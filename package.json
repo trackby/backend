@@ -1,13 +1,12 @@
 {
-  "name": "heros",
-  "description": "The tour of heros",
+  "name": "Trackby.me rest service",
+  "description": "Backend service for tmb-web react application",
   "version": "1.0.0",
-  "private": true,
-  "author": "Brian Love",
+  "author": "<Fatih, Gokcan, Onur, Orcun>",
   "scripts": {
     "dev": "NODE_ENV=development nodemon ./bin/www",
     "grunt": "grunt",
-    "start": "node ./bin/www"
+    "start": "nodemon ./bin/www"
   },
   "dependencies": {
     "body-parser": "^1.18.2",

@@ -20,5 +20,12 @@ export class Controller {
         let r: ExampleEntity = service.findOne(req.params.id)        
         res.send(r)
     }
+
+    public static async exampleQuery(req:Request, res:Response) {
+        let { id } = req.params 
+        let item: ExampleEntity = await service.exampleQuery(id);
+        res.send(item)
+    }
+
     
 }

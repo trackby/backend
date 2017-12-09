@@ -1,9 +1,13 @@
 import { Entity } from '../models/entity';
-
+import mysql from 'promise-mysql';
+import config from '../config'
 
 export class Service  {
 
+    protected pool: any
+
     constructor() {
+        this.pool = mysql.createPool(config)
         //db adapter
     }
 

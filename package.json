@@ -1,5 +1,5 @@
 {
-  "name": "Trackby.me rest service",
+  "name": "trackbymebackend",
   "description": "Backend service for tmb-web react application",
   "version": "1.0.0",
   "author": "<Fatih, Gokcan, Onur, Orcun>",

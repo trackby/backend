@@ -1,0 +1,5 @@
+.tscache
+.baseDir.ts
+dist
+node_modules
+package-lock.json

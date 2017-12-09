@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 "use strict";
 
+var env = require('dotenv/config')
 //module dependencies
 var server = require("../dist/server");
 var debug = require("debug")("express:server");
 var http = require("http");
 
 //create http server
-var httpPort = normalizePort(process.env.PORT || 8080);
+var httpPort = normalizePort(process.env.PORT);
 var app = server.Server.bootstrap().app;
 app.set("port", httpPort);
 var httpServer = http.createServer(app);
+
+
 
 //listen on provided ports
 httpServer.listen(httpPort);

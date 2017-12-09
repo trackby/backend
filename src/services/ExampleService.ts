@@ -2,7 +2,6 @@ import { Entity } from '../models/entity';
 import { ExampleEntity } from '../models/exampleEntity';
 import { Service } from './service'
 
-
 export class ExampleService extends Service {
 
     constructor() {
@@ -21,7 +20,7 @@ export class ExampleService extends Service {
     public findOne(id: number): ExampleEntity {
         return new ExampleEntity(id, "Fatih", true)
     }
-    public async exampleQuery(id: number): ExampleEntity {
+    public async exampleQuery(id: number): Promise<ExampleEntity> {
         try {
             let itemData = await this.pool.query(
                 `

@@ -1,13 +1,17 @@
 import { Entity } from '../models/entity';
-import mysql from 'promise-mysql';
-import config from '../config'
+import mysql = require('promise-mysql');
 
 export class Service  {
 
     protected pool: any
 
     constructor() {
-        this.pool = mysql.createPool(config)
+        this.pool = mysql.createPool({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_DATABASE
+        })
         //db adapter
     }
 

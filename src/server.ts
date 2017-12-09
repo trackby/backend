@@ -5,7 +5,6 @@ import * as logger from "morgan";
 
 import { Routes } from "./routes"
 
-
 /**
  * The server.
  *
@@ -42,19 +41,6 @@ export class Server {
     
         //add routes
         this.routes();
-    
-        //add api
-        this.api();
-      }
-    
-      /**
-       * Create REST API routes
-       *
-       * @class Server
-       * @method api
-       */
-      public api() {
-        //empty for now
       }
     
       /**

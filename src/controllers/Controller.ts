@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
-import { Service } from '../services/Service'
+import { ExampleService } from '../services/ExampleService'
 import { EntityNotFoundError } from '../errors/EntityNotFound'
+import { ExampleEntity } from '../models/ExampleEntity'
 
-
-const service = new Service()
+const service = new ExampleService()
 
 export class Controller {
 
@@ -12,11 +12,13 @@ export class Controller {
     }
     
     public static getEntities(req: Request, res: Response) {
-        res.send(service.find())
+        let r: ExampleEntity[] =  service.find()
+        res.send(r)
     }
     
     public static getEntity(req: Request, res: Response) {
-        res.send(service.findOne(1))
+        let r: ExampleEntity = service.findOne(req.params.id)        
+        res.send(r)
     }
     
 }

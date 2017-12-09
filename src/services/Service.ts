@@ -8,18 +8,20 @@ export class Service  {
     }
 
     public find(): Entity[] {
-        let arr: Entity[] = [
-            {id : 1, name: "Fatih"},
-            {id: 2, name: "Gokcan"},
-            {id: 3, name: "Onur"}
-        ];
-        return arr
+        throw new Error("find() was not implemented yet")
+    }
+
+    public create(ent: Entity): boolean {
+        throw new Error("create() was not implemented yet")
+    }
+
+    public delete(id: number): boolean {
+        throw new Error("delete() was not implemented yet")
     }
 
     public findOne(id: number): Entity {
-        return {id: id, name: "Fatih"}
+        throw new Error("find() was not implemented yet")
     }
-
 
 }
     

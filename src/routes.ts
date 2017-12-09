@@ -23,6 +23,7 @@ export class Routes {
     router.get("/", Controller.sayHello);
     router.get("/entity", Controller.getEntities);
     router.get("/entity/:id", Controller.getEntity);
+    router.get("/query/:id", Controller.exampleQuery)
     
   }
 

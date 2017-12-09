@@ -1,6 +1,7 @@
 import { Entity } from '../models/entity';
 import { ExampleEntity } from '../models/exampleEntity';
 import { Service } from './service'
+import { Pool, Client } from 'pg';
 
 export class ExampleService extends Service {
 
@@ -21,20 +22,17 @@ export class ExampleService extends Service {
         return new ExampleEntity(id, "Fatih", true)
     }
     public async exampleQuery(id: number): Promise<ExampleEntity> {
-        try {
-            let itemData = await this.pool.query(
-                `
-                SELECT id, name
-                FROM items
-                WHERE id = ?
-                `,
-                [id]
-            );
-            return itemData[0];
-        } catch(error) {
-            console.log(error)
-            return null
-        }
+        
+            const client = await this.pool.connect()
+            try {
+              const res = await client.query('SELECT * FROM users WHERE id = $1', [id])
+              return res.rows[0];
+            } catch (e) {
+                console.log(e.stack)
+            } finally {
+              client.release()
+            }
+            return null;
     }
 
 }

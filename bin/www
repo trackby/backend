@@ -8,7 +8,7 @@ var debug = require("debug")("express:server");
 var http = require("http");
 
 //create http server
-var httpPort = normalizePort(process.env.PORT);
+var httpPort = normalizePort(process.env.PORT || 8080 );
 var app = server.Server.bootstrap().app;
 app.set("port", httpPort);
 var httpServer = http.createServer(app);

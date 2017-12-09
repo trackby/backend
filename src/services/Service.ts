@@ -1,18 +1,20 @@
 import { Entity } from '../models/entity';
-import mysql = require('promise-mysql');
+import { Pool, Client } from 'pg';
 
 export class Service  {
 
-    protected pool: any
+    pool: any
 
     constructor() {
-        this.pool = mysql.createPool({
+
+        console.log("TEST:" + process.env);
+        
+        this.pool= new Pool ({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
-            password: process.env.DB_PASS,
-            database: process.env.DB_DATABASE
+            database: process.env.DB_DATABASE,
+            port: process.env.DB_PORT
         })
-        //db adapter
     }
 
     public find(): Entity[] {

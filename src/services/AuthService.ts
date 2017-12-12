@@ -1,6 +1,6 @@
+import * as bcrypt from 'bcrypt';
 import { User } from '../models/user';
 import { Service } from './service';
-
 export class AuthService extends Service {
     constructor() {
         super();
@@ -22,9 +22,11 @@ export class AuthService extends Service {
     }
     public async save(user: User): Promise<boolean> {
         const { username, password } = user;
-        const values = [username, password];
+        const salt = await bcrypt.genSalt(10).catch((error) => { throw new Error(error); });
+        const hashedPass = await bcrypt.hash(password, salt).catch((error) => { throw new Error(error); });
+
+        const values = [username, hashedPass];
         const sql = 'INSERT INTO users(name, password) VALUES($1, $2) RETURNING *';
-        // TODO(1): encrypt the password before save (use bcrypt with salt)
 
         const client = await this.pool.connect();
         try {
@@ -41,4 +43,8 @@ export class AuthService extends Service {
         }
         return false;
     }
+    public comparePass(given: string, stored: string) {
+        const isMatch: boolean = bcrypt.compareSync(given, stored);
+        return isMatch;
+      }
 }

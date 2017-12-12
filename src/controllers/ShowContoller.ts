@@ -13,9 +13,9 @@ export class ShowController {
     public static async readShows(req: Request, res: Response) {
         const r: Show[] = await showService.findAll();
         if (r) {
-            res.status(200).send(r);
+            return res.status(200).send(r);
         }
-        res.status(404).send(new NotFound());
+        return res.status(404).send(new NotFound());
     }
 
     public static async readShow(req: Request, res: Response) {
@@ -40,9 +40,9 @@ export class ShowController {
         const { showid } = req.params;
         const r: Comment[] = await showService.findShowComments(showid);
         if (r) {
-            res.status(200).send(r);
+            return res.status(200).send(r);
         }
-        res.status(404).send(new NotFound());
+        return res.status(404).send(new NotFound());
     }
 
     public static async createShow(req: Request, res: Response) {

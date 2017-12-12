@@ -1,13 +1,9 @@
-import { Entity } from './entity'
+import { User} from './user';
 
-
-
-export class ExampleEntity extends Entity{
-
-    private success:boolean
-
-    constructor(id: number, name: string, success: boolean) {
-        super(id, name)
-        this.success = success
+export class ExampleEntity extends User {
+    private success: boolean;
+    constructor(id: number, name: string, password: string, success: boolean) {
+        super(id, name, password);
+        this.success = success;
     }
 }

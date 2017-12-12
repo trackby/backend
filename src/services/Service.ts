@@ -1,37 +1,32 @@
-import { Entity } from '../models/entity';
-import { Pool, Client } from 'pg';
+import { Client, Pool } from 'pg';
+import { User } from '../models/user';
 
 export class Service  {
 
-    pool: any
-
+    public pool: Pool;
     constructor() {
-
-        console.log("TEST:" + process.env);
-        
-        this.pool= new Pool ({
-            host: process.env.DB_HOST,
-            user: process.env.DB_USER,
+        this.pool = new Pool ({
             database: process.env.DB_DATABASE,
-            port: process.env.DB_PORT
-        })
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT,
+            user: process.env.DB_USER,
+        });
     }
 
-    public find(): Entity[] {
-        throw new Error("find() was not implemented yet")
+    public find(): User[] {
+        throw new Error('find() was not implemented yet');
     }
 
-    public create(ent: Entity): boolean {
-        throw new Error("create() was not implemented yet")
+    public create(ent: User): boolean {
+        throw new Error('create() was not implemented yet');
     }
 
     public delete(id: number): boolean {
-        throw new Error("delete() was not implemented yet")
+        throw new Error('delete() was not implemented yet');
     }
 
-    public findOne(id: number): Entity {
-        throw new Error("find() was not implemented yet")
+    public findOne(id: number): User {
+        throw new Error('find() was not implemented yet');
     }
 
 }
-    

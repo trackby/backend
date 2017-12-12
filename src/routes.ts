@@ -1,5 +1,7 @@
-import { Controller } from "./controllers/Controller"
-import { Router } from 'express'
+import { Router } from 'express';
+import { AuthController } from './controllers/AuthController';
+import { Controller } from './controllers/Controller';
+import { ShowController } from './controllers/ShowContoller';
 
 /**
  * / route
@@ -16,14 +18,20 @@ export class Routes {
    * @static
    */
   public static create(router: Router) {
-    //log
-    console.log("[IndexRoute::create] Creating index route.");
-
-    //add home page route
-    router.get("/", Controller.sayHello);
-    router.get("/entity", Controller.getEntities);
-    router.get("/entity/:id", Controller.getEntity);
-    router.get("/query/:id", Controller.exampleQuery)
-    
+    router.use((req, res, next) => {
+      next();
+  });
+    router.get('/', Controller.sayHello);
+    router.get('/entity', Controller.getEntities);
+    router.get('/entity/:id', Controller.getEntity);
+    router.get('/query/:id', Controller.exampleQuery);
+    // trackby.me routes
+    router.route('/signup').post(AuthController.signup);
+    router.post('/shows', ShowController.createShow);
+    router.get('/shows', ShowController.readShows);
+    router.get('/shows/:showid', ShowController.readShow);
+    router.delete('/shows/:showid', ShowController.deleteShow);
+    router.get('/shows/:showid/comments', ShowController.readShowComments);
+    router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
   }
 }

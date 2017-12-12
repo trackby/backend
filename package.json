@@ -8,7 +8,13 @@
     "grunt": "grunt",
     "start": "nodemon ./bin/www"
   },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ]
+  },
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
     "dotenv": "^4.0.0",
@@ -16,7 +22,7 @@
     "express": "^4.16.2",
     "morgan": "^1.9.0",
     "pg": "^7.4.0",
-    "ts-node": "^3.3.0"
+    "tslint": "^5.8.0"
   },
   "devDependencies": {
     "@types/body-parser": "1.16.8",
@@ -24,11 +30,12 @@
     "@types/errorhandler": "0.0.32",
     "@types/method-override": "0.0.31",
     "@types/morgan": "^1.7.35",
+    "@types/bcrypt": "^1.0.0",
     "grunt": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-ts": "^6.0.0-beta.17",
     "nodemon": "^1.12.1",
-    "typescript": "^2.6.1"
+    "typescript": "^2.6.2"
   }
 }

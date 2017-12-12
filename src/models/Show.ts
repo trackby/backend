@@ -1,30 +1,47 @@
-import { Entity } from './entity'
+export class Show {
 
+    private _id: number;
+    private _info: string;
+    private _trailerUrl: string;
+    private _imageUrl: string;
+    private _showName: string;
 
-export class Show extends Entity{
-
-    info: string
-    trailer_url: string
-    image_url: string
-    show_name: string
-
-    constructor(id: number, name: string, info: string, trailer_url: string, image_url: string) {
-        super(id)
-        this.show_name = name
-        this.info = info
-        this.trailer_url = trailer_url
-        this.image_url = image_url
+    constructor(id: number, name: string, info: string, trailerUrl: string, imageUrl: string) {
+        this._id = id;
+        this._showName = name;
+        this._info = info;
+        this._trailerUrl = trailerUrl;
+        this._imageUrl = imageUrl;
     }
-}
 
-export class ShowComment extends Entity {
-    /*show_comment table */
-    show_id: number 
-    comment_id: number
-
-    constructor(id: number, show_id: number, comment_id: number) {
-        super(id)
-        this.show_id = show_id
-        this.comment_id = comment_id
+    public get id(): number {
+        return this._id;
+    }
+    public set id(id: number) {
+        this._id = id;
+    }
+    public get info(): string {
+        return this._info;
+    }
+    public set info(info: string) {
+        this._info = info;
+    }
+    public get trailer_url(): string {
+        return this._trailerUrl;
+    }
+    public set trailer_url(url: string) {
+        this._trailerUrl = url;
+    }
+    public get image_url(): string {
+        return this._imageUrl;
+    }
+    public set image_url(url: string) {
+        this._imageUrl = url;
+    }
+    public get show_name(): string {
+        return this._showName;
+    }
+    public set show_name(name: string) {
+        this._showName = name;
     }
 }

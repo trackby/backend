@@ -1,14 +1,9 @@
+import { User} from './user';
 
-
-export class ExampleEntity{
-
-    private success:boolean
-    private id: number
-    private name: string
-
-    constructor(id: number, name: string, success: boolean) {
-        this.id = id
-        this.name = name
-        this.success = success
+export class ExampleEntity extends User {
+    private success: boolean;
+    constructor(id: number, name: string, password: string, success: boolean) {
+        super(id, name, password);
+        this.success = success;
     }
 }

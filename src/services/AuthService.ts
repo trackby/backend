@@ -8,7 +8,7 @@ export class AuthService extends Service {
     public async isUserExists(username: string): Promise<boolean> {
             const client = await this.pool.connect();
             try {
-              const res = await client.query('SELECT * FROM users WHERE name = $1', [username]);
+              const res = await client.query('SELECT * FROM users WHERE username = $1', [username]);
               if (res.rows[0]) {
                   return true;
               }
@@ -26,13 +26,15 @@ export class AuthService extends Service {
         const hashedPass = await bcrypt.hash(password, salt).catch((error) => { throw new Error(error); });
 
         const values = [username, hashedPass];
-        const sql = 'INSERT INTO users(name, password) VALUES($1, $2) RETURNING *';
+        const sql = 'INSERT INTO users(username, password) VALUES($1, $2) RETURNING *';
 
         const client = await this.pool.connect();
         try {
           const res = await client.query(sql, values);
           if (res.rows[0]) {
               user.id = res.rows[0].id;
+              // tslint:disable-next-line:no-console
+              console.dir(user);
               return true;
           }
         } catch (e) {

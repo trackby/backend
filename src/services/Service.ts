@@ -1,37 +1,33 @@
-import { Entity } from '../models/entity';
-import { Pool, Client } from 'pg';
+import { Pool } from 'pg';
 
 export class Service  {
 
-    pool: any
+    protected pool: Pool
 
-    constructor() {
-
-        console.log("TEST:" + process.env);
-        
+    constructor() {        
         this.pool= new Pool ({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
+            password: process.env.DB_PASS,
             database: process.env.DB_DATABASE,
             port: process.env.DB_PORT
         })
     }
 
-    public find(): Entity[] {
-        throw new Error("find() was not implemented yet")
+    public async findById(id: number): Promise<any> {
+        throw new Error("findById() was not implemented yet")        
     }
 
-    public create(ent: Entity): boolean {
-        throw new Error("create() was not implemented yet")
+    public async findAll(): Promise<any[]> {
+        throw new Error("findAll() was not implemented yet")        
     }
 
-    public delete(id: number): boolean {
-        throw new Error("delete() was not implemented yet")
+    public async create(ent: any): Promise<number> {
+        throw new Error("create() was not implemented yet")        
     }
 
-    public findOne(id: number): Entity {
-        throw new Error("find() was not implemented yet")
+    public async delete(id: number): Promise<number> {
+        throw new Error("delete() was not implemented yet")        
     }
-
-}
     
+}

@@ -26,6 +26,4 @@ export class Routes {
     router.get("/query/:id", Controller.exampleQuery)
     
   }
-
-
 }

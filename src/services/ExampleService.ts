@@ -1,8 +1,5 @@
-import { Entity } from '../models/entity';
 import { ExampleEntity } from '../models/exampleEntity';
 import { Service } from './service'
-import { Pool, Client } from 'pg';
-
 export class ExampleService extends Service {
 
     constructor() {
@@ -21,19 +18,18 @@ export class ExampleService extends Service {
     public findOne(id: number): ExampleEntity {
         return new ExampleEntity(id, "Fatih", true)
     }
-    public async exampleQuery(id: number): Promise<ExampleEntity> {
+    public async exampleQuery(id: number): Promise<any> {
         
-            const client = await this.pool.connect()
-            try {
-              const res = await client.query('SELECT * FROM users WHERE id = $1', [id])
-              return res.rows[0];
-            } catch (e) {
-                console.log(e.stack)
-            } finally {
-              client.release()
-            }
-            return null;
+        const client = await this.pool.connect()
+        try {
+            const res = await client.query('SELECT * FROM users WHERE id = $1', [id])
+            return res.rows[0];
+        } catch (e) {
+            console.log(e.stack)
+        } finally {
+          client.release()
+        }
+        return null
     }
-
 }
   

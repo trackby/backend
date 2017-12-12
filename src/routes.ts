@@ -1,5 +1,6 @@
-import { Controller } from "./controllers/Controller"
-import { Router } from 'express'
+import { Router } from 'express';
+import { AuthController } from './controllers/AuthController';
+import { Controller } from './controllers/Controller';
 
 /**
  * / route
@@ -16,16 +17,13 @@ export class Routes {
    * @static
    */
   public static create(router: Router) {
-    //log
-    console.log("[IndexRoute::create] Creating index route.");
-
-    //add home page route
-    router.get("/", Controller.sayHello);
-    router.get("/entity", Controller.getEntities);
-    router.get("/entity/:id", Controller.getEntity);
-    router.get("/query/:id", Controller.exampleQuery)
-    
+    router.use((req, res, next) => {
+      next();
+  });
+    router.get('/', Controller.sayHello);
+    router.get('/entity', Controller.getEntities);
+    router.get('/entity/:id', Controller.getEntity);
+    router.get('/query/:id', Controller.exampleQuery);
+    router.route('/signup').post(AuthController.signup);
   }
-
-
 }

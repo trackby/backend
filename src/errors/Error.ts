@@ -1,11 +1,12 @@
 export class Error {
-    private errCode: number;
-    private errMsg: string;
+    private errorCode: number;
+    private errorMessage: string;
+
     constructor(
-        errCode: number,
-        errMsg: string,
+        errorCode: number,
+        errorMessage: string,
     ) {
-        this.errCode = errCode;
-        this.errMsg = errMsg;
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
     }
 }

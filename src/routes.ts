@@ -22,9 +22,7 @@ export class Routes {
       next();
   });
     router.get('/', Controller.sayHello);
-    router.get('/entity', Controller.getEntities);
-    router.get('/entity/:id', Controller.getEntity);
-    router.get('/query/:id', Controller.exampleQuery);
+
     // trackby.me routes
     router.route('/signup').post(AuthController.signup);
     router.route('/auth').post(AuthController.authenticate);

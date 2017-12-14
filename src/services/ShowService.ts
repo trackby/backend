@@ -1,5 +1,6 @@
 import { Comment } from '../models/comment';
-import { Show, ShowComment } from '../models/show';
+import { Show } from '../models/show';
+import { ShowComment } from '../models/showcomment';
 import { Service } from './service';
 
 export class ShowService  extends Service {

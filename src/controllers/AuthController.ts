@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { EntityNotFoundError } from '../errors/EntityNotFound';
+import { NotFound } from '../errors/NotFound';
 import { User } from '../models/user';
 import { AuthService } from '../services/AuthService';
 

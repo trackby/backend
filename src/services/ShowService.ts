@@ -1,5 +1,6 @@
 import { Comment } from '../models/comment';
-import { Show, ShowComment } from '../models/show';
+import { Show } from '../models/show';
+import { ShowComment } from '../models/showcomment';
 import { Service } from './service';
 
 export class ShowService  extends Service {
@@ -20,7 +21,7 @@ export class ShowService  extends Service {
 
     public async create(show: Show): Promise<number> {
         const client = await this.pool.connect();
-        const sql = 'INSERT into tvshow (name, info, trailer_url, image_url) VALUES($1, $2, $3, $4) RETURNING id';
+        const sql = 'INSERT into tvshow (show_name, info, trailer_url, image_url) VALUES($1, $2, $3, $4) RETURNING id';
         try {
             const id = await client.query(sql, [show.show_name, show.info, show.trailer_url, show.image_url]);
             return id;
@@ -62,7 +63,7 @@ export class ShowService  extends Service {
 
     public async createShowComment(scomment: ShowComment): Promise<number> {
         const client = await this.pool.connect();
-        const sql = 'INSERT into showcomment (show_id, comment_id) VALUES($1, $2) RETURNING id';
+        const sql = 'INSERT into show_comment (show_id, comment_id) VALUES($1, $2) RETURNING id';
         try {
             const id = await client.query(sql, [scomment.show_id, scomment.comment_id]);
             return id;
@@ -76,8 +77,8 @@ export class ShowService  extends Service {
 
     public async findShowComments(sid: number): Promise<Comment[]> {
         const client = await this.pool.connect();
-        const sql = 'SELECT * FROM showcomment INNER JOIN comment'
-                    + 'ON showcomment.comment_id = comment.id WHERE show_id = $1';
+        const sql = 'SELECT * FROM show_comment INNER JOIN comment'
+                    + 'ON show_comment.comment_id = comment.id WHERE show_id = $1';
         try {
             const res = await client.query(sql, [sid]);
             return res.rows;
@@ -91,8 +92,8 @@ export class ShowService  extends Service {
 
     public async findShowComment(sid: number, cid: number): Promise<Comment> {
         const client = await this.pool.connect();
-        const sql = 'SELECT * FROM showcomment INNER JOIN comment'
-                    + 'ON showcomment.comment_id = comment.id WHERE show_id = $1 AND comment_id = $2';
+        const sql = 'SELECT * FROM show_comment INNER JOIN comment'
+                    + 'ON show_comment.comment_id = comment.id WHERE show_id = $1 AND comment_id = $2';
         try {
             const res = await client.query(sql, [sid, cid]);
             return res.rows[0];

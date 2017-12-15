@@ -22,16 +22,17 @@ export class Routes {
       next();
   });
     router.get('/', Controller.sayHello);
-    router.get('/entity', Controller.getEntities);
-    router.get('/entity/:id', Controller.getEntity);
-    router.get('/query/:id', Controller.exampleQuery);
+
     // trackby.me routes
     router.route('/signup').post(AuthController.signup);
+    router.route('/auth').post(AuthController.authenticate);
+
     router.post('/shows', ShowController.createShow);
     router.get('/shows', ShowController.readShows);
     router.get('/shows/:showid', ShowController.readShow);
     router.delete('/shows/:showid', ShowController.deleteShow);
     router.get('/shows/:showid/comments', ShowController.readShowComments);
     router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
+
   }
 }

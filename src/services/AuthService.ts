@@ -1,9 +1,12 @@
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 import { User } from '../models/user';
 import { Service } from './service';
 export class AuthService extends Service {
+    private key: string;
     constructor() {
         super();
+        this.key = process.env.SECRET_KEY;
     }
     public async isUserExists(username: string): Promise<boolean> {
             const client = await this.pool.connect();
@@ -45,8 +48,37 @@ export class AuthService extends Service {
         }
         return false;
     }
-    public comparePass(given: string, stored: string) {
-        const isMatch: boolean = bcrypt.compareSync(given, stored);
+    public async comparePass(given: string, username: string) {
+        const user: User = await this.findOne(username);
+        const stored: string = user.password;
+
+        const isMatch: boolean = await bcrypt.compare(given, stored).catch((error) => { throw new Error(error); });
         return isMatch;
-      }
+    }
+
+    public async findOne(username: string): Promise<User> {
+        const client = await this.pool.connect();
+        const sql = 'SELECT * FROM users WHERE username = $1';
+        try {
+            const res = await client.query(sql, [username]);
+            if (res.rows[0]) {
+                return res.rows[0];
+            }
+        } catch (e) {
+            // console.log(e.stack)
+        } finally {
+          client.release();
+        }
+        return null;
+    }
+
+    public signJWT(username: string) {
+        const token = jwt.sign({ __username: username }, this.key, {
+            expiresIn: 60 * 60 * 24,
+            issuer: 'trackby',
+        });
+        if (token) {
+            return token;
+        }
+    }
 }

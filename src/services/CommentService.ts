@@ -21,8 +21,8 @@ export class ShowService  extends Service {
         const client = await this.pool.connect();
         const sql = 'INSERT INTO comment (body, user_id, parent_id) VALUES($1, $2, $3, $4) RETURNING id';
         try {
-            const id = await client.query(sql, [comment.body, comment.user_id, comment.parent_id]);
-            return id;
+            const res = await client.query(sql, [comment.body, comment.user_id, comment.parent_id]);
+            return res.rows[0].id;
         } catch (e) {
            // console.log(e.stack)
         } finally {
@@ -35,8 +35,8 @@ export class ShowService  extends Service {
         const client = await this.pool.connect();
         const sql = 'DELETE FROM comment WHERE id = $1 RETURNING id';
         try {
-            const id = await client.query(sql, [sid]);
-            return id;
+            const res = await client.query(sql, [sid]);
+            return res.rows[0].id;
         } catch (e) {
             // console.log(e.stack)
         } finally {

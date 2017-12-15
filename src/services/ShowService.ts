@@ -23,8 +23,8 @@ export class ShowService  extends Service {
         const client = await this.pool.connect();
         const sql = 'INSERT into tvshow (show_name, info, trailer_url, image_url) VALUES($1, $2, $3, $4) RETURNING id';
         try {
-            const id = await client.query(sql, [show.show_name, show.info, show.trailer_url, show.image_url]);
-            return id;
+            const res = await client.query(sql, [show.show_name, show.info, show.trailer_url, show.image_url]);
+            return res.rows[0].id;
         } catch (e) {
             // console.log(e.stack)
         } finally {
@@ -37,8 +37,8 @@ export class ShowService  extends Service {
         const client = await this.pool.connect();
         const sql = 'DELETE FROM tvshow WHERE id = $1 RETURNING id';
         try {
-            const id = await client.query(sql, [sid]);
-            return id;
+            const res = await client.query(sql, [sid]);
+            return res.rows[0].id;
         } catch (e) {
             // console.log(e.stack)
         } finally {
@@ -65,8 +65,8 @@ export class ShowService  extends Service {
         const client = await this.pool.connect();
         const sql = 'INSERT into show_comment (show_id, comment_id) VALUES($1, $2) RETURNING id';
         try {
-            const id = await client.query(sql, [scomment.show_id, scomment.comment_id]);
-            return id;
+            const res = await client.query(sql, [scomment.show_id, scomment.comment_id]);
+            return res.rows[0].id;
         } catch (e) {
             // console.log(e.stack)
         } finally {

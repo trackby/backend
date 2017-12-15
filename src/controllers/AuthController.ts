@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import { NextFunction } from 'express-serve-static-core';
+import { BadRequest } from '../errors/BadRequest';
 import { NotFound } from '../errors/NotFound';
 import { ResourceExists } from '../errors/ResourceExists';
 import { Unauthorized } from '../errors/Unauthorized';
@@ -11,6 +13,9 @@ export class AuthController {
 
     public static async signup(req: Request, res: Response) {
         const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).send(new BadRequest());
+        }
         const isExists: boolean = await service.isUserExists(username);
         const user = new User(null, username, password);
 
@@ -27,6 +32,9 @@ export class AuthController {
 
     public static async authenticate(req: Request, res: Response) {
         const { username, password } = req.body;
+        if (!username || !password) {
+            return res.sendStatus(400).send(new BadRequest());
+        }
         const isExits: boolean = await service.isUserExists(username);
 
         if (isExits) {
@@ -41,4 +49,15 @@ export class AuthController {
             res.status(404).send(new NotFound());
         }
     }
-}
+
+    public static protect(req: Request, res: Response, next: NextFunction) {
+        const token = req.body.token || req.query.token || req.headers['x-access-token'];
+        const isVerified: boolean = service.verifyJWT(token);
+
+        if (isVerified) {
+            next();
+        } else {
+            return res.status(403).send(new Unauthorized());
+        }
+      }
+    }

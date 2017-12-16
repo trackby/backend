@@ -64,4 +64,14 @@ export class ShowController {
         }
         return res.status(400).send(new BadRequest());
     }
+
+    public static async addShowAction(req: Request, res: Response) {
+        const userid = 1;
+        const { showid } = req.params;
+        const r: number = await showService.markAsWatched(showid, userid);
+        if (r) {
+            return res.status(201).send({id: r});
+        }
+        return res.status(400).send(new BadRequest());
+    }
 }

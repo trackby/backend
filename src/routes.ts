@@ -33,6 +33,7 @@ export class Routes {
     router.delete('/shows/:showid', ShowController.deleteShow);
     router.get('/shows/:showid/comments', ShowController.readShowComments);
     router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
+    router.post('/shows/:showid', ShowController.addShowAction);
 
   }
 }

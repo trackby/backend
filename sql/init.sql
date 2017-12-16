@@ -30,7 +30,6 @@ CREATE TABLE tvshow (
 CREATE TABLE watch(
   watch_id SERIAL,
   user_id INTEGER NOT NULL,
-  FOREIGN KEY(user_id) REFERENCES user ON DELETE CASCADE,
   PRIMARY KEY(watch_id)
 );
 
@@ -42,3 +41,6 @@ ALTER TABLE comment
 ALTER TABLE show_comment
   ADD FOREIGN KEY(show_id) REFERENCES tvshow(id) ON DELETE CASCADE,
   ADD FOREIGN KEY(comment_id) REFERENCES comment(id) ON DELETE CASCADE;
+
+ALTER TABLE watch
+  ADD FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE;

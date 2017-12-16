@@ -2,6 +2,7 @@ import { Comment } from '../models/comment';
 import { Show } from '../models/show';
 import { ShowComment } from '../models/showcomment';
 import { Service } from './service';
+import { WatchService } from './watchservice';
 
 export class ShowService  extends Service {
 
@@ -103,5 +104,21 @@ export class ShowService  extends Service {
           client.release();
         }
         return null;
+    }
+    public async markAsWatched(sid: number, uid: number) {
+        const ser: Service = new WatchService();
+        const wid = await ser.create(uid);
+
+        const client = await this.pool.connect();
+        const sql = 'INSERT INTO show_watch(watch_id, show_id) VALUES($1, $2) RETURNİNG id';
+
+        try {
+            const res = await client.query(sql, [wid, sid]);
+            return res.rows[0].id;
+        } catch (e) {
+            // console.log(e.stack)
+        } finally {
+            client.release();
+        }
     }
 }

@@ -7,10 +7,6 @@ Install the node packages via:
 
 `$ npm install`
 
-And then run the grunt task to compile the TypeScript:
-
-`$ npm run grunt`
-
 ## Configuration
 
 Create .env variable similar to .env.example

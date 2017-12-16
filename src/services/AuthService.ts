@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import { request } from 'http';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../models/user';
 import { Service } from './service';
@@ -80,5 +81,17 @@ export class AuthService extends Service {
         if (token) {
             return token;
         }
+    }
+
+    public verifyJWT(token: string): boolean {
+        if (token) {
+            try {
+                const decoded: string | object =  jwt.verify(token, this.key, {issuer: 'trackby'});
+                return decoded ? true : false;
+            } catch (e) {
+             // console.log(e.stack);
+            }
+        }
+        return false;
     }
 }

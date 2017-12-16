@@ -86,8 +86,8 @@ export class AuthService extends Service {
     public verifyJWT(token: string): boolean {
         if (token) {
             try {
-                const decoded: boolean =  jwt.verify(token, this.key, {issuer: 'trackby'});
-                return decoded;
+                const decoded: string | object =  jwt.verify(token, this.key, {issuer: 'trackby'});
+                return decoded ? true : false;
             } catch (e) {
              // console.log(e.stack);
             }

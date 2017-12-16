@@ -51,6 +51,12 @@ export class AuthController {
     }
 
     public static protect(req: Request, res: Response, next: NextFunction) {
+       /* All resources are accessible via GET.
+        * This rule is subject to change in future, regarding to application logic.
+        */
+        if (req.method === 'GET' ) {
+            next();
+        }
         const token = req.body.token || req.query.token || req.headers['x-access-token'];
         const isVerified: boolean = service.verifyJWT(token);
 

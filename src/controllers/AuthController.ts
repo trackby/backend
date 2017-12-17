@@ -55,8 +55,9 @@ export class AuthController {
         * This rule is subject to change in future, regarding to application logic.
         */
         if (req.method === 'GET' ) {
-            next();
+            return next();
         }
+
         const token = req.body.token || req.query.token || req.headers['x-access-token'];
         const isVerified: boolean = service.verifyJWT(token);
 

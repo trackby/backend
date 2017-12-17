@@ -31,7 +31,13 @@ export class Routes {
       res.json({message: 'Hoorayyy! Welcome to TrackBy!'});
   });
 
+  /* Please activate it at the end.
+    
+  */
+  /*
     router.use(AuthController.protect);
+  */
+
 
     /*
      * Below routes are protected and cannot be accessed without authentication token.

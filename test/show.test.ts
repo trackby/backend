@@ -1,7 +1,8 @@
-import * as request from 'supertest';
 import { expect } from 'chai';
-import 'mocha';
-const server = require('../bin/www');
+import { Request, Response } from 'express';
+import * as mocha from 'mocha';
+import * as request from 'supertest';
+import * as server from '../bin/www';
 
 describe('List Shows Test', () => {
     it('should return 200 OK', () => {
@@ -11,31 +12,28 @@ describe('List Shows Test', () => {
 });
 
 describe('Post New Show Test', () => {
-    describe('Successes', function() {
+    describe('Successes', () => {
         it('should return 201 Created', () => {
-            let show = {info:"this is trial!", show_name: "Mr.Robot", image_url: "url", trailer_url: "sadastrailer"};
+            const show = {info: 'This is trial!', show_name: 'Mr.Robot', image_url: 'url', trailer_url: 'sadastrailer'};
             return request(server)
                 .post('/shows')
                 .type('form')
                 .send(show)
-                .then(function(res) {
-                    expect(res.statusCode).to.be.equal(201);  
-                })
-                
+                .then((res: any) => {
+                    expect(res.statusCode).to.be.equal(201);
+                });
         });
     });
-    describe('Errors', function() {
+    describe('Errors', () => {
         it('should return 400 Bad Request', () => {
-            const show = {info:"this is trial!"};
+            const show = {info: 'this is trial!'};
             return request(server)
                 .post('/shows')
                 .type('form')
                 .send(show)
-                .then(function(res) {
-                    expect(res.statusCode).to.be.equal(400);  
-                })
-                
+                .then((res: any) => {
+                    expect(res.statusCode).to.be.equal(400);
+                });
         });
     });
 });
-

@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { request } from 'http';
 import * as jwt from 'jsonwebtoken';
+import { BadRequest } from '../errors/BadRequest';
 import { User } from '../models/user';
 import { Service } from './service';
 export class AuthService extends Service {
@@ -9,28 +10,34 @@ export class AuthService extends Service {
         super();
         this.key = process.env.SECRET_KEY;
     }
-    public async isUserExists(username: string): Promise<boolean> {
+    public async isUserExists(username: string, email?: string): Promise<boolean> {
             const client = await this.pool.connect();
             try {
-              const res = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+              let res = await client.query('SELECT * FROM users WHERE username = $1', [username]);
               if (res.rows[0]) {
-                  return true;
-              }
+                return true;
+              } else if (email) {
+                    res = await client.query('SELECT * FROM users WHERE email = $1', [email]);
+                    if (res.rows[0]) {
+                        return true;
+                    }
+                }
             } catch (e) {
                 // tslint:disable-next-line:no-console
                 console.log(e.stack);
+                throw new Error(e);
             } finally {
               client.release();
             }
             return false;
     }
     public async save(user: User): Promise<boolean> {
-        const { username, password } = user;
+        const { username, password, email, age } = user;
         const salt = await bcrypt.genSalt(10).catch((error) => { throw new Error(error); });
         const hashedPass = await bcrypt.hash(password, salt).catch((error) => { throw new Error(error); });
 
-        const values = [username, hashedPass];
-        const sql = 'INSERT INTO users(username, password) VALUES($1, $2) RETURNING *';
+        const values = [username, hashedPass, email, age];
+        const sql = 'INSERT INTO users(username, password, email, age) VALUES($1, $2, $3, $4) RETURNING *';
 
         const client = await this.pool.connect();
         try {
@@ -44,6 +51,7 @@ export class AuthService extends Service {
         } catch (e) {
             // tslint:disable-next-line:no-console
             console.log(e.stack);
+            throw new Error(e);
         } finally {
           client.release();
         }
@@ -66,6 +74,7 @@ export class AuthService extends Service {
                 return res.rows[0];
             }
         } catch (e) {
+            throw new Error(e);
             // console.log(e.stack)
         } finally {
           client.release();
@@ -89,7 +98,7 @@ export class AuthService extends Service {
                 const decoded: string | object =  jwt.verify(token, this.key, {issuer: 'trackby'});
                 return decoded ? true : false;
             } catch (e) {
-             // console.log(e.stack);
+                throw new Error(e);
             }
         }
         return false;

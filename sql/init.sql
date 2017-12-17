@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, show_comment, users;
+DROP TABLE IF EXISTS comment, tvshow, show_comment, watch, users CASCADE;
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -39,14 +39,10 @@ CREATE TABLE users (
   username VARCHAR(25) NOT NULL UNIQUE,
   password TEXT NOT NULL,
   email CITEXT NOT NULL UNIQUE,
-  age SMALLINT,
-  isAdmin BOOLEAN NOT NULL,
+  age SMALLINT NOT NULL,
+  isAdmin BOOLEAN DEFAULT false,
   PRIMARY KEY(id)
 );
-
-INSERT INTO users (username, password, email, age, isAdmin) 
-VALUES ('Gokcan', 'gHgk54549232Lr3', 'gokcand@gmail.com', 22, true);
-
 /* migrations */
 ALTER TABLE comment
   ADD FOREIGN KEY (parent_id) REFERENCES comment(id);

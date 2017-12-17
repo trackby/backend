@@ -1,7 +1,7 @@
 import { Comment } from '../models/comment';
 import { Service } from './service';
 
-export class ShowService  extends Service {
+export class CommentService  extends Service {
 
     public async findById(id: number): Promise<Comment> {
         const client = await this.pool.connect();

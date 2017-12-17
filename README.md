@@ -29,3 +29,9 @@ Example database config:
 To start the server run:
 
 `$ npm start`
+
+### Testing
+
+To test api endpoints:
+
+`$ npm run test`

@@ -1,11 +1,11 @@
 {
     "compileOnSave": true,
-        "compilerOptions": {
-            "target": "es6",
-            "module": "commonjs",
-            "outDir": "./dist",
-            "watch": false
-        },
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "outDir": "./dist",
+        "watch": false
+    },
     "include": [
         "src/**/*.ts"
     ],

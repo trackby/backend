@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { BadRequest } from '../errors/BadRequest';
-import { UnprocessableEntity } from '../errors/UnprocessableEntity';
 import { NotFound } from '../errors/NotFound';
+import { UnprocessableEntity } from '../errors/UnprocessableEntity';
 import { Comment } from '../models/comment';
 import { Show } from '../models/show';
 import { ShowComment } from '../models/showcomment';
@@ -45,59 +45,59 @@ export class ShowController {
     return res.status(404).send(new NotFound());
   }
 
-	public static async createShow(req: Request, res: Response) {
-		const { image_url, info, show_name, trailer_url } = req.body;
-		if (!image_url || !info || !show_name || !trailer_url) {
-			return res.status(400).send(new BadRequest());
-		}
+  public static async createShow(req: Request, res: Response) {
+    const { image_url, info, show_name, trailer_url } = req.body;
+    if (!image_url || !info || !show_name || !trailer_url) {
+      return res.status(400).send(new BadRequest());
+    }
 
-		const show: Show = new Show(null, show_name, info, trailer_url, image_url);
-		const id: number = await showService.create(show);
-		if (id) {
-			return res.status(201).send({ showid: id });
-		}
-		return res.status(422).send(new UnprocessableEntity());
-	}
-	public static async deleteShow(req: Request, res: Response) {
-		const { showid } = req.params;
-		const r: number = await showService.delete(showid);
-		if (r) {
-			return res.status(200).send({ showid }); // shorthand to showid: showid
-		}
-		return res.status(404).send(new NotFound());
-	}
+    const show: Show = new Show(null, show_name, info, trailer_url, image_url);
+    const id: number = await showService.create(show);
+    if (id) {
+      return res.status(201).send({ showid: id });
+    }
+    return res.status(422).send(new UnprocessableEntity());
+  }
+  public static async deleteShow(req: Request, res: Response) {
+    const { showid } = req.params;
+    const r: number = await showService.delete(showid);
+    if (r) {
+      return res.status(200).send({ showid }); // shorthand to showid: showid
+    }
+    return res.status(404).send(new NotFound());
+  }
 
-	public static async createShowComment(req: Request, res: Response) {
-		const { showid } = req.params;
-		const { body, user_id, parent_id } = req.body;
-		if (!body || !user_id) {
-			return res.status(400).send(new BadRequest());
-		}
-		const comment: Comment = new Comment(null, body, user_id, parent_id);		
-		const r: number = await showService.createShowComment(showid, comment);
-		if (r) {
-			return res.status(201).send({ showid }); // shorthand to showid: showid
-		}
-		return res.status(422).send(new UnprocessableEntity());
-	}
+  public static async createShowComment(req: Request, res: Response) {
+    const { showid } = req.params;
+    const { body, user_id, parent_id } = req.body;
+    if (!body || !user_id) {
+      return res.status(400).send(new BadRequest());
+    }
+    const comment: Comment = new Comment(null, body, user_id, parent_id);
+    const r: number = await showService.createShowComment(showid, comment);
+    if (r) {
+      return res.status(201).send({ showid }); // shorthand to showid: showid
+    }
+    return res.status(422).send(new UnprocessableEntity());
+  }
 
-	public static async markAsWatched(req: Request, res: Response) {
-		const userid = 1;
-		const { showid } = req.params;
-		const r: number = await showService.markAsWatched(showid, userid);
-		if (r) {
-			return res.status(201).send({ id: r });
-		}
-		return res.status(422).send(new UnprocessableEntity());
-	}
+  public static async markAsWatched(req: Request, res: Response) {
+    const userid = 1;
+    const { showid } = req.params;
+    const r: number = await showService.markAsWatched(showid, userid);
+    if (r) {
+      return res.status(201).send({ id: r });
+    }
+    return res.status(422).send(new UnprocessableEntity());
+  }
 
-	public static async unmarkWatch(req: Request, res: Response) {
-		const userid = 1;
-		const { showid } = req.params;
-		const r: number = await showService.unmarkWatch(showid, userid);
-		if (r) {
-			return res.status(200).send({ id: r });
-		}
-		return res.status(404).send(new NotFound());
-	}
+  public static async unmarkWatch(req: Request, res: Response) {
+    const userid = 1;
+    const { showid } = req.params;
+    const r: number = await showService.unmarkWatch(showid, userid);
+    if (r) {
+      return res.status(200).send({ id: r });
+    }
+    return res.status(404).send(new NotFound());
+  }
 }

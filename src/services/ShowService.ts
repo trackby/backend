@@ -3,7 +3,7 @@ import { Show } from '../models/show';
 import { ShowComment } from '../models/showcomment';
 import { Service } from './service';
 import { WatchService } from './watchservice';
-
+import { CommentService } from './commentservice';
 export class ShowService extends Service {
 	public async findById(id: number): Promise<Show> {
 		const client = await this.pool.connect();
@@ -61,11 +61,14 @@ export class ShowService extends Service {
 		return null;
 	}
 
-	public async createShowComment(scomment: ShowComment): Promise<number> {
+	public async createShowComment(sid: number, comment: Comment): Promise<number> {
+		const ser: Service = new CommentService();
+		const cid: number = await ser.create(comment);
+
 		const client = await this.pool.connect();
 		const sql = 'INSERT into show_comment (show_id, comment_id) VALUES($1, $2) RETURNING id';
 		try {
-			const res = await client.query(sql, [ scomment.show_id, scomment.comment_id ]);
+			const res = await client.query(sql, [sid, cid]);
 			return res.rows[0].id;
 		} catch (e) {
 			// console.log(e.stack)
@@ -115,6 +118,21 @@ export class ShowService extends Service {
 
 		try {
 			const res = await client.query(sql, [ wid, sid ]);
+			return res.rows[0].id;
+		} catch (e) {
+			// console.log(e.stack)
+		} finally {
+			client.release();
+		}
+	}
+
+	public async unmarkWatch(sid: number, uid: number) {
+
+		const client = await this.pool.connect();
+		const sql = 'DELETE FROM show_watch WHERE show_id = $1 AND user_id = $2 RETURNİNG id';
+
+		try {
+			const res = await client.query(sql, [ sid, uid ]);
 			return res.rows[0].id;
 		} catch (e) {
 			// console.log(e.stack)

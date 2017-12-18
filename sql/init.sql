@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, show_comment, watch, users CASCADE;
+DROP TABLE IF EXISTS comment, tvshow, show_comment, show_watch, watch, users CASCADE;
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -15,7 +15,7 @@ CREATE TABLE show_comment (
   id SERIAL,
   show_id	INT  NOT NULL,
   comment_id  INT  NOT NULL,
-  PRIMARY KEY(id)
+  PRIMARY KEY(show_id)
 );
 
 /*tvshow table */
@@ -30,8 +30,14 @@ CREATE TABLE tvshow (
 
 CREATE TABLE watch (
   watch_id SERIAL,
-  user_id INTEGER NOT NULL,
+  user_id INT NOT NULL,
   PRIMARY KEY(watch_id)
+);
+
+CREATE TABLE show_watch (
+  watch_id INT,
+  show_id INT,
+  PRIMARY KEY(show_id)
 );
 
 CREATE TABLE users (
@@ -43,6 +49,7 @@ CREATE TABLE users (
   isAdmin BOOLEAN DEFAULT false,
   PRIMARY KEY(id)
 );
+
 /* migrations */
 ALTER TABLE comment
   ADD FOREIGN KEY (parent_id) REFERENCES comment(id);
@@ -50,6 +57,10 @@ ALTER TABLE comment
 ALTER TABLE show_comment
   ADD FOREIGN KEY(show_id) REFERENCES tvshow(id) ON DELETE CASCADE,
   ADD FOREIGN KEY(comment_id) REFERENCES comment(id) ON DELETE CASCADE;
+
+ALTER TABLE show_watch
+  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id) ON DELETE CASCADE,
+  ADD FOREIGN KEY(watch_id) REFERENCES watch(watch_id) ON DELETE CASCADE;
 
 ALTER TABLE watch
   ADD FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE;

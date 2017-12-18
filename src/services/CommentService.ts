@@ -18,9 +18,10 @@ export class CommentService extends Service {
 
 	public async create(comment: Comment): Promise<number> {
 		const client = await this.pool.connect();
-		const sql = 'INSERT INTO comment (body, user_id, parent_id) VALUES($1, $2, $3, $4) RETURNING id';
+		
+		const sql = 'INSERT INTO comment (body, user_id, parent_id) VALUES($1, $2, $3) RETURNING id';
 		try {
-			const res = await client.query(sql, [ comment.body, comment.user_id, comment.parent_id ]);
+			const res = await client.query(sql, [comment.body, comment.user_id, comment.parent_id]);
 			return res.rows[0].id;
 		} catch (e) {
 			// console.log(e.stack)

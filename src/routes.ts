@@ -30,15 +30,17 @@ export class Routes {
 			res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
 		});
 
-		/* Please activate it at the end.
-
-  */
-		router.use(AuthController.protect);
+		// allah muhammet aşkına şunu en sonda aktif edin test edemiyorum postları vs, productiona aldım o yüzden
+		
+		/* only active on production */
+		if	(process.env.NODE_ENV === 'production') {
+			router.use(AuthController.protect);			
+		}
 
 		/*
-     * Below routes are protected and cannot be accessed without authentication token.
-     * Place the resources that need login operation to be accessed below:
-     */
+		* Below routes are protected and cannot be accessed without authentication token.
+		* Place the resources that need login operation to be accessed below:
+		*/
 
 		router.post('/protected', (req, res) => {
 			res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
@@ -48,15 +50,17 @@ export class Routes {
 		router.get('/shows/:showid', ShowController.readShow);
 		router.get('/shows/:showid/comments', ShowController.readShowComments);
 		router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
-		router.post('/shows/:showid', ShowController.addShowAction);
 
 		/*
-     * Below routes are protected and cannot be accessed without authentication token + admin privileges
-     * Place the resources that need both login operation and admin privileges to be accessed below:
-     * (Also some routes may be accessed with 'get' by users but cannot be accessed with 'post', 'delete', 'patch')
-     * Example: /protected is open for get requests but not for post requests.
-     */
+		* Below routes are protected and cannot be accessed without authentication token + admin privileges
+		* Place the resources that need both login operation and admin privileges to be accessed below:
+		* (Also some routes may be accessed with 'get' by users but cannot be accessed with 'post', 'delete', 'patch')
+		* Example: /protected is open for get requests but not for post requests.
+		*/
 
+		router.post('/shows/:showid/watch', ShowController.markAsWatched);	
+		router.delete('/shows/:showid/watch', ShowController.unmarkWatch);	
+		router.post('/shows/:showid/comments', ShowController.createShowComment);		
 		router.delete('/shows/:showid', ShowController.deleteShow);
 		router.post('/shows', ShowController.createShow);
 	}

@@ -10,40 +10,40 @@ import { ShowService } from '../services/showservice';
 const showService = new ShowService();
 
 export class ShowController {
-	public static async readShows(req: Request, res: Response) {
-		const r: Show[] = await showService.findAll();
-		if (r) {
-			return res.status(200).send(r);
-		}
-		return res.status(404).send(new NotFound());
-	}
+  public static async readShows(req: Request, res: Response) {
+    const r: Show[] = await showService.findAll();
+    if (r) {
+      return res.status(200).send(r);
+    }
+    return res.status(404).send(new NotFound());
+  }
 
-	public static async readShow(req: Request, res: Response) {
-		const { showid } = req.params;
-		const r: Show = await showService.findById(showid);
-		if (r) {
-			return res.status(200).send(r);
-		}
-		return res.status(404).send(new NotFound());
-	}
+  public static async readShow(req: Request, res: Response) {
+    const { showid } = req.params;
+    const r: Show = await showService.findById(showid);
+    if (r) {
+      return res.status(200).send(r);
+    }
+    return res.status(404).send(new NotFound());
+  }
 
-	public static async readShowComment(req: Request, res: Response) {
-		const { showid, commentid } = req.params;
-		const r: Comment = await showService.findShowComment(showid, commentid);
-		if (r) {
-			return res.status(200).send(r);
-		}
-		return res.status(404).send(new NotFound());
-	}
+  public static async readShowComment(req: Request, res: Response) {
+    const { showid, commentid } = req.params;
+    const r: Comment = await showService.findShowComment(showid, commentid);
+    if (r) {
+      return res.status(200).send(r);
+    }
+    return res.status(404).send(new NotFound());
+  }
 
-	public static async readShowComments(req: Request, res: Response) {
-		const { showid } = req.params;
-		const r: Comment[] = await showService.findShowComments(showid);
-		if (r) {
-			return res.status(200).send(r);
-		}
-		return res.status(404).send(new NotFound());
-	}
+  public static async readShowComments(req: Request, res: Response) {
+    const { showid } = req.params;
+    const r: Comment[] = await showService.findShowComments(showid);
+    if (r) {
+      return res.status(200).send(r);
+    }
+    return res.status(404).send(new NotFound());
+  }
 
 	public static async createShow(req: Request, res: Response) {
 		const { image_url, info, show_name, trailer_url } = req.body;
@@ -70,11 +70,9 @@ export class ShowController {
 	public static async createShowComment(req: Request, res: Response) {
 		const { showid } = req.params;
 		const { body, user_id, parent_id } = req.body;
-		
 		if (!body || !user_id) {
 			return res.status(400).send(new BadRequest());
 		}
-
 		const comment: Comment = new Comment(null, body, user_id, parent_id);		
 		const r: number = await showService.createShowComment(showid, comment);
 		if (r) {

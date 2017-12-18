@@ -5,7 +5,7 @@
 	"rules": {
 		"quotemark": [ true, "single" ],
 		"variable-name": [ true, "ban-keywords", "check-format", "allow-leading-underscore" ],
-		"indent": [ true, "tabs", 4 ]
+		"indent": [ true, "spaces", 2 ]
 	},
 	"rulesDirectory": []
 }

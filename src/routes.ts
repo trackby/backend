@@ -9,26 +9,26 @@ import { ShowController } from './controllers/ShowContoller';
  * @class User
  */
 export class Routes {
-	/**
-  * Create the routes.
-  *
-  * @class IndexRoute
-  * @method create
-  * @static
-  */
-	public static create(router: Router) {
-		router.use((req, res, next) => {
-			next();
-		});
+/**
+ * Create the routes.
+ *
+ * @class IndexRoute
+ * @method create
+ * @static
+ */
+  public static create(router: Router) {
+    router.use((req, res, next) => {
+      next();
+    });
 
-		router.get('/', Controller.sayHello);
+    router.get('/', Controller.sayHello);
 
-		// trackby.me routes
-		router.route('/signup').post(AuthController.signup);
-		router.route('/auth').post(AuthController.authenticate);
-		router.get('/protected', (req, res) => {
-			res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
-		});
+    // trackby.me routes
+    router.route('/signup').post(AuthController.signup);
+    router.route('/auth').post(AuthController.authenticate);
+    router.get('/protected', (req, res) => {
+      res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
+    });
 
 		// allah muhammet aşkına şunu en sonda aktif edin test edemiyorum postları vs, productiona aldım o yüzden
 		
@@ -42,9 +42,9 @@ export class Routes {
 		* Place the resources that need login operation to be accessed below:
 		*/
 
-		router.post('/protected', (req, res) => {
-			res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
-		});
+    router.post('/protected', (req, res) => {
+      res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
+    });
 
 		router.get('/shows', ShowController.readShows);
 		router.get('/shows/:showid', ShowController.readShow);

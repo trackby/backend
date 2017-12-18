@@ -5,9 +5,9 @@ import * as request from 'supertest';
 import * as server from '../bin/www';
 
 describe('List Shows Test', () => {
-	it('should return 200 OK', () => {
-		return request(server).get('/shows').expect(200);
-	});
+  it('should return 200 OK', () => {
+    return request(server).get('/shows').expect(200);
+  });
 });
 
 describe('Create New Show Test', () => {

@@ -1,12 +1,11 @@
 {
-    "defaultSeverity": "error",
-    "extends": [
-        "tslint:recommended"
-    ],
-    "jsRules": {},
-    "rules": { 
-        "quotemark": [true, "single"],
-        "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"]
-    },
-    "rulesDirectory": []
+	"defaultSeverity": "error",
+	"extends": [ "tslint:recommended" ],
+	"jsRules": {},
+	"rules": {
+		"quotemark": [ true, "single" ],
+		"variable-name": [ true, "ban-keywords", "check-format", "allow-leading-underscore" ],
+		"indent": [ true, "tabs", 4 ]
+	},
+	"rulesDirectory": []
 }

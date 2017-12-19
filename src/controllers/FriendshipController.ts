@@ -12,19 +12,18 @@ import { FriendshipService } from '../services/FriendshipService';
 const service = new FriendshipService();
 
 export class FriendshipController {
-  public static async addFriendship(req: Request, res: Response) {
-    const { first_user_id, second_user_id, status, action_id } = req.body;
-    let success = false;
+  public static async sendFriendshipRequest(req: Request, res: Response) {
+    const { user_id, target_user_id } = req.body;
+    let success: any = false;
 
-    if (!first_user_id || !second_user_id || !action_id ) {
+    if (!user_id || !target_user_id) {
       return res.status(400).send(new BadRequest('Required body parameters cannot be empty.'));
     }
-
-    if (![first_user_id, second_user_id].includes(action_id)) {
+/*  if (![user_id, target_user_id].includes(action_id)) {
       return res.status(400).send(new BadRequest('action_uid must be defined as one of the two other user ids.'));
-    }
+    } */
     try {
-      const friendship = new Friendship(first_user_id, second_user_id, status, action_id);
+      const friendship = new Friendship(user_id, target_user_id, undefined, user_id);
       success = await service.save(friendship);
     } catch (e) {
         return res.status(400).send(new BadRequest());

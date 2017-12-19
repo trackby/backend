@@ -19,13 +19,16 @@ export class FriendshipService extends Service {
     }
   }
 
-  public async save(friendship: Friendship): Promise<boolean> {
+  public async save(friendship: Friendship): Promise<Friendship> {
     const { firstUserId, secondUserId, status, actionUserId } = friendship;
     const client = await this.pool.connect();
     const sql = `INSERT INTO friendship (first_user_id, second_user_id, status, action_user_id)
                 VALUES($1, $2, $3, $4) RETURNING *`;
 
-    const sortedIds: any = [firstUserId, secondUserId].sort();
+    const sortedIds: any = [firstUserId, secondUserId];
+    sortedIds.sort((a, b) => {
+      return a - b;
+    });
     const values = sortedIds.concat([status, actionUserId]);
 
     try {

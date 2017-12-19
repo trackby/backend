@@ -70,6 +70,6 @@ export class Routes {
     router.delete('/shows/:showid', ShowController.deleteShow);
     router.post('/shows', ShowController.createShow);
 
-    router.post('/friendships/create', FriendshipController.addFriendship);
+    router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
   }
 }

@@ -13,18 +13,18 @@ const service = new FriendshipService();
 
 export class FriendshipController {
   public static async addFriendship(req: Request, res: Response) {
-    const { first_user_id, second_user_id, status, action_user_id } = req.body;
-    let success: boolean = false;
+    const { first_user_id, second_user_id, status, action_id } = req.body;
+    let success = false;
 
-    if (!first_user_id || !second_user_id || !action_user_id ) {
+    if (!first_user_id || !second_user_id || !action_id ) {
       return res.status(400).send(new BadRequest('Required body parameters cannot be empty.'));
     }
 
-    if (![first_user_id, second_user_id].includes(action_user_id)) {
-      return res.status(400).send(new BadRequest('action_user_id must be defined as one of the two other user ids.'));
+    if (![first_user_id, second_user_id].includes(action_id)) {
+      return res.status(400).send(new BadRequest('action_uid must be defined as one of the two other user ids.'));
     }
     try {
-      const friendship = new Friendship(first_user_id, second_user_id, status, action_user_id);
+      const friendship = new Friendship(first_user_id, second_user_id, status, action_id);
       success = await service.save(friendship);
     } catch (e) {
         return res.status(400).send(new BadRequest());
@@ -37,16 +37,16 @@ export class FriendshipController {
   }
 
   public static async showFriendshipRelation(req: Request, res: Response) {
-    const { target_id, source_id } = req.query;
+    const { first_user_id, second_user_id } = req.query;
 
-    if (!target_id || !source_id) {
+    if (!first_user_id || !second_user_id) {
       return res.status(400).send(new BadRequest('Required body parameters cannot be empty.'));
     }
     try {
-      const friendship: Friendship = await service.showFriendshipRelation(source_id, target_id);
+      const friendship: Friendship = await service.showFriendshipRelation(first_user_id, second_user_id);
       return res.status(200).send({friendship});
     } catch (e) {
-        return res.status(400).send(new BadRequest('dede'));
+        return res.status(400).send(new BadRequest());
     }
   }
 }

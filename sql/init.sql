@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, show_comment, show_watch, watch, users CASCADE;
+DROP TABLE IF EXISTS comment, tvshow, show_comment, show_watch, watch, users, friendship CASCADE;
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -57,7 +57,8 @@ CREATE TABLE friendship (
   action_user_id INT NOT NULL,
   FOREIGN KEY(first_user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY(second_user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  PRIMARY KEY(first_user_id, second_user_id)
+  PRIMARY KEY(first_user_id, second_user_id),
+  CHECK (first_user_id < second_user_id)
 );
 
 /* migrations */

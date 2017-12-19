@@ -71,5 +71,6 @@ export class Routes {
     router.post('/shows', ShowController.createShow);
 
     router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
+    router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
   }
 }

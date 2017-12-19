@@ -5,6 +5,7 @@ import { NotFound } from '../errors/NotFound';
 import { ResourceExists } from '../errors/ResourceExists';
 import { ServerError } from '../errors/ServerError';
 import { Unauthorized } from '../errors/Unauthorized';
+import {UnprocessableEntity} from '../errors/UnprocessableEntity';
 import { Friendship } from '../models/Friendship';
 import { User } from '../models/user';
 import { FriendshipService } from '../services/FriendshipService';
@@ -47,5 +48,41 @@ export class FriendshipController {
     } catch (e) {
         return res.status(400).send(new BadRequest());
     }
+  }
+
+  public static async updateFriendshipStatus(req: Request, res: Response) {
+    const { user_id, target_user_id, status} = req.body;
+    let success: Friendship | boolean = false;
+    let check: any = false;
+
+    if (!user_id || !target_user_id || !status) {
+      return res.status(400).send(new BadRequest('Required body parameters cannot be empty.'));
+    }
+    try {
+      check = await service.showFriendshipRelation(user_id, target_user_id);
+    } catch (e) {
+        return res.status(400).send(new BadRequest());
+    }
+    if (check) {
+      const { action_user_id } = check;
+      if (action_user_id === user_id) {
+        return res.status(400).send(new BadRequest('You cannot modify your own friendship request.'));
+      }
+    } else {
+        return res.status(422).send(new UnprocessableEntity());
+    }
+
+    try {
+      const friendship = new Friendship(user_id, target_user_id, status, undefined);
+      success = await service.update(friendship);
+    } catch (e) {
+        return res.status(400).send(new BadRequest(e.stack));
+    }
+    if (success) {
+      return res.status(200).send({success});
+    } else {
+      return res.status(409).send(new ResourceExists());
+    }
+
   }
 }

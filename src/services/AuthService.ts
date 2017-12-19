@@ -18,11 +18,11 @@ export class AuthService extends Service {
     try {
       let res = await client.query('SELECT * FROM users WHERE username = $1', [ username ]);
       if (res.rows[0]) {
-        return true;
+        return res.rows[0].id;
       } else if (email) {
         res = await client.query('SELECT * FROM users WHERE email = $1', [ email ]);
         if (res.rows[0]) {
-          return true;
+          return res.rows[0].id;
         }
       }
     } catch (e) {
@@ -92,8 +92,8 @@ export class AuthService extends Service {
     return null;
   }
 
-  public signJWT(username: string) {
-    const token = jwt.sign({ __username: username }, this.key, {
+  public signJWT(id: number) {
+    const token = jwt.sign({ id }, this.key, {
       expiresIn: 60 * 60 * 24,
       issuer: 'trackby',
     });
@@ -102,15 +102,14 @@ export class AuthService extends Service {
     }
   }
 
-  public verifyJWT(token: string): boolean {
+  public verifyJWT(token: string): string |object {
     if (token) {
       try {
         const decoded: string | object = jwt.verify(token, this.key, { issuer: 'trackby' });
-        return decoded ? true : false;
+        return decoded;
       } catch (e) {
         throw new Error(e);
       }
     }
-    return false;
   }
 }

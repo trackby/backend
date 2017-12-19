@@ -45,22 +45,21 @@ export class AuthController {
 
   public static async authenticate(req: Request, res: Response) {
     const { username, password } = req.body;
-    let isExits: boolean = false;
+    let isExists: any = false;
 
     if (!username || !password) {
       return res.sendStatus(400).send(new BadRequest());
     }
     try {
-      isExits = await service.isUserExists(username);
+      isExists = await service.isUserExists(username);
     } catch (e) {
-        // tslint:disable-next-line:no-console
-        console.log(e);
         return res.status(500).send(new ServerError());
     }
-    if (isExits) {
+    if (isExists) {
       const isMatched: boolean = await service.comparePass(password, username);
       if (isMatched) {
-        const jwt = service.signJWT(username);
+        const id = isExists;
+        const jwt = service.signJWT(id);
         return res.status(200).json({ token: jwt, expiresIn: '1 day' });
       } else {
           return res.status(401).send(new Unauthorized());
@@ -78,9 +77,10 @@ export class AuthController {
       return next();
     }
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
-    const isVerified: boolean = service.verifyJWT(token);
+    const decoded: any = service.verifyJWT(token);
 
-    if (isVerified) {
+    if (decoded) {
+      req.body.user_id = decoded.id;
       next();
     } else {
         return res.status(403).send(new Unauthorized());

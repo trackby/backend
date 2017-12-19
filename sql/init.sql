@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, show_comment, watch, users CASCADE;
+DROP TABLE IF EXISTS comment, tvshow, show_comment, watch, users, friendship CASCADE;
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -13,8 +13,8 @@ CREATE TABLE comment (
 /*show_comment table */
 CREATE TABLE show_comment (
   id SERIAL,
-  show_id	INT  NOT NULL,
-  comment_id  INT  NOT NULL,
+  show_id	INT NOT NULL,
+  comment_id  INT NOT NULL,
   PRIMARY KEY(id)
 );
 
@@ -43,6 +43,17 @@ CREATE TABLE users (
   isAdmin BOOLEAN DEFAULT false,
   PRIMARY KEY(id)
 );
+
+CREATE TABLE friendship (
+  first_user_id INT NOT NULL,
+  second_user_id INT NOT NULL,
+  status CITEXT NOT NULL CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
+  action_user_id INT NOT NULL,
+  FOREIGN KEY(first_user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY(second_user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  PRIMARY KEY(first_user_id, second_user_id)
+);
+
 /* migrations */
 ALTER TABLE comment
   ADD FOREIGN KEY (parent_id) REFERENCES comment(id);

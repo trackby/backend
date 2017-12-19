@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AuthController } from './controllers/AuthController';
 import { Controller } from './controllers/Controller';
+import { FriendshipController } from './controllers/FriendshipController';
 import { ShowController } from './controllers/ShowContoller';
 
 /**
@@ -32,9 +33,8 @@ export class Routes {
 
     /* Please activate it at the end.
 
-  */
     router.use(AuthController.protect);
-
+*/
     /*
      * Below routes are protected and cannot be accessed without authentication token.
      * Place the resources that need login operation to be accessed below:
@@ -57,7 +57,14 @@ export class Routes {
      * Example: /protected is open for get requests but not for post requests.
      */
 
+    // router.get('/friendships/incoming/', FriendshipController.readFriendship);
+    // router.get('/friendships/outgoing/', FriendshipController.readFriendship);
+
+    router.get('/friendships/show/', FriendshipController.showFriendshipRelation);
+
     router.delete('/shows/:showid', ShowController.deleteShow);
     router.post('/shows', ShowController.createShow);
+
+    router.post('/friendships/create', FriendshipController.addFriendship);
   }
 }

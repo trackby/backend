@@ -5,7 +5,7 @@
 	"author": "<Fatih, Gokcan, Onur, Orcun>",
 	"scripts": {
 		"dev": "NODE_ENV=development nodemon ./bin/www",
-		"test": "mocha -r ts-node/register test/*.*.ts",
+		"test": "mocha -r ts-node/register test/*.test.ts",
 		"start": "nodemon -e ts --exec \"npm run compile\"",
 		"compile": "tsc -p tsconfig.json && node ./bin/www"
 	},

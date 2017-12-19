@@ -28,10 +28,25 @@ Example database config:
 
 To start the server run:
 
-`$ npm start`
+### Dev
 
-### Testing
+    `$ npm start`
+
+### Production
+
+    `$ npm start prod`
+
+
+## Testing
 
 To test api endpoints:
 
-`$ npm run test`
+### Dev
+
+    `$ npm run test`
+
+### Production
+
+    `$ npm run testprod`
+
+

@@ -94,6 +94,7 @@ export class AuthService extends Service {
 
   public signJWT(id: number) {
     const token = jwt.sign({ id }, this.key, {
+      algorithm: 'HS384',
       expiresIn: 60 * 60 * 24,
       issuer: 'trackby',
     });
@@ -105,7 +106,10 @@ export class AuthService extends Service {
   public verifyJWT(token: string): string |object {
     if (token) {
       try {
-        const decoded: string | object = jwt.verify(token, this.key, { issuer: 'trackby' });
+        const decoded: string | object = jwt.verify(token, this.key, {
+            algorithms: ['HS384'],
+            issuer: 'trackby',
+          });
         return decoded;
       } catch (e) {
         throw new Error(e);

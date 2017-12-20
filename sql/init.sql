@@ -28,6 +28,31 @@ CREATE TABLE tvshow (
     PRIMARY KEY(id)
 );
 
+/*season table */
+CREATE TABLE season(
+	  id 		SERIAL,
+    season_no       INT NOT NULL,
+    season_info		VARCHAR(255),
+    season_year	    INT,
+    image_url	VARCHAR(75),
+    trailer_url     VARCHAR(75),
+    show_id		     INT,
+    PRIMARY KEY(season_id)
+);
+
+/*episode table */
+CREATE TABLE episode(
+	  id 	SERIAL,
+	  episode_no   	INT   NOT NULL,
+    episode_name	VARCHAR(45) NOT NULL,
+    episode_info	VARCHAR(255),
+    image_url	VARCHAR(75),
+    trailer_url VARCHAR(75),    
+    season_id		INT,
+    show_id	    INT,
+    PRIMARY KEY(episode_id)
+);
+
 CREATE TABLE watch (
   watch_id SERIAL,
   user_id INT NOT NULL,
@@ -55,15 +80,25 @@ CREATE TABLE friendship (
   second_user_id INT NOT NULL,
   status CITEXT NOT NULL CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
   action_user_id INT NOT NULL,
-  FOREIGN KEY(first_user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  FOREIGN KEY(second_user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
   PRIMARY KEY(first_user_id, second_user_id),
   CHECK (first_user_id < second_user_id)
 );
 
 /* migrations */
+ALTER TABLE season
+  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);
+
+ALTER TABLE episode
+  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id),
+  ADD FOREIGN KEY(season_id) REFERENCES season(id);
+
 ALTER TABLE comment
-  ADD FOREIGN KEY (parent_id) REFERENCES comment(id);
+  ADD FOREIGN KEY(parent_id) REFERENCES comment(id),
+  ADD FOREIGN KEY(user_id) REFERENCES users(id);
+
+ALTER TABLE users
+  ADD FOREIGN KEY(first_user_id) REFERENCES users(id)  ON UPDATE CASCADE ON DELETE CASCADE,
+  ADD FOREIGN KEY(second_user_id) REFERENCES users(id)  ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE show_comment
   ADD FOREIGN KEY(show_id) REFERENCES tvshow(id) ON DELETE CASCADE,

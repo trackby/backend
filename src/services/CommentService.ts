@@ -56,4 +56,20 @@ export class CommentService extends Service {
     }
     return null;
   }
+
+  public async findSubcomments(cid: number): Promise<Comment[]> {
+    const client = await this.pool.connect();
+    const sql =
+      'SELECT * FROM comment parent NATURAL JOIN comment sub' +
+      'WHERE sub.parent_id = $1';
+    try {
+      const res = await client.query(sql, [cid]);
+      return res.rows;
+    } catch (e) {
+      // console.log(e.stack)
+    } finally {
+      client.release();
+    }
+    return null;
+  }
 }

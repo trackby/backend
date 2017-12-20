@@ -3,6 +3,7 @@ import { AuthController } from './controllers/AuthController';
 import { Controller } from './controllers/Controller';
 import { FriendshipController } from './controllers/FriendshipController';
 import { ShowController } from './controllers/ShowContoller';
+import { CommentController } from './controllers/CommentController';
 
 /**
  * / route
@@ -51,6 +52,10 @@ export class Routes {
     router.get('/shows/:showid', ShowController.readShow);
     router.get('/shows/:showid/comments', ShowController.readShowComments);
     router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
+    router.get('/comments', CommentController.readAllComments);
+    router.get('/comments/:commentid', CommentController.readComment);
+    router.get('/comments/:commentid/subcomments', CommentController.readSubcomments);    
+    
 
     /*
     * Below routes are protected and cannot be accessed without authentication token + admin privileges
@@ -67,6 +72,7 @@ export class Routes {
     router.post('/shows/:showid/watch', ShowController.markAsWatched);
     router.delete('/shows/:showid/watch', ShowController.unmarkWatch);
     router.post('/shows/:showid/comments', ShowController.createShowComment);
+    
     router.delete('/shows/:showid', ShowController.deleteShow);
     router.post('/shows', ShowController.createShow);
 

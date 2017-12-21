@@ -93,6 +93,7 @@ export class ShowService extends Service {
     return null;
   }
 
+
   public async findShowComment(sid: number, cid: number): Promise<Comment> {
     const client = await this.pool.connect();
     const sql =
@@ -108,6 +109,7 @@ export class ShowService extends Service {
     }
     return null;
   }
+
   public async markAsWatched(sid: number, uid: number) {
     const ser: Service = new WatchService();
     const wid = await ser.create(uid);

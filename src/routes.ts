@@ -3,6 +3,7 @@ import { AuthController } from './controllers/AuthController';
 import { Controller } from './controllers/Controller';
 import { FriendshipController } from './controllers/FriendshipController';
 import { ShowController } from './controllers/ShowContoller';
+import { UploadController } from './controllers/UploadController';
 
 /**
  * / route
@@ -72,5 +73,7 @@ export class Routes {
 
     router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
     router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
+
+    router.post('/upload', UploadController.upload);
   }
 }

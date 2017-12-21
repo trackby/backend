@@ -1,8 +1,10 @@
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
+import * as subdomain from 'express-subdomain';
 import * as helmet from 'helmet';
 import * as logger from 'morgan';
+import * as path from 'path';
 
 import { Routes } from './routes';
 
@@ -41,6 +43,8 @@ export class Server {
   public config() {
     const client = require('redis').createClient();
     const limiter = require('express-limiter')(this.app, client);
+
+    this.app.use('/static', express.static('public/uploads'));
 
     // mount logger
     this.app.use(logger('dev'));

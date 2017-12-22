@@ -9,6 +9,7 @@ import { UnprocessableEntity } from '../errors/UnprocessableEntity';
 import { Friendship } from '../models/Friendship';
 import { User } from '../models/user';
 import { FriendshipService } from '../services/FriendshipService';
+import { UserService } from '../services/UserService';
 
 const service = new FriendshipService();
 
@@ -87,13 +88,13 @@ export class FriendshipController {
   }
 
   public static async showFriends(req: Request, res: Response) {
-    const { userid } = req.params;
+    const { username } = req.params;
 
-    if (!userid) {
+    if (!username) {
       return res.status(400).send(new BadRequest('Required url parameters cannot be empty.'));
     }
     try {
-      const success = await service.findAllFriends(userid);
+      const success = await service.findAllFriends(username);
       if (success) {
         return res.status(200).send(success);
       }

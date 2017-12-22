@@ -2,8 +2,11 @@ import { FriendshipController } from '../controllers/FriendshipController';
 import { Friendship } from '../models/Friendship';
 import { User } from '../models/User';
 import { Service } from './service';
+import { UserService } from './UserService';
 
 type FriendshipStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+const service = new UserService();
 
 export class FriendshipService extends Service {
   public async showFriendshipRelation(firstUserId: number, secondUserId: number): Promise<Friendship> {
@@ -63,17 +66,17 @@ export class FriendshipService extends Service {
     }
   }
 
-  public async findAllFriends(userId: number): Promise<User[]> {
+  public async findAllFriends(username: string): Promise<User[]> {
     const client = await this.pool.connect();
     const sql = `SELECT username, email, age, id FROM users WHERE id
                 IN (SELECT second_user_id FROM friends_view WHERE first_user_id=$1) `;
-    const values = [userId];
-
     try {
+      const userId = await service.findByUsername(username);
+      const values = [userId.id];
       const res = await client.query(sql, values);
       return res.rows;
     } catch (e) {
-        throw new Error(`There is some error during the findAll operation on friendship='${userId}' .`);
+        throw new Error(`There is some error during the findAll operation on friendship='${username}' .`);
     } finally {
         client.release();
     }

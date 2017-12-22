@@ -26,6 +26,12 @@ export class Routes {
 
     router.get('/', Controller.sayHello);
 
+    router.use((req, res, next) => {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+      next();
+    });
+
     // trackby.me routes
     router.route('/signup').post(AuthController.signup);
     router.route('/auth').post(AuthController.authenticate);

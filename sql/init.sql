@@ -91,6 +91,14 @@ CREATE VIEW friends_view AS (
   ORDER BY first_user_id, second_user_id
 );
 
+CREATE VIEW public_user AS (
+  SELECT * FROM users WHERE isAdmin=false
+);
+
+CREATE VIEW admin_user AS (
+  SELECT * FROM users WHERE isAdmin=true
+);
+
 /* migrations */
 ALTER TABLE season
   ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);

@@ -84,6 +84,13 @@ CREATE TABLE friendship (
   CHECK (first_user_id < second_user_id)
 );
 
+CREATE VIEW friends_view AS (
+  SELECT first_user_id, second_user_id FROM friendship WHERE status='APPROVED'
+  UNION ALL 
+  SELECT second_user_id, first_user_id FROM friendship WHERE status='APPROVED'
+  ORDER BY first_user_id, second_user_id
+);
+
 /* migrations */
 ALTER TABLE season
   ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);

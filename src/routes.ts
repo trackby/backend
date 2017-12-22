@@ -69,6 +69,8 @@ export class Routes {
 
     router.get('/friendships/show/', FriendshipController.showFriendshipRelation);
 
+    router.get('/user/:userid/friends', FriendshipController.showFriends);
+
     router.post('/shows/:showid/watch', ShowController.markAsWatched);
     router.delete('/shows/:showid/watch', ShowController.unmarkWatch);
     router.post('/shows/:showid/comments', ShowController.createShowComment);

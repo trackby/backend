@@ -5,7 +5,7 @@ import { NotFound } from '../errors/NotFound';
 import { ResourceExists } from '../errors/ResourceExists';
 import { ServerError } from '../errors/ServerError';
 import { Unauthorized } from '../errors/Unauthorized';
-import {UnprocessableEntity} from '../errors/UnprocessableEntity';
+import { UnprocessableEntity } from '../errors/UnprocessableEntity';
 import { Friendship } from '../models/Friendship';
 import { User } from '../models/user';
 import { FriendshipService } from '../services/FriendshipService';
@@ -84,5 +84,21 @@ export class FriendshipController {
       return res.status(409).send(new ResourceExists());
     }
 
+  }
+
+  public static async showFriends(req: Request, res: Response) {
+    const { userid } = req.params;
+
+    if (!userid) {
+      return res.status(400).send(new BadRequest('Required url parameters cannot be empty.'));
+    }
+    try {
+      const success = await service.findAllFriends(userid);
+      if (success) {
+        return res.status(200).send(success);
+      }
+    } catch (e) {
+        return res.status(400).send(new BadRequest());
+    }
   }
 }

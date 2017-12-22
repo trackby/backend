@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, show_comment, show_watch, watch, users, friendship CASCADE;
+/*DROP TABLE IF EXISTS comment, tvshow, show_comment, show_watch, watch, users, friendship CASCADE; */
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -80,15 +80,29 @@ CREATE TABLE friendship (
   second_user_id INT NOT NULL,
   status CITEXT NOT NULL CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
   action_user_id INT NOT NULL,
-  PRIMARY KEY(first_user_id, second_user_id),
+  PRIMARY KEY (first_user_id, second_user_id),
   CHECK (first_user_id < second_user_id)
 );
+
+CREATE TABLE user_profile_photo (
+  user_id INT NOT NULL,
+  image_url TEXT NOT NULL,
+  PRIMARY KEY (user_id, image_url),
+  FOREIGN KEY user_id REFERENCES users(id) ON DELETE CASCADE,
+)
 
 CREATE VIEW friends_view AS (
   SELECT first_user_id, second_user_id FROM friendship WHERE status='APPROVED'
   UNION ALL 
   SELECT second_user_id, first_user_id FROM friendship WHERE status='APPROVED'
   ORDER BY first_user_id, second_user_id
+);
+
+CREATE VIEW friendship_requests AS (
+  SELECT first_user_id, second_user_id, action_user_id FROM friendship WHERE status='PENDING'
+  UNION ALL 
+  SELECT second_user_id, first_user_id, action_user_id FROM friendship WHERE status='PENDING'
+  ORDER BY first_user_id, second_user_id, action_user_id
 );
 
 CREATE VIEW public_user AS (

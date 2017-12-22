@@ -22,11 +22,11 @@ export class Service {
     throw new Error('findAll() was not implemented yet');
   }
 
-  public async create(ent: any): Promise<number> {
+  public async create(ent: any): Promise<any> {
     throw new Error('create() was not implemented yet');
   }
 
-  public async delete(id: number): Promise<number> {
+  public async delete(id: number): Promise<any> {
     throw new Error('delete() was not implemented yet');
   }
 }

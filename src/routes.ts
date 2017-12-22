@@ -64,8 +64,7 @@ export class Routes {
     * Example: /protected is open for get requests but not for post requests.
     */
 
-    // router.get('/friendships/incoming/', FriendshipController.readFriendship);
-    // router.get('/friendships/outgoing/', FriendshipController.readFriendship);
+    router.get('/friendships/requests/', AuthController.protect, FriendshipController.showFriendshipRequests);
 
     router.get('/friendships/show/', FriendshipController.showFriendshipRelation);
 
@@ -80,6 +79,7 @@ export class Routes {
 
     router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
     router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
+    router.delete('/friendships/remove', FriendshipController.removeFriend);
 
     router.post('/upload', UploadController.upload);
   }

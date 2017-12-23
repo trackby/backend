@@ -94,7 +94,8 @@ export class ShowController {
     const comment: Comment = new Comment(null, comment_body, user_id, null);
     const r: number = await showService.createShowComment(showid, comment);
     if (r) {
-      return res.status(201).send({ showid }); // shorthand to showid: showid
+      comment.id = r;
+      return res.status(201).send(comment); // shorthand to showid: showid
     }
     return res.status(422).send(new UnprocessableEntity());
   }

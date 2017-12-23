@@ -20,7 +20,6 @@ export class ShowService extends Service {
   }
 
   public async create(show: Show): Promise<number> {
-    console.log(show)
     const client = await this.pool.connect();
     const sql = 'INSERT INTO tvshow(show_name, info, trailer_url, image_url, director_name, writer_name) ' +
                 'VALUES($1, $2, $3, $4, $5, $6) RETURNING id';

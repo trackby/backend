@@ -79,7 +79,6 @@ export class Routes {
 
     router.delete('/reactions/:reactionid', ReactionController.deleteReaction);
     router.delete('/watches/:watchid', WatchController.unmarkWatch);
-
    
     router.get('/user/:username/friends', FriendshipController.showFriends);    
     router.get('/friendships/requests/', AuthController.protect, FriendshipController.showFriendshipRequests);

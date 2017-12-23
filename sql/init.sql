@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, users, friendship, reaction, comment_reaction CASCADE;
+DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, friendship, reaction, comment_reaction CASCADE;
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -24,7 +24,7 @@ CREATE TABLE show_comment (
 CREATE TABLE tvshow (
     id SERIAL,
     info	VARCHAR(255),
-    show_name	VARCHAR(45) NOT NULL,
+    show_name	TEXT NOT NULL,
     director_name VARCHAR(45),
     writer_name VARCHAR(45),
     image_url	VARCHAR(75),

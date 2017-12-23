@@ -4,6 +4,7 @@ import { CommentController } from './controllers/CommentController';
 import { Controller } from './controllers/Controller';
 import { FriendshipController } from './controllers/FriendshipController';
 import { ReactionController } from './controllers/ReactionController';
+import { SearchController } from './controllers/SearchController';
 import { ShowController } from './controllers/ShowContoller';
 import { UploadController } from './controllers/UploadController';
 import { WatchController } from './controllers/WatchController';
@@ -52,18 +53,18 @@ export class Routes {
 
     /* Feed */
     router.get('/feed/comments', CommentController.readUserComments);
-    router.get('/feed/reactions', ReactionController.readUserReactions);    
-    router.get('/feed/watches', WatchController.readUserWatches);  
+    router.get('/feed/reactions', ReactionController.readUserReactions);
+    router.get('/feed/watches', WatchController.readUserWatches);
     /* Feed */
 
     /* Show */
     router.post('/shows', ShowController.createShow);
     router.get('/shows', ShowController.readShows);
-    router.get('/shows/:showid', ShowController.readShow);    
-    router.patch('/shows/:showid', ShowController.updateShow); //for each field
+    router.get('/shows/:showid', ShowController.readShow);
+    router.patch('/shows/:showid', ShowController.updateShow); // for each field
     router.delete('/shows/:showid', ShowController.deleteShow);
     router.get('/shows/:showid/comments', ShowController.readShowComments);
-    router.post('/shows/:showid/comments', ShowController.createShowComment);    
+    router.post('/shows/:showid/comments', ShowController.createShowComment);
     router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
     router.post('/shows/:showid/watch', ShowController.markAsWatched);
     /* Show */
@@ -80,13 +81,14 @@ export class Routes {
     router.delete('/reactions/:reactionid', ReactionController.deleteReaction);
     router.delete('/watches/:watchid', WatchController.unmarkWatch);
 
-   
-    router.get('/user/:username/friends', FriendshipController.showFriends);    
+    router.get('/user/:username/friends', FriendshipController.showFriends);
     router.get('/friendships/requests/', AuthController.protect, FriendshipController.showFriendshipRequests);
     router.get('/friendships/show/', FriendshipController.showFriendshipRelation);
     router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
     router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
     router.delete('/friendships/remove', FriendshipController.removeFriend);
     router.post('/upload', UploadController.upload);
+
+    router.post('/search', SearchController.search);
   }
 }

@@ -9,14 +9,13 @@ describe('List Shows Test', () => {
   });
 });
 
-
 describe('Create New Show Test', () => {
   describe('Successes', () => {
     it('should return 201 Created', () => {
       const show = {
         image_url: 'url',
         info: 'Mr. Robot follows Elliot Alderson, a young computer programmer with an anxiety order, who is recruited by Mr Robot and his anarchist team of hackers fscoiety',
-        show_name: 'Mr.Robot',
+        show_name: 'Mr. Robot',
         writer_name: 'Sam Esmail',
         director_name: 'Niels Arden Oplev',
         trailer_url: 'https://www.youtube.com/watch?v=xIBiJ_SzJTA',
@@ -45,7 +44,7 @@ describe('Create Show Comment Test', () => {
     it('should return 201 Created', () => {
       const comment = {
         comment_body: 'Nice tv show! Everybody should follow',
-        user_id: 1
+        user_id: 1,
       };
       describe('Successes', () => {
         return request(server)
@@ -59,10 +58,10 @@ describe('Create Show Comment Test', () => {
 
   describe('Errors', () => {
     it('should return 400 Bad Request', () => {
-      const comment = { id: 2 };
+      const comment = { id: 1 };
       describe('Errors', () => {
         return request(server)
-        .post('/shows/' + 1+ '/comments')
+        .post('/shows/' + 1 + '/comments')
         .type('form').send(comment).then((r: any) => {
           expect(r.statusCode).to.be.equal(400);
         });
@@ -71,10 +70,9 @@ describe('Create Show Comment Test', () => {
   });
 });
 
-
 describe('List Show Comment Test', () => {
   it('should return 200 OK', () => {
-    return request(server).get('/shows/' + 2 + '/comments').expect(200);
+    return request(server).get('/shows/' + 1 + '/comments').expect(200);
   });
 });
 
@@ -84,7 +82,7 @@ describe('Create Subcomment', () => {
       const comment = {
         comment_body: 'Nice tv show! Everybody should follow',
         user_id: 1,
-        parent_id: 1
+        parent_id: 1,
       };
       describe('Successes', () => {
         return request(server)
@@ -96,4 +94,3 @@ describe('Create Subcomment', () => {
     });
   });
 });
-

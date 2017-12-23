@@ -88,14 +88,17 @@ export class ShowController {
   public static async createShowComment(req: Request, res: Response) {
     const { showid } = req.params;
     const { comment_body, user_id } = req.body;
-    if (!comment_body || !user_id) {
+    if (!comment_body) {
       return res.status(400).send(new BadRequest());
     }
-    const comment: Comment = new Comment(null, comment_body, user_id, null);
-    const r: number = await showService.createShowComment(showid, comment);
-    if (r) {
-      comment.id = r;
-      return res.status(200).send(comment); // shorthand to showid: showid
+    let c: Comment = new Comment(null, comment_body, user_id, null);
+    const r: number = await showService.createShowComment(showid, c);
+    if(r) {
+      const comment: Comment = await showService.findShowComment(showid, r);
+      if (comment) {
+        return res.status(200).send(comment);
+      }
+      return res.status(404).send(new NotFound());
     }
     return res.status(422).send(new UnprocessableEntity());
   }

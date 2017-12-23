@@ -9,6 +9,7 @@ import { ShowService } from '../services/showservice';
 
 const showService = new ShowService();
 
+
 export class ShowController {
   public static async readShows(req: Request, res: Response) {
     const r: Show[] = await showService.findAll();
@@ -25,6 +26,23 @@ export class ShowController {
       return res.status(200).send(r);
     }
     return res.status(404).send(new NotFound());
+  }
+
+  public static async updateShow(req: Request, res: Response) {
+    const { showid } = req.params;
+    const fields = req.body;
+    let args = [];
+    for (let field in fields) {
+      args.push({ field: field, val: fields[field]});
+    }
+    if (!fields.length) {
+      return res.status(400).send(new BadRequest());
+    }
+    const r: boolean = await showService.updateShow(showid, ...args);
+    if (r) {
+      return res.status(204);
+    }
+    return res.status(422).send(new UnprocessableEntity());  
   }
 
   public static async readShowComment(req: Request, res: Response) {
@@ -46,12 +64,12 @@ export class ShowController {
   }
 
   public static async createShow(req: Request, res: Response) {
-    const { image_url, info, show_name, trailer_url } = req.body;
-    if (!image_url || !info || !show_name || !trailer_url) {
+    const { image_url, info, show_name, trailer_url, director_name, writer_name } = req.body;
+    if (!image_url || !info || !show_name || !trailer_url || !director_name || !writer_name ) {      
       return res.status(400).send(new BadRequest());
     }
 
-    const show: Show = new Show(null, show_name, info, trailer_url, image_url);
+    const show: Show = new Show(null, show_name, info, trailer_url, image_url, director_name, writer_name);
     const id: number = await showService.create(show);
     if (id) {
       return res.status(201).send({ showid: id });
@@ -69,11 +87,11 @@ export class ShowController {
 
   public static async createShowComment(req: Request, res: Response) {
     const { showid } = req.params;
-    const { body, user_id, parent_id } = req.body;
-    if (!body || !user_id) {
+    const { comment_body, user_id } = req.body;
+    if (!comment_body || !user_id) {
       return res.status(400).send(new BadRequest());
     }
-    const comment: Comment = new Comment(null, body, user_id, parent_id);
+    const comment: Comment = new Comment(null, comment_body, user_id, null);
     const r: number = await showService.createShowComment(showid, comment);
     if (r) {
       return res.status(201).send({ showid }); // shorthand to showid: showid
@@ -89,15 +107,5 @@ export class ShowController {
       return res.status(201).send({ id: r });
     }
     return res.status(422).send(new UnprocessableEntity());
-  }
-
-  public static async unmarkWatch(req: Request, res: Response) {
-    const userid = 1;
-    const { showid } = req.params;
-    const r: number = await showService.unmarkWatch(showid, userid);
-    if (r) {
-      return res.status(200).send({ id: r });
-    }
-    return res.status(404).send(new NotFound());
   }
 }

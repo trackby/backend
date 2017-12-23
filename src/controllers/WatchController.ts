@@ -19,8 +19,8 @@ export class WatchController {
   }
 
   public static async readUserWatches(req: Request, res: Response) {
-    const uid = 1;
-    const r = await watchService.findUserWatches(uid);
+    const { user_id } = req.body;
+    const r = await watchService.findUserWatches(user_id);
     if (r) {
       return res.status(200).send(r);
     }

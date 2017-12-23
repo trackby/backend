@@ -22,7 +22,7 @@ export class CommentService extends Service {
 
   public async create(comment: Comment): Promise<number> {
     const client = await this.pool.connect();
-    const sql = 'INSERT INTO comment (comment_body, user_id, parent_id) VALUES($1, $2, $3) RETURNING id';
+    const sql = 'INSERT INTO comment (comment_body, user_id, parent_id) VALUES($1, $2, $3) RETURNING *';
     try {
       const res = await client.query(sql, [comment.comment_body, comment.user_id, comment.parent_id]);
       return res.rows[0].id;
@@ -83,7 +83,7 @@ export class CommentService extends Service {
   //gets all subcomments that user entered
   public async findUserSubcomments(uid: number): Promise<Comment[]> {
     const client = await this.pool.connect();
-    const sql =
+    const sql = 
       'SELECT parent.comment_body as parent_body, sub.comment_body, sub.subcomment_count, sub.created_at ' +
       'FROM comment parent INNER JOIN comment sub ON sub.parent_id = parent.id';
     try {

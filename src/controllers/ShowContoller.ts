@@ -94,18 +94,30 @@ export class ShowController {
     const comment: Comment = new Comment(null, comment_body, user_id, null);
     const r: number = await showService.createShowComment(showid, comment);
     if (r) {
-      return res.status(201).send({ showid }); // shorthand to showid: showid
+      comment.id = r;
+      return res.status(201).send(comment); // shorthand to showid: showid
     }
     return res.status(422).send(new UnprocessableEntity());
   }
 
   public static async markAsWatched(req: Request, res: Response) {
-    const userid = 1;
-    const { showid } = req.params;
-    const r: number = await showService.markAsWatched(showid, userid);
+    const { user_id } = req.body;
+    const { showid } = req.params;  
+    const r: number = await showService.markAsWatched(showid, user_id);
     if (r) {
       return res.status(201).send({ id: r });
     }
     return res.status(422).send(new UnprocessableEntity());
   }
+
+  public static async unmarkWatch(req: Request, res: Response) {
+    const { user_id } = req.body;
+    const { showid } = req.params;  
+    const r: number = await showService.unmarkWatch(showid, user_id);
+    if (r) {
+      return res.status(200).send({ id: r });
+    }
+    return res.status(404).send(new NotFound());
+  }
+  
 }

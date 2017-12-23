@@ -3,8 +3,10 @@ import { AuthController } from './controllers/AuthController';
 import { CommentController } from './controllers/CommentController';
 import { Controller } from './controllers/Controller';
 import { FriendshipController } from './controllers/FriendshipController';
+import { ReactionController } from './controllers/ReactionController';
 import { ShowController } from './controllers/ShowContoller';
 import { UploadController } from './controllers/UploadController';
+import { WatchController } from './controllers/WatchController';
 
 /**
  * / route
@@ -33,51 +35,50 @@ export class Routes {
       res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
     });
 
-    // allah muhammet aşkına şunu en sonda aktif edin test edemiyorum postları vs, productiona aldım o yüzden
-
     /* only active on production */
     if (process.env.NODE_ENV === 'production') {
       router.use(AuthController.protect);
     }
 
-    /*
-    * Below routes are protected and cannot be accessed without authentication token.
-    * Place the resources that need login operation to be accessed below:
-    */
+
+    router.get('/friendships/show/', FriendshipController.showFriendshipRelation);
+    router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
+    router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
 
     router.post('/protected', (req, res) => {
       res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
     });
 
-    router.get('/shows', ShowController.readShows);
-    router.get('/shows/:showid', ShowController.readShow);
-    router.get('/shows/:showid/comments', ShowController.readShowComments);
-    router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
-    router.get('/comments', CommentController.readAllComments);
-    router.get('/comments/:commentid', CommentController.readComment);
-    router.get('/comments/:commentid/subcomments', CommentController.readSubcomments);
+    /* Feed */
+    router.get('/feed/comments', CommentController.readUserComments);
+    router.get('/feed/reactions', ReactionController.readUserReactions);    
+    router.get('/feed/watches', WatchController.readUserWatches);  
+    /* Feed */
 
-    /*
-    * Below routes are protected and cannot be accessed without authentication token + admin privileges
-    * Place the resources that need both login operation and admin privileges to be accessed below:
-    * (Also some routes may be accessed with 'get' by users but cannot be accessed with 'post', 'delete', 'patch')
-    * Example: /protected is open for get requests but not for post requests.
-    */
-
-    // router.get('/friendships/incoming/', FriendshipController.readFriendship);
-    // router.get('/friendships/outgoing/', FriendshipController.readFriendship);
-
-    router.get('/friendships/show/', FriendshipController.showFriendshipRelation);
-
-    router.post('/shows/:showid/watch', ShowController.markAsWatched);
-    router.delete('/shows/:showid/watch', ShowController.unmarkWatch);
-    router.post('/shows/:showid/comments', ShowController.createShowComment);
-
-    router.delete('/shows/:showid', ShowController.deleteShow);
+    /* Show */
     router.post('/shows', ShowController.createShow);
+    router.get('/shows', ShowController.readShows);
+    router.get('/shows/:showid', ShowController.readShow);    
+    router.patch('/shows/:showid', ShowController.updateShow); //for each field
+    router.delete('/shows/:showid', ShowController.deleteShow);
+    router.get('/shows/:showid/comments', ShowController.readShowComments);
+    router.post('/shows/:showid/comments', ShowController.createShowComment);    
+    router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
+    router.post('/shows/:showid/watch', ShowController.markAsWatched);
+    /* Show */
 
-    router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
-    router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
+    /* Comment */
+    router.get('/comments/:commentid', CommentController.readComment);
+    router.delete('/comments/:commentid', CommentController.deleteComment);
+    router.get('/comments/:commentid/subcomments', CommentController.readSubcomments);
+    router.post('/comments/:commentid/subcomments', CommentController.createSubcomment);
+    router.get('/comments/:commentid/reactions', CommentController.readCommentReactions);
+    router.post('/comments/:commentid/reactions', CommentController.createCommentReaction);
+    /* Comment */
+
+    router.delete('/reactions/:reactionid', ReactionController.deleteReaction);
+    router.delete('/watches/:watchid', WatchController.unmarkWatch);
+    
 
     router.post('/upload', UploadController.upload);
   }

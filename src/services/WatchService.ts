@@ -1,4 +1,5 @@
 import { Service } from './service';
+import { ShowService } from './ShowService';
 
 export class WatchService extends Service {
   public async create(uid: number): Promise<number> {
@@ -13,6 +14,16 @@ export class WatchService extends Service {
       client.release();
     }
     return null;
+  }
+  
+
+  public async findUserWatches(uid: number): Promise<any> {
+    const ser: ShowService = new ShowService();
+    const show_watches = await ser.findUserShowWatches(uid);
+    //may be added more
+    return {
+      show_watches: show_watches
+    };
   }
 
   public async delete(uid: number): Promise<number> {

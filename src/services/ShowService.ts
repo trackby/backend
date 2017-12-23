@@ -152,20 +152,34 @@ export class ShowService extends Service {
   }
 
   public async markAsWatched(sid: number, uid: number) {
-    const ser: Service = new WatchService();
+    const ser: WatchService = new WatchService();
     const wid = await ser.create(uid);
-
     const client = await this.pool.connect();
-    const sql = 'INSERT INTO show_watch(watch_id, show_id) VALUES($1, $2) RETURNİNG id';
+    const sql = 'INSERT INTO show_watch(watch_id, show_id) VALUES($1, $2) RETURNING watch_id';
 
     try {
       const res = await client.query(sql, [wid, sid]);
+      return res.rows[0].watch_id;
+    } catch (e) {
+      console.log(e);
+      // console.log(e.stack)
+    } finally {
+      client.release();
+    }
+  }
+
+  public async unmarkWatch(sid: number, uid: number): Promise<number> {
+    const client = await this.pool.connect();    
+    const sql = 'DELETE FROM watch WHERE id IN (SELECT watch_id FROM show_watch WHERE show_id = $1) AND user_id = $2 RETURNING id';
+    try {
+      const res = await client.query(sql, [sid, uid]);
       return res.rows[0].id;
     } catch (e) {
       // console.log(e.stack)
     } finally {
       client.release();
     }
+    return null;
   }
   public async findUserShowWatches(uid: number) {
     const client = await this.pool.connect();

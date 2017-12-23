@@ -10,8 +10,8 @@ import { Reaction } from '../models/reaction';
 const reactionService = new ReactionService();
 export class ReactionController {
   public static async readUserReactions(req: Request, res: Response) {
-    const uid = 1;
-    const r = await reactionService.findUserReactions(uid);
+    const { user_id } = req.body;
+    const r = await reactionService.findUserReactions(user_id);
     if (r) {
       return res.status(200).send(r);
     }

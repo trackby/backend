@@ -14,8 +14,8 @@ export class CommentController {
 
   // For user feed
   public static async readUserComments(req: Request, res: Response) {
-    const uid = 1;
-    const r = await commentService.findUserComments(uid);
+    const { user_id } = req.body;
+    const r = await commentService.findUserComments(user_id);
     if (r) {
       return res.status(200).send(r);
     }

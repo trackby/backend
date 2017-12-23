@@ -40,11 +40,8 @@ export class Routes {
     router.get('/protected', (req, res) => {
       res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
     });
-
-    /* only active on production */
-    if (process.env.NODE_ENV === 'production') {
-      router.use(AuthController.protect);
-    }
+  
+    router.use(AuthController.protect);
 
     router.post('/protected', (req, res) => {
       res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
@@ -66,6 +63,7 @@ export class Routes {
     router.post('/shows/:showid/comments', ShowController.createShowComment);    
     router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
     router.post('/shows/:showid/watch', ShowController.markAsWatched);
+    router.delete('/shows/:showid/watch', ShowController.unmarkWatch);
     /* Show */
 
     /* Comment */
@@ -78,7 +76,6 @@ export class Routes {
     /* Comment */
 
     router.delete('/reactions/:reactionid', ReactionController.deleteReaction);
-    router.delete('/watches/:watchid', WatchController.unmarkWatch);
    
     router.get('/user/:username/friends', FriendshipController.showFriends);    
     router.get('/friendships/requests/', AuthController.protect, FriendshipController.showFriendshipRequests);

@@ -101,12 +101,23 @@ export class ShowController {
   }
 
   public static async markAsWatched(req: Request, res: Response) {
-    const userid = 1;
-    const { showid } = req.params;
-    const r: number = await showService.markAsWatched(showid, userid);
+    const { user_id } = req.body;
+    const { showid } = req.params;  
+    const r: number = await showService.markAsWatched(showid, user_id);
     if (r) {
       return res.status(201).send({ id: r });
     }
     return res.status(422).send(new UnprocessableEntity());
   }
+
+  public static async unmarkWatch(req: Request, res: Response) {
+    const { user_id } = req.body;
+    const { showid } = req.params;  
+    const r: number = await showService.unmarkWatch(showid, user_id);
+    if (r) {
+      return res.status(200).send({ id: r });
+    }
+    return res.status(404).send(new NotFound());
+  }
+  
 }

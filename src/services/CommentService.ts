@@ -83,7 +83,7 @@ export class CommentService extends Service {
   //gets all subcomments that user entered
   public async findUserSubcomments(uid: number): Promise<Comment[]> {
     const client = await this.pool.connect();
-    const sql =
+    const sql = 
       'SELECT parent.comment_body as parent_body, sub.comment_body, sub.subcomment_count, sub.created_at ' +
       'FROM comment parent INNER JOIN comment sub ON sub.parent_id = parent.id';
     try {

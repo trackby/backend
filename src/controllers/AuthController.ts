@@ -77,6 +77,12 @@ export class AuthController {
     * Which routes are protected or not? Define them in here.
     */
 
+    if (process.env.NODE_ENV === 'test') {
+      req.body.user_id = 1; //mock data
+      return next();
+    }
+    
+
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     const decoded: any = service.verifyJWT(token);
 

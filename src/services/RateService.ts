@@ -9,6 +9,7 @@ export class RateService extends Service {
       const res = await client.query(sql, [uid, rating]);
       return res.rows[0].id;
     } catch (e) {
+      console.log(e)
       // console.log(e.stack)
     } finally {
       client.release();
@@ -16,11 +17,11 @@ export class RateService extends Service {
     return null;
   }
 
-  public async update(uid: number, rating): Promise<Boolean> {
+  public async update(uid: number, sid: number, rating): Promise<Boolean> {
     const client = await this.pool.connect();
-    const sql = 'UPDATE rate SET rating = $1 WHERE user_id = $2';
+    const sql = 'UPDATE rate SET rating = $1 WHERE id IN (SELECT rate_id FROM show_rate WHERE show_id = $2) AND user_id = $3';
     try {
-      await client.query(sql, [uid, rating]);
+      await client.query(sql, [rating, sid,  uid]);
       return true;
     } catch (e) {
       // console.log(e.stack)

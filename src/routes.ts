@@ -66,7 +66,7 @@ export class Routes {
     router.post('/shows/:showid/watch', ShowController.markAsWatched);
     router.delete('/shows/:showid/watch', ShowController.unmarkWatch);
     router.post('/shows/:showid/rate', ShowController.rateShow);
-    router.patch('/show/:showid/rate', ShowController.changeRate);
+    router.patch('/shows/:showid/rate', ShowController.changeRate);
 
     /* Show */
 

@@ -3,14 +3,6 @@ import * as mocha from 'mocha';
 import * as request from 'supertest';
 import * as server from '../bin/www';
 
-<<<<<<< HEAD
-=======
-describe('Register', () => {
-  it('should return 200 OK', () => {
-    return request(server).get('/shows').expect(200);
-  });
-});
->>>>>>> 835ffa88997e96d1a2b891980ab62a964bddd166
 
 describe('List Shows Test', () => {
   it('should return 200 OK', () => {
@@ -52,12 +44,7 @@ describe('Create Show Comment Test', () => {
   describe('Successes', () => {
     it('should return 201 Created', () => {
       const comment = {
-<<<<<<< HEAD
         comment_body: 'Nice tv show! Everybody should follow'
-=======
-        comment_body: 'Nice tv show! Everybody should follow',
-        user_id: 1,
->>>>>>> 835ffa88997e96d1a2b891980ab62a964bddd166
       };
       describe('Successes', () => {
         return request(server)
@@ -94,12 +81,7 @@ describe('Create Subcomment', () => {
     it('should return 200 Created', () => {
       const comment = {
         comment_body: 'I do not aggree with you. Mr. Robot sucks!',
-<<<<<<< HEAD
         parent_id: 1
-=======
-        user_id: 1,
-        parent_id: 1,
->>>>>>> 835ffa88997e96d1a2b891980ab62a964bddd166
       };
       describe('Successes', () => {
         return request(server)

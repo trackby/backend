@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, users, friendship, reaction, comment_reaction, rate, show_rate, user_profile_photo CASCADE;
+DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, users, friendship, reaction, comment_reaction, rate, show_rate CASCADE;
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -81,6 +81,7 @@ CREATE TABLE users (
   password TEXT NOT NULL,
   email CITEXT NOT NULL UNIQUE,
   age SMALLINT NOT NULL,
+  image_url TEXT,
   isAdmin BOOLEAN DEFAULT false,
   PRIMARY KEY(id)
 );
@@ -127,12 +128,6 @@ CREATE TABLE show_rate(
   PRIMARY KEY(rate_id)
 );
 
-CREATE TABLE user_profile_photo (
-  user_id INT NOT NULL,
-  image_url TEXT NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  PRIMARY KEY (user_id, image_url)
-);
 
 CREATE VIEW friends_view AS (
   SELECT first_user_id, second_user_id FROM friendship WHERE status='APPROVED'

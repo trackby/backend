@@ -5,7 +5,7 @@ import { Controller } from './controllers/Controller';
 import { FriendshipController } from './controllers/FriendshipController';
 import { ReactionController } from './controllers/ReactionController';
 import { SearchController } from './controllers/SearchController';
-import { ShowController } from './controllers/ShowContoller';
+import { ShowController } from './controllers/ShowController';
 import { UploadController } from './controllers/UploadController';
 import { WatchController } from './controllers/WatchController';
 

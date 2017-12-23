@@ -102,10 +102,9 @@ export class ShowService extends Service {
   public async findShowComments(sid: number): Promise<Comment[]> {
     const client = await this.pool.connect();
     const sql =
-      'SELECT comment_id, user_profile_photo.image_url, comment_body, users.id, users.username, subcomment_count, created_at FROM show_comment ' +
+      'SELECT comment_id, users.image_url, comment_body, users.id, users.username, subcomment_count, created_at FROM show_comment ' +
       'INNER JOIN comment ON show_comment.comment_id = comment.id ' +
-      'INNER JOIN users ON comment.user_id = users.id ' +
-      'INNER JOIN user_profile_photo ON user_profile_photo.user_id = users.id WHERE show_id = $1';
+      'INNER JOIN users ON comment.user_id = users.id WHERE show_id = $1';
 
     try {
       const res = await client.query(sql, [sid]);

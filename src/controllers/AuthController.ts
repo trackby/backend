@@ -70,12 +70,13 @@ export class AuthController {
   }
 
   public static protect(req: Request, res: Response, next: NextFunction) {
-    /* All resources are accessible via GET.
-        * This rule is subject to change in future, regarding to application logic.
-        */
-    if (req.method === 'GET') {
-      return next();
+    /* if (req.method === 'GET') {
+         return next();
     }
+    * TODO(1): Implement the application's business logic about guest/member/admin users.
+    * Which routes are protected or not? Define them in here.
+    */
+
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     const decoded: any = service.verifyJWT(token);
 

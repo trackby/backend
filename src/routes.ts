@@ -28,6 +28,12 @@ export class Routes {
 
     router.get('/', Controller.sayHello);
 
+    router.use((req, res, next) => {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, x-access-token');
+      next();
+    });
+
     // trackby.me routes
     router.route('/signup').post(AuthController.signup);
     router.route('/auth').post(AuthController.authenticate);
@@ -39,11 +45,6 @@ export class Routes {
     if (process.env.NODE_ENV === 'production') {
       router.use(AuthController.protect);
     }
-
-
-    router.get('/friendships/show/', FriendshipController.showFriendshipRelation);
-    router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
-    router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
 
     router.post('/protected', (req, res) => {
       res.json({ message: 'Hoorayyy! Welcome to TrackBy!' });
@@ -78,8 +79,14 @@ export class Routes {
 
     router.delete('/reactions/:reactionid', ReactionController.deleteReaction);
     router.delete('/watches/:watchid', WatchController.unmarkWatch);
-    
 
+   
+    router.get('/user/:username/friends', FriendshipController.showFriends);    
+    router.get('/friendships/requests/', AuthController.protect, FriendshipController.showFriendshipRequests);
+    router.get('/friendships/show/', FriendshipController.showFriendshipRelation);
+    router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
+    router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
+    router.delete('/friendships/remove', FriendshipController.removeFriend);
     router.post('/upload', UploadController.upload);
   }
 }

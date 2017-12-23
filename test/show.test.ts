@@ -74,7 +74,7 @@ describe('Create Show Comment Test', () => {
 
 describe('List Show Comment Test', () => {
   it('should return 200 OK', () => {
-    return request(server).get('/shows/' + 1 + '/comments').expect(200);
+    return request(server).get('/shows/' + 2 + '/comments').expect(200);
   });
 });
 

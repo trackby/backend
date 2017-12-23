@@ -46,6 +46,8 @@ export class Server {
 
     this.app.use('/static', express.static('public/uploads'));
 
+    this.app.set('json spaces', 2);
+
     // mount logger
     this.app.use(logger('dev'));
 

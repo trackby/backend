@@ -24,7 +24,7 @@ CREATE TABLE show_comment (
 CREATE TABLE tvshow (
     id SERIAL,
     info	VARCHAR(255),
-    show_name	VARCHAR(45) NOT NULL,
+    show_name	TEXT NOT NULL,
     director_name VARCHAR(45),
     writer_name VARCHAR(45),
     image_url	VARCHAR(75),

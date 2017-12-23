@@ -3,6 +3,14 @@ import * as mocha from 'mocha';
 import * as request from 'supertest';
 import * as server from '../bin/www';
 
+<<<<<<< HEAD
+=======
+describe('Register', () => {
+  it('should return 200 OK', () => {
+    return request(server).get('/shows').expect(200);
+  });
+});
+>>>>>>> 835ffa88997e96d1a2b891980ab62a964bddd166
 
 describe('List Shows Test', () => {
   it('should return 200 OK', () => {
@@ -16,7 +24,7 @@ describe('Create New Show Test', () => {
       const show = {
         image_url: 'url',
         info: 'Mr. Robot follows Elliot Alderson, a young computer programmer with an anxiety order, who is recruited by Mr Robot and his anarchist team of hackers fscoiety',
-        show_name: 'Mr.Robot',
+        show_name: 'Mr. Robot',
         writer_name: 'Sam Esmail',
         director_name: 'Niels Arden Oplev',
         trailer_url: 'https://www.youtube.com/watch?v=xIBiJ_SzJTA',
@@ -44,7 +52,12 @@ describe('Create Show Comment Test', () => {
   describe('Successes', () => {
     it('should return 201 Created', () => {
       const comment = {
+<<<<<<< HEAD
         comment_body: 'Nice tv show! Everybody should follow'
+=======
+        comment_body: 'Nice tv show! Everybody should follow',
+        user_id: 1,
+>>>>>>> 835ffa88997e96d1a2b891980ab62a964bddd166
       };
       describe('Successes', () => {
         return request(server)
@@ -58,10 +71,10 @@ describe('Create Show Comment Test', () => {
 
   describe('Errors', () => {
     it('should return 400 Bad Request', () => {
-      const comment = { id: 2 };
+      const comment = { id: 1 };
       describe('Errors', () => {
         return request(server)
-        .post('/shows/' + 1+ '/comments')
+        .post('/shows/' + 1 + '/comments')
         .type('form').send(comment).then((r: any) => {
           expect(r.statusCode).to.be.equal(400);
         });
@@ -69,7 +82,6 @@ describe('Create Show Comment Test', () => {
     });
   });
 });
-
 
 describe('List Show Comment Test', () => {
   it('should return 200 OK', () => {
@@ -82,7 +94,12 @@ describe('Create Subcomment', () => {
     it('should return 200 Created', () => {
       const comment = {
         comment_body: 'I do not aggree with you. Mr. Robot sucks!',
+<<<<<<< HEAD
         parent_id: 1
+=======
+        user_id: 1,
+        parent_id: 1,
+>>>>>>> 835ffa88997e96d1a2b891980ab62a964bddd166
       };
       describe('Successes', () => {
         return request(server)
@@ -101,7 +118,7 @@ describe('Create Subcomment', () => {
       };
       describe('Errors', () => {
         return request(server)
-        .post('/shows/' + 1+ '/comments')
+        .post('/shows/' + 1 + '/comments')
         .type('form').send(comment).then((r: any) => {
           expect(r.statusCode).to.be.equal(400);
         });
@@ -115,7 +132,6 @@ describe('List Subcomments', () => {
     return request(server).get('/comments/' + 1 + '/subcomments').expect(200);
   });
 });
-
 
 describe('Mark As Watched', () => {
   it('should return 201 Created', () => {

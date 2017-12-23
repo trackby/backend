@@ -64,6 +64,9 @@ export class Routes {
     router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
     router.post('/shows/:showid/watch', ShowController.markAsWatched);
     router.delete('/shows/:showid/watch', ShowController.unmarkWatch);
+    router.post('/shows/:showid/rate', ShowController.rateShow);
+    router.patch('/show/:showid/rate', ShowController.changeRate);
+
     /* Show */
 
     /* Comment */
@@ -76,7 +79,7 @@ export class Routes {
     /* Comment */
 
     router.delete('/reactions/:reactionid', ReactionController.deleteReaction);
-   
+
     router.get('/user/:username/friends', FriendshipController.showFriends);    
     router.get('/friendships/requests/', AuthController.protect, FriendshipController.showFriendshipRequests);
     router.get('/friendships/show/', FriendshipController.showFriendshipRelation);

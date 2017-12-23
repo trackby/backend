@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, users, friendship, reaction, comment_reaction CASCADE;
+DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, users, friendship, reaction, comment_reaction, rate, show_rate, user_profile_photo CASCADE;
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -112,11 +112,26 @@ CREATE TABLE comment_reaction(
   PRIMARY KEY(comment_id)
 );
 
+/*rate table */
+CREATE TABLE rate(
+	id		SERIAL,
+	user_id		INT NOT NULL,
+	rating   FLOAT,
+  PRIMARY KEY(id)
+);
+
+/*show_rate table */
+CREATE TABLE show_rate(
+	show_id	INT  NOT NULL,
+	rate_id	INT NOT NULL,
+  PRIMARY KEY(rate_id)
+);
+
 CREATE TABLE user_profile_photo (
   user_id INT NOT NULL,
   image_url TEXT NOT NULL,
-  PRIMARY KEY (user_id, image_url),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, image_url)
 );
 
 CREATE VIEW friends_view AS (
@@ -144,6 +159,14 @@ CREATE VIEW admin_user AS (
 /* migrations */
 ALTER TABLE season
   ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);
+
+ALTER TABLE rate
+  ADD FOREIGN KEY(user_id) REFERENCES users(id);
+
+ALTER TABLE show_rate
+  ADD FOREIGN KEY(rate_id) REFERENCES rate(id),
+  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);
+
 
 ALTER TABLE episode
   ADD FOREIGN KEY(show_id) REFERENCES tvshow(id),

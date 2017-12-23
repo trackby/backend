@@ -95,7 +95,7 @@ export class ShowController {
     const r: number = await showService.createShowComment(showid, comment);
     if (r) {
       comment.id = r;
-      return res.status(201).send(comment); // shorthand to showid: showid
+      return res.status(200).send(comment); // shorthand to showid: showid
     }
     return res.status(422).send(new UnprocessableEntity());
   }
@@ -118,6 +118,26 @@ export class ShowController {
       return res.status(200).send({ id: r });
     }
     return res.status(404).send(new NotFound());
+  }
+
+  public static async rateShow(req: Request, res: Response) {
+    const { user_id, rating } = req.body;
+    const { showid } = req.params;
+    const r: Boolean = await showService.rateShow(user_id, showid, rating);
+    if (r) {
+      return res.status(204);
+    }
+    return res.status(422).send(new UnprocessableEntity());
+  }
+
+  public static async changeRate(req: Request, res: Response) {
+    const { user_id, rating } = req.body;
+    const { showid } = req.params;
+    const r: Boolean = await showService.updateRate(user_id, showid, rating);
+    if (r) {
+      return res.status(204);
+    }
+    return res.status(422).send(new UnprocessableEntity());  
   }
   
 }

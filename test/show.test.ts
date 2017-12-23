@@ -4,14 +4,6 @@ import * as request from 'supertest';
 import * as server from '../bin/www';
 
 
-
-describe('Register', () => {
-  it('should return 200 OK', () => {
-    return request(server).get('/shows').expect(200);
-  });
-});
-
-
 describe('List Shows Test', () => {
   it('should return 200 OK', () => {
     return request(server).get('/shows').expect(200);
@@ -52,14 +44,13 @@ describe('Create Show Comment Test', () => {
   describe('Successes', () => {
     it('should return 201 Created', () => {
       const comment = {
-        comment_body: 'Nice tv show! Everybody should follow',
-        user_id: 1
+        comment_body: 'Nice tv show! Everybody should follow'
       };
       describe('Successes', () => {
         return request(server)
         .post('/shows/' + 1 + '/comments')
         .type('form').send(comment).then((res: any) => {
-          expect(res.statusCode).to.be.equal(201);
+          expect(res.statusCode).to.be.equal(200);
         });
       });
     });
@@ -88,17 +79,16 @@ describe('List Show Comment Test', () => {
 
 describe('Create Subcomment', () => {
   describe('Successes', () => {
-    it('should return 201 Created', () => {
+    it('should return 200 Created', () => {
       const comment = {
         comment_body: 'I do not aggree with you. Mr. Robot sucks!',
-        user_id: 1,
         parent_id: 1
       };
       describe('Successes', () => {
         return request(server)
         .post('/comments/' + 1 + '/subcomments')
         .type('form').send(comment).then((res: any) => {
-          expect(res.statusCode).to.be.equal(201);
+          expect(res.statusCode).to.be.equal(200);
         });
       });
     });
@@ -108,7 +98,6 @@ describe('Create Subcomment', () => {
     it('should return 400 Bad Request', () => {
       const comment = {
         comment_body: 'I do not aggree with you. Mr. Robot sucks!',
-        user_id: 1,
       };
       describe('Errors', () => {
         return request(server)

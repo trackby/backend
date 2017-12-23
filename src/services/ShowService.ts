@@ -4,6 +4,8 @@ import { ShowComment } from '../models/showcomment';
 import { CommentService } from './commentservice';
 import { Service } from './service';
 import { WatchService } from './watchservice';
+import { RateService } from './rateservice';
+
 export class ShowService extends Service {
   public async findById(id: number): Promise<Show> {
     const client = await this.pool.connect();
@@ -100,8 +102,9 @@ export class ShowService extends Service {
   public async findShowComments(sid: number): Promise<Comment[]> {
     const client = await this.pool.connect();
     const sql =
-      'SELECT comment_id,comment_body, user_id, subcomment_count, created_at FROM show_comment INNER JOIN comment ' +
-      'ON show_comment.comment_id = comment.id WHERE show_id = $1';
+      'SELECT comment_id, comment_body, users.id, users.username, subcomment_count, created_at FROM show_comment ' +
+      'INNER JOIN comment ON show_comment.comment_id = comment.id ' +
+      'INNER JOIN users ON comment.user_id = users.id WHERE show_id = $1';
 
     try {
       const res = await client.query(sql, [sid]);
@@ -197,4 +200,30 @@ export class ShowService extends Service {
     }
     return null;
   }
+
+  public async rateShow(uid: number, sid: number, rating): Promise<boolean> {
+    const ser: RateService = new RateService();
+    const rid = await ser.rate(uid, rating); 
+    const client = await this.pool.connect();
+    const sql = 'INSERT INTO show_rate(rate_id, show_id) VALUES($1, $2)'
+
+    try {
+      const res = await client.query(sql, [rid, sid]);
+      return true;
+    } catch (e) {
+      // console.log(e.stack)
+    } finally {
+      client.release();
+    }
+    return false;
+  }
+
+  public async updateRate(uid: number, sid: number, rating): Promise<Boolean> {
+    const ser: RateService = new RateService();
+    return await ser.update(uid, rating);
+  }
+
 }
+
+
+

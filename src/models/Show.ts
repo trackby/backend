@@ -4,13 +4,17 @@ export class Show {
   private _trailerUrl: string;
   private _imageUrl: string;
   private _showName: string;
+  private _directorName: string;
+  private _writerName: string;
 
-  constructor(id: number, name: string, info: string, trailerUrl: string, imageUrl: string) {
+  constructor(id: number, name: string, info: string, trailerUrl: string, imageUrl: string, directorName: string, writerName: string) {
     this._id = id;
     this._showName = name;
     this._info = info;
     this._trailerUrl = trailerUrl;
     this._imageUrl = imageUrl;
+    this._directorName = directorName;
+    this._writerName = writerName;
   }
 
   public get id(): number {
@@ -43,4 +47,17 @@ export class Show {
   public set show_name(name: string) {
     this._showName = name;
   }
+  public get writer_name() {
+    return this._writerName;
+  }
+  public set writer_name(name: string) {
+    this._writerName = name;
+  }
+  public get director_name() {
+    return this._directorName;
+  }
+  public set director_name(name: string) {
+    this._directorName = name;
+  }
+  
 }

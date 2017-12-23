@@ -1,11 +1,11 @@
 export class Comment {
   private _id: number;
-  private _body: string;
+  private _commentBody: string;
   private _userId: number;
   private _parentId: number;
 
   constructor(id: number, body: string, userId: number, parentId: number) {
-    this._body = body;
+    this._commentBody = body;
     this._id = id;
     this._userId = userId;
     this._parentId = parentId;
@@ -16,11 +16,11 @@ export class Comment {
   public set id(id: number) {
     this._id = id;
   }
-  public get body(): string {
-    return this._body;
+  public get comment_body(): string {
+    return this._commentBody;
   }
-  public set body(body: string) {
-    this._body = body;
+  public set comment_body(body: string) {
+    this._commentBody = body;
   }
   public get user_id(): number {
     return this._userId;

@@ -1,17 +1,22 @@
+import { Episode } from './Episode';
+
 export class Season {
   private _info: string;
   private _trailerUrl: string;
   private _imageUrl: string;
   private _seasonNo: number;
-  private _seasonYear: string;
-  private _showId: number;
-
-  constructor(no: number, info: string, trailerUrl: string, imageUrl: string, seasonYear: string, showId: number) {
+  private _seasonYear: number;
+  private _showName: string;
+  private _watched: Boolean;
+  private _episodes: Episode[];
+  
+  constructor(no: number, info: string, trailerUrl: string, imageUrl: string, seasonYear: number, showName: string) {
     this._seasonNo = no;
     this._info = info;
     this._trailerUrl = trailerUrl;
     this._imageUrl = imageUrl;
-    this._showId = showId;
+    this._showName = showName;
+    this._seasonYear = seasonYear;
   }
 
   public get info(): string {
@@ -41,15 +46,26 @@ export class Season {
   public get season_year() {
     return this._seasonYear;
   }
-  public set season_year(name: string) {
-    this._seasonYear = name;
+  public set season_year(year: number) {
+    this._seasonYear = year;
   }
-  public get show_id() {
-    return this._showId;
+  public get show_name() {
+    return this._showName;
   }
-  public set show_id(id: number) {
-    this.show_id = id;
+  public set show_name(showName: string) {
+    this._showName = showName;
   }
-  
+  public get watched() {
+    return this._watched;
+  }
+  public set watched(watch: Boolean) {
+    this._watched = watch;
+  }
+  public get episodes() {
+    return this._episodes;
+  }
+  public set episodes(ep: Episode[]) {
+    this._episodes = ep;
+  }
 }
 

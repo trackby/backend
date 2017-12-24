@@ -6,12 +6,14 @@ import { Comment } from '../models/comment';
 import { Show } from '../models/show';
 import { ShowComment } from '../models/showcomment';
 import { ShowService } from '../services/showservice';
+import { EpisodeService } from '../services/episodeservice';
+import { SeasonService } from '../services/seasonservice';
+
 
 const showService = new ShowService();
 
-
 export class ShowController {
-  public static async readShows(req: Request, res: Response) {
+  public async readAll(req: Request, res: Response) {
     const r: Show[] = await showService.findAll();
     if (r) {
       return res.status(200).send(r);
@@ -19,18 +21,22 @@ export class ShowController {
     return res.status(404).send(new NotFound());
   }
 
-  public static async readShow(req: Request, res: Response) {
-    const { showid } = req.params;
-    const r: Show = await showService.findById(showid);
+  public async readOne(req: Request, res: Response) {
+    const { show } = req.query;
+    const episodeService = new EpisodeService();
+    const seasonService = new SeasonService();
+    const r = await showService.find(show);
     if (r) {
-      r.watched = await showService.checkIfWatched(showid);      
+      r.watched = await showService.checkIfWatched(show); 
+      r.seasons = await seasonService.findAllSeasons(show);
+      r.episodes = await episodeService.findAllShowEpisodes(show);
       return res.status(200).send(r);
     }
     return res.status(404).send(new NotFound());
   }
 
-  public static async updateShow(req: Request, res: Response) {
-    const { showid } = req.params;
+  public async update(req: Request, res: Response) {
+    const { show } = req.query;
     const fields = req.body;
     let args = [];
     for (let field in fields) {
@@ -39,63 +45,67 @@ export class ShowController {
     if (!fields.length) {
       return res.status(400).send(new BadRequest());
     }
-    const r: boolean = await showService.updateShow(showid, ...args);
+    const r: boolean = await showService.updateShow(show, ...args);
     if (r) {
       return res.status(204);
     }
     return res.status(422).send(new UnprocessableEntity());  
   }
 
-  public static async readShowComment(req: Request, res: Response) {
-    const { showid, commentid } = req.params;
-    const r: Comment = await showService.findShowComment(showid, commentid);
+  public async readComment(req: Request, res: Response) {
+    const { show } = req.query;    
+    const { commentid } = req.params;
+    const r: Comment = await showService.findShowComment(show, commentid);
     if (r) {
       return res.status(200).send(r);
     }
     return res.status(404).send(new NotFound());
   }
 
-  public static async readShowComments(req: Request, res: Response) {
-    const { showid } = req.params;
-    const r: Comment[] = await showService.findShowComments(showid);
-    if (r) {
-      return res.status(200).send(r);
-    }
-    return res.status(404).send(new NotFound());
-  }
-
-  public static async createShow(req: Request, res: Response) {
-    const { image_url, info, show_name, trailer_url, director_name, writer_name } = req.body;
-    if (!image_url || !info || !show_name || !trailer_url || !director_name || !writer_name ) {      
+  public async readComments(req: Request, res: Response) {
+    const { show } = req.query;
+    if(!show) {
       return res.status(400).send(new BadRequest());
     }
+    const r: Comment[] = await showService.findShowComments(show);
+    if (r) {
+      return res.status(200).send(r);
+    }
+    return res.status(404).send(new NotFound());
+  }
 
-    const show: Show = new Show(null, show_name, info, trailer_url, image_url, director_name, writer_name);
-    const id: number = await showService.create(show);
-    if (id) {
-      return res.status(201).send({ showid: id });
+  public async create(req: Request, res: Response) {
+    const { show } = req.query;
+    const { image_url, info, trailer_url, director_name, writer_name } = req.body;
+    if (!image_url || !info || !show || !trailer_url || !director_name || !writer_name ) {      
+      return res.status(400).send(new BadRequest());
+    }
+    const s: Show = new Show(null, show, info, trailer_url, image_url, director_name, writer_name);
+    const sname: string = await showService.create(s);
+    if (sname) {
+      return res.status(201).send({ showname: sname });
     }
     return res.status(422).send(new UnprocessableEntity());
   }
-  public static async deleteShow(req: Request, res: Response) {
-    const { showid } = req.params;
-    const r: number = await showService.delete(showid);
+  public async delete(req: Request, res: Response) {
+    const { show } = req.query;
+    const r: number = await showService.delete(show);
     if (r) {
-      return res.status(200).send({ showid }); // shorthand to showid: showid
+      return res.status(200).send({ show }); // shorthand to showid: showid
     }
     return res.status(404).send(new NotFound());
   }
 
-  public static async createShowComment(req: Request, res: Response) {
-    const { showid } = req.params;
+  public async createComment(req: Request, res: Response) {
+    const { show } = req.query;
     const { comment_body, user_id } = req.body;
     if (!comment_body) {
       return res.status(400).send(new BadRequest());
     }
     let c: Comment = new Comment(null, comment_body, user_id, null);
-    const r: number = await showService.createShowComment(showid, c);
+    const r: number = await showService.createShowComment(show, c);
     if(r) {
-      const comment: Comment = await showService.findShowComment(showid, r);
+      const comment: Comment = await showService.findShowComment(show, r);
       if (comment) {
         return res.status(200).send(comment);
       }
@@ -104,47 +114,47 @@ export class ShowController {
     return res.status(422).send(new UnprocessableEntity());
   }
 
-  public static async markAsWatched(req: Request, res: Response) {
+  public async markAsWatched(req: Request, res: Response) {
     const { user_id } = req.body;
-    const { showid } = req.params;  
-    const r: number = await showService.markAsWatched(showid, user_id);
+    const { show } = req.query;  
+    const r: number = await showService.markAsWatched(show, user_id);
     if (r) {
       return res.status(201).send({ id: r });
     }
     return res.status(422).send(new UnprocessableEntity());
   }
 
-  public static async unmarkWatch(req: Request, res: Response) {
+  public async unmarkWatch(req: Request, res: Response) {
     const { user_id } = req.body;
-    const { showid } = req.params;  
-    const r: Boolean = await showService.unmarkWatch(showid, user_id);
+    const { show } = req.query;  
+    const r: Boolean = await showService.unmarkWatch(show, user_id);
     if (r) {
       return res.status(204);
     }
     return res.status(404).send(new NotFound());
   }
 
-  public static async rateShow(req: Request, res: Response) {
+  public async rate(req: Request, res: Response) {
     const { user_id, rating } = req.body;
-    const { showid } = req.params;
+    const { show } = req.query;
     if(!rating || rating < 1 || rating > 5) {
       return res.status(422).send(new BadRequest());
     }
 
-    const r: Boolean = await showService.rateShow(user_id, showid, rating);
+    const r: Boolean = await showService.rateShow(user_id, show, rating);
     if (r) {
-      const r: number = await showService.findOverallRate(showid);
+      const r: number = await showService.findOverallRate(show);
       return res.status(200).send({ overall_rate: r });
     }
     return res.status(422).send(new UnprocessableEntity());
   }
 
-  public static async changeRate(req: Request, res: Response) {
+  public async changeRate(req: Request, res: Response) {
     const { user_id, rating } = req.body;
-    const { showid } = req.params;
-    const r: Boolean = await showService.updateRate(user_id, showid, rating);
+    const { show } = req.query;
+    const r: Boolean = await showService.updateRate(user_id, show, rating);
     if (r) {
-      const r: number = await showService.findOverallRate(showid);
+      const r: number = await showService.findOverallRate(show);
       return res.status(200).send({ overall_rate: r });
     }
     return res.status(422).send(new UnprocessableEntity());  

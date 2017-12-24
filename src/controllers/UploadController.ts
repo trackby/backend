@@ -22,12 +22,19 @@ const storage = multer.diskStorage({
   },
 });
 
+const imageFilter = (req, file, cb) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new Error('Only image files are allowed!'), false);
+  }
+  cb(null, true);
+};
+
 const clean = (folderPath, url) => {
   // Delete old profile photos but not the folder itself.
   del.sync([`${folderPath}/${url}`, `!${folderPath}`]);
 };
 
-const upload = util.promisify(multer({ storage }).single('profile-photo'));
+const upload = util.promisify(multer({ storage, fileFilter: imageFilter }).single('profile-photo'));
 const service = new UploadService();
 
 export class UploadController {
@@ -39,6 +46,7 @@ export class UploadController {
         await upload(req, res);
         imageUrl = `${HOST}/static/${req.file.filename}`;
       } catch (e) {
+        console.log(e);
         return res.status(400).send(new BadRequest('Image upload operation is not successful!'));
       }
 

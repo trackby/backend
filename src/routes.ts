@@ -57,7 +57,7 @@ export class Routes {
 
     /* Show */
 
-    //handles for all routes with shows
+    // handles for all routes with shows
 
     router.post('/shows', ShowController.createShow);
     router.get('/shows', ShowController.readShows);
@@ -73,7 +73,6 @@ export class Routes {
     router.patch('/shows/:showid/rate', ShowController.changeRate);
     /* Show */
 
-
     /* Comment */
     router.get('/comments/:commentid', CommentController.readComment);
     router.delete('/comments/:commentid', CommentController.deleteComment);
@@ -86,7 +85,7 @@ export class Routes {
     router.delete('/reactions/:reactionid', ReactionController.deleteReaction);
 
     router.get('/user/:username/friends', FriendshipController.showFriends);
-    router.get('/friendships/requests/', AuthController.protect, FriendshipController.showFriendshipRequests);
+    router.post('/friendships/requests/:direction', FriendshipController.showFriendshipRequests);
     router.get('/friendships/show/', FriendshipController.showFriendshipRelation);
     router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
     router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);

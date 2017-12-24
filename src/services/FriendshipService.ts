@@ -34,7 +34,7 @@ export class FriendshipService extends Service {
     const values = [ userId ];
     let predicate = 'IS DISTINCT FROM';
 
-    if (direction === 'OUTGOING') {
+    if (direction.toUpperCase() === 'OUTGOING') {
       predicate = 'IS NOT DISTINCT FROM';
     }
 

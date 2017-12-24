@@ -5,11 +5,13 @@ import { CommentService } from './commentservice';
 import { Service } from './service';
 import { WatchService } from './watchservice';
 import { RateService } from './rateservice';
+import { Season } from '../models/season';
 
-export class ShowService extends Service {
-  public async findById(id: number): Promise<Show> {
+
+export class SeasonServie extends Service {
+  public async findById(id: number): Promise<Season> {
     const client = await this.pool.connect();
-    const sql = 'SELECT tvshow.id, info, show_name, director_name, writer_name, image_url,'
+    const sql = 'SELECT season.id, info, show_name, director_name, writer_name, image_url,'
                 +'trailer_url, season_count, overall_rating, rating, created_at '
                 +'FROM tvshow LEFT JOIN show_rate ON show_rate.show_id = tvshow.id LEFT JOIN rate ON rate.id = show_rate.rate_id';
     try {
@@ -73,13 +75,14 @@ export class ShowService extends Service {
     const sql = 'SELECT tvshow.show_name, comment.comment_body, comment.created_at FROM show_comment ' +
                 'INNER JOIN tvshow ON show_comment.show_id = tvshow.id ' +
                 'INNER JOIN comment ON show_comment.comment_id = comment.id WHERE comment.user_id IN '+
-                '(SELECT second_user_id FROM friends_view WHERE first_user_id = $1)'
+                '(SELECT second_user_id FROM friends_view WHERE first_user_id = $1) '
                 'ORDER BY comment.created_at DESC';
 
     try {
       const res = await client.query(sql, [uid]);
       return res.rows;
     } catch (e) {
+      console.log(e)
       // console.log(e.stack)
     } finally {
       client.release();
@@ -108,12 +111,13 @@ export class ShowService extends Service {
     const sql =
       'SELECT comment_id, users.image_url, comment_body, users.id, users.username, subcomment_count, created_at FROM show_comment ' +
       'INNER JOIN comment ON show_comment.comment_id = comment.id ' +
-      'INNER JOIN users ON comment.user_id = users.id WHERE show_id = $1 ORDER BY comment.created_at DESC';
+      'INNER JOIN users ON comment.user_id = users.id WHERE show_id = $1';
 
     try {
       const res = await client.query(sql, [sid]);
       return res.rows;
     } catch (e) {
+      console.log(e)
       // console.log(e.stack)
     } finally {
       client.release();
@@ -151,6 +155,7 @@ export class ShowService extends Service {
       const res = await client.query(sql, [sid, cid]);
       return res.rows[0];
     } catch (e) {
+      console.log(e)
       // console.log(e.stack)
     } finally {
       client.release();
@@ -257,3 +262,6 @@ export class ShowService extends Service {
   }
 
 }
+
+
+

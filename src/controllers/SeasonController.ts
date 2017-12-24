@@ -1,17 +1,17 @@
-import { Request, Response } from 'express';
+/*import { Request, Response } from 'express';
 import { BadRequest } from '../errors/BadRequest';
 import { NotFound } from '../errors/NotFound';
 import { UnprocessableEntity } from '../errors/UnprocessableEntity';
 import { Comment } from '../models/comment';
 import { Show } from '../models/show';
 import { ShowComment } from '../models/showcomment';
-import { ShowService } from '../services/showservice';
+import { SeasonService } from '../services/seasonservice';
 
-const showService = new ShowService();
+const seasonService = new SeasonService();
 
 
-export class ShowController {
-  public static async readShows(req: Request, res: Response) {
+export class SeasonController {
+  public static async readSeasons(req: Request, res: Response) {
     const r: Show[] = await showService.findAll();
     if (r) {
       return res.status(200).send(r);
@@ -19,17 +19,17 @@ export class ShowController {
     return res.status(404).send(new NotFound());
   }
 
-  public static async readShow(req: Request, res: Response) {
+  public static async readSeason(req: Request, res: Response) {
     const { showid } = req.params;
     const r: Show = await showService.findById(showid);
+    r.watched = await showService.checkIfWatched(showid);
     if (r) {
-      r.watched = await showService.checkIfWatched(showid);      
       return res.status(200).send(r);
     }
     return res.status(404).send(new NotFound());
   }
 
-  public static async updateShow(req: Request, res: Response) {
+  public static async updateSeason(req: Request, res: Response) {
     const { showid } = req.params;
     const fields = req.body;
     let args = [];
@@ -66,7 +66,7 @@ export class ShowController {
 
   public static async createShow(req: Request, res: Response) {
     const { image_url, info, show_name, trailer_url, director_name, writer_name } = req.body;
-    if (!image_url || !info || !show_name || !trailer_url || !director_name || !writer_name ) {      
+    if (!image_url || !info || !show_name || !trailer_url || !director_name || !writer_name ) {      
       return res.status(400).send(new BadRequest());
     }
 
@@ -151,3 +151,4 @@ export class ShowController {
   }
   
 }
+*/

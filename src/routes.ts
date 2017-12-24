@@ -56,10 +56,13 @@ export class Routes {
     /* Feed */
 
     /* Show */
+
+    //handles for all routes with shows
+
     router.post('/shows', ShowController.createShow);
     router.get('/shows', ShowController.readShows);
     router.get('/shows/:showid', ShowController.readShow);
-    router.patch('/shows/:showid', ShowController.updateShow); // for each field
+    router.patch('/shows/:showid', ShowController.updateShow); // check this out!
     router.delete('/shows/:showid', ShowController.deleteShow);
     router.get('/shows/:showid/comments', ShowController.readShowComments);
     router.post('/shows/:showid/comments', ShowController.createShowComment);
@@ -68,8 +71,8 @@ export class Routes {
     router.delete('/shows/:showid/watch', ShowController.unmarkWatch);
     router.post('/shows/:showid/rate', ShowController.rateShow);
     router.patch('/shows/:showid/rate', ShowController.changeRate);
-
     /* Show */
+
 
     /* Comment */
     router.get('/comments/:commentid', CommentController.readComment);

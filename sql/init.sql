@@ -16,7 +16,7 @@ CREATE TABLE comment (
 CREATE TABLE show_comment (
   show_id	INT NOT NULL,
   comment_id  INT NOT NULL,
-  PRIMARY KEY(show_id)
+  PRIMARY KEY(comment_id)
 );
 
 /*tvshow table */
@@ -110,7 +110,7 @@ CREATE TABLE reaction(
 CREATE TABLE comment_reaction(
 	comment_id	 INT  NOT NULL,
 	reaction_id  INT  NOT NULL,
-  PRIMARY KEY(comment_id)
+  PRIMARY KEY(reaction_id)
 );
 
 /*rate table */

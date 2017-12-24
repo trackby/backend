@@ -58,12 +58,8 @@ export class Routes {
 
     /* Show */
 
-<<<<<<< HEAD
     //handles for all routes with shows
     router.use('/shows', Controller.handleAll);
-   // router.get('/shows', Controller.readAll);
-   // router.get('/shows/:showid', Controller.readOne);
-
     router.post('/shows', Controller.create);   
     router.get('/shows', Controller.read);
     router.patch('/shows', Controller.update); // check this out!
@@ -75,22 +71,6 @@ export class Routes {
     router.delete('/shows/watch', Controller.unmarkWatch);
     router.post('/shows/rate', Controller.rate);
     router.patch('/shows/rate', Controller.changeRate);
-=======
-    // handles for all routes with shows
-
-    router.post('/shows', ShowController.createShow);
-    router.get('/shows', ShowController.readShows);
-    router.get('/shows/:showid', ShowController.readShow);
-    router.patch('/shows/:showid', ShowController.updateShow); // check this out!
-    router.delete('/shows/:showid', ShowController.deleteShow);
-    router.get('/shows/:showid/comments', ShowController.readShowComments);
-    router.post('/shows/:showid/comments', ShowController.createShowComment);
-    router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
-    router.post('/shows/:showid/watch', ShowController.markAsWatched);
-    router.delete('/shows/:showid/watch', ShowController.unmarkWatch);
-    router.post('/shows/:showid/rate', ShowController.rateShow);
-    router.patch('/shows/:showid/rate', ShowController.changeRate);
->>>>>>> 51db683bdf34a0916ed193f80d03eb5c09870a97
     /* Show */
 
     /* Comment */

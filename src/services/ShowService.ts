@@ -9,8 +9,9 @@ import { RateService } from './rateservice';
 export class ShowService extends Service {
   public async findById(id: number): Promise<Show> {
     const client = await this.pool.connect();
-    const sql = 'SELECT id, info, show_name, director_name, writer_name, image_url, trailer_url, season_count, overall_rating, rating, created_at '
-                +'FROM tvshow NATURAL JOIN show_rate NATURAL JOIN rate';
+    const sql = 'SELECT tvshow.id, info, show_name, director_name, writer_name, image_url,'
+                +'trailer_url, season_count, overall_rating, rating, created_at '
+                +'FROM tvshow LEFT JOIN show_rate ON show_rate.show_id = tvshow.id LEFT JOIN rate ON rate.id = show_rate.rate_id';
     try {
       const res = await client.query(sql);
       return res.rows[0];

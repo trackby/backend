@@ -22,8 +22,8 @@ export class ShowController {
   public static async readShow(req: Request, res: Response) {
     const { showid } = req.params;
     const r: Show = await showService.findById(showid);
-    r.watched = await showService.checkIfWatched(showid);
     if (r) {
+      r.watched = await showService.checkIfWatched(showid);      
       return res.status(200).send(r);
     }
     return res.status(404).send(new NotFound());

@@ -129,14 +129,16 @@ export class ShowController {
     const { show } = req.query;  
     const r: Boolean = await showService.unmarkWatch(show, user_id);
     if (r) {
-      return res.status(204);
+      return res.status(204).send();
     }
     return res.status(404).send(new NotFound());
   }
 
   public async rate(req: Request, res: Response) {
     const { user_id, rating } = req.body;
+    console.log('rate this!');
     const { show } = req.query;
+    console.log(rating);
     if(!rating || rating < 1 || rating > 5) {
       return res.status(422).send(new BadRequest());
     }

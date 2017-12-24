@@ -392,9 +392,9 @@ CREATE OR REPLACE FUNCTION calculate_episode_average()
   RETURNS trigger AS
   $$
   BEGIN
-    UPDATE tvshow SET overall_rating =
+    UPDATE episode SET overall_rating =
     ( SELECT AVG(rate.rating) FROM episode_rate INNER JOIN rate
-      ON show_rate.rate_id = rate.id
+      ON episode_rate.rate_id = rate.id
     );
     RETURN NEW;
   END;
@@ -405,9 +405,9 @@ CREATE OR REPLACE FUNCTION calculate_season_average()
   RETURNS trigger AS
   $$
   BEGIN
-    UPDATE tvshow SET overall_rating =
+    UPDATE season SET overall_rating =
     ( SELECT AVG(rate.rating) FROM season_rate INNER JOIN rate
-      ON show_rate.rate_id = rate.id
+      ON season_rate.rate_id = rate.id
     );
     RETURN NEW;
   END;

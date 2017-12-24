@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, users, friendship, reaction, comment_reaction, rate, show_rate CASCADE;
+DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, season_comment, episode_comment, show_watch, season_watch, episode_watch, watch, users, friendship, reaction, comment_reaction, rate, show_rate, season_rate, episode_rate CASCADE;
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -14,52 +14,73 @@ CREATE TABLE comment (
 
 /*show_comment table */
 CREATE TABLE show_comment (
-  show_id	INT NOT NULL,
+  show_name	VARCHAR(40) NOT NULL,
   comment_id  INT NOT NULL,
   PRIMARY KEY(comment_id)
 );
+
+/*season_comment table */
+CREATE TABLE season_comment (
+  show_name	VARCHAR(40) NOT NULL,
+  season_no INT NOT NULL,
+  comment_id  INT NOT NULL,
+  PRIMARY KEY(comment_id)
+);
+
+/*episode_ table */
+CREATE TABLE episode_comment (
+  show_name	VARCHAR(40) NOT NULL,
+  season_no INT NOT NULL,
+  episode_no INT NOT NULL,
+  comment_id  INT NOT NULL,
+  PRIMARY KEY(comment_id)
+);
+
 
 /*tvshow table */
 CREATE TABLE tvshow (
     id SERIAL,
     info	VARCHAR(255),
-    show_name	TEXT NOT NULL,
+    show_name	VARCHAR(40) NOT NULL UNIQUE,
     director_name VARCHAR(45),
     writer_name VARCHAR(45),
-    image_url	VARCHAR(75),
+    image_url	TEXT,
     trailer_url VARCHAR(75),
     season_count INT DEFAULT 0,
+    episode_count INT DEFAULT 0,
     overall_rating FLOAT DEFAULT 0.0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(id)
+    PRIMARY KEY(show_name)
 );
 
 /*season table */
 CREATE TABLE season(
 	  id 		SERIAL,
-    season_no       INT NOT NULL,
-    season_info		VARCHAR(255),
+    season_no     INT NOT NULL UNIQUE,
+    info		VARCHAR(255),
     season_year	    INT,
-    image_url	VARCHAR(75),
+    image_url	TEXT,
+    overall_rating FLOAT DEFAULT 0.0,
     trailer_url     VARCHAR(75),
-    show_id		     INT,
+    show_name	VARCHAR(40) NOT NULL,
     episode_count  INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(show_id, season_no)
+    PRIMARY KEY(show_name, season_no)
 );
 
 /*episode table */
 CREATE TABLE episode(
 	  id 	SERIAL,
-	  episode_no   	INT   NOT NULL,
+	  episode_no   	INT   NOT NULL UNIQUE,
     episode_name	VARCHAR(45) NOT NULL,
-    episode_info	VARCHAR(255),
-    image_url	VARCHAR(75),
+    info	VARCHAR(255),
+    image_url	TEXT,
+    overall_rating FLOAT DEFAULT 0.0,
     trailer_url VARCHAR(75),    
-    season_no		INT,
-    show_id	    INT,
+    season_no		INT NOT NULL UNIQUE,
+    show_name	VARCHAR(40) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(show_id, season_no, episode_no)
+    PRIMARY KEY(show_name, season_no, episode_no)
 );
 
 CREATE TABLE watch (
@@ -71,8 +92,23 @@ CREATE TABLE watch (
 
 CREATE TABLE show_watch (
   watch_id INT,
-  show_id INT,
-  PRIMARY KEY(show_id)
+  show_name	VARCHAR(40),
+  PRIMARY KEY(show_name)
+);
+
+CREATE TABLE season_watch (
+  watch_id INT,
+  show_name	VARCHAR(40) NOT NULL,
+  season_no INT,
+  PRIMARY KEY(show_name, season_no)
+);
+
+CREATE TABLE episode_watch (
+  watch_id INT,
+  show_name	VARCHAR(40) NOT NULL,
+  season_no INT,
+  episode_no INT,
+  PRIMARY KEY(show_name, season_no, episode_no)
 );
 
 CREATE TABLE users (
@@ -124,11 +160,26 @@ CREATE TABLE rate(
 
 /*show_rate table */
 CREATE TABLE show_rate(
-	show_id	INT  NOT NULL,
+  show_name	VARCHAR(40) NOT NULL,
 	rate_id	INT NOT NULL,
   PRIMARY KEY(rate_id)
 );
 
+CREATE TABLE season_rate(
+  show_name	VARCHAR(40) NOT NULL,
+  season_no INT NOT NULL,
+	rate_id	INT NOT NULL,
+  PRIMARY KEY(rate_id)
+);
+
+
+CREATE TABLE episode_rate(
+  show_name	VARCHAR(40) NOT NULL,
+ season_no INT NOT NULL,
+ episode_no INT NOT NULL,
+ rate_id	INT NOT NULL,
+ PRIMARY KEY(rate_id)
+);
 
 CREATE VIEW friends_view AS (
   SELECT first_user_id, second_user_id FROM friendship WHERE status='APPROVED'
@@ -154,18 +205,31 @@ CREATE VIEW admin_user AS (
 
 /* migrations */
 ALTER TABLE season
-  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name);
+
+
+ALTER TABLE episode
+  ADD FOREIGN KEY(season_no) REFERENCES season(season_no),
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name);
 
 ALTER TABLE rate
   ADD FOREIGN KEY(user_id) REFERENCES users(id);
 
 ALTER TABLE show_rate
   ADD FOREIGN KEY(rate_id) REFERENCES rate(id),
-  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name);
 
+ALTER TABLE season_rate
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
+  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(rate_id) REFERENCES rate(id) ON DELETE CASCADE;
 
-ALTER TABLE episode
-  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);
+ALTER TABLE episode_rate
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
+  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(episode_no) REFERENCES episode(episode_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(rate_id) REFERENCES rate(id) ON DELETE CASCADE;
+
 
 ALTER TABLE comment
   ADD FOREIGN KEY(parent_id) REFERENCES comment(id),
@@ -176,12 +240,36 @@ ALTER TABLE friendship
   ADD FOREIGN KEY(second_user_id) REFERENCES users(id)  ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE show_comment
-  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id) ON DELETE CASCADE,
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
   ADD FOREIGN KEY(comment_id) REFERENCES comment(id) ON DELETE CASCADE;
 
+ALTER TABLE season_comment
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
+  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(comment_id) REFERENCES comment(id) ON DELETE CASCADE;
+
+ALTER TABLE episode_comment
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
+  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(episode_no) REFERENCES episode(episode_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(comment_id) REFERENCES comment(id) ON DELETE CASCADE;
+
+
 ALTER TABLE show_watch
-  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id) ON DELETE CASCADE,
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
   ADD FOREIGN KEY(watch_id) REFERENCES watch(id) ON DELETE CASCADE;
+
+ALTER TABLE season_watch
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
+  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(watch_id) REFERENCES watch(id) ON DELETE CASCADE;
+
+ALTER TABLE episode_watch
+  ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
+  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(episode_no) REFERENCES episode(episode_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(watch_id) REFERENCES watch(id) ON DELETE CASCADE;
+
 
 ALTER TABLE watch
   ADD FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE;
@@ -201,8 +289,19 @@ CREATE OR REPLACE FUNCTION decrease_episode_count()
   $$
   BEGIN
     UPDATE season SET episode_count = episode_count - 1
-    WHERE season.id = OLD.season_id;
-  RETURN NEW;
+    WHERE season.id = OLD.id;
+    RETURN NEW;
+  END;
+  $$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION decrease_episode_count_show()
+  RETURNS trigger AS
+  $$
+  BEGIN
+    UPDATE tvshow SET episode_count = episode_count - 1
+    WHERE tvshow.id = OLD.id;
+    RETURN NEW;
   END;
   $$
 LANGUAGE 'plpgsql';
@@ -234,7 +333,7 @@ CREATE OR REPLACE FUNCTION increase_season_count()
   $$
   BEGIN
     UPDATE tvshow SET season_count = season_count + 1
-    WHERE tvshow.id = NEW.show_id;
+    WHERE tvshow.show_name = NEW.show_name;
     RETURN NEW;
   END;
 $$
@@ -245,7 +344,7 @@ CREATE OR REPLACE FUNCTION decrease_season_count()
   $$
   BEGIN
     UPDATE tvshow SET season_count = season_count - 1
-    WHERE tvshow.id = OLD.show_id;
+    WHERE tvshow.id = OLD.id;
     RETURN NEW;
   END;
 $$
@@ -257,11 +356,23 @@ CREATE OR REPLACE FUNCTION increase_episode_count()
   $$
   BEGIN
     UPDATE season SET episode_count = episode_count + 1
-    WHERE season.id = NEW.season_id;
+    WHERE season.id = NEW.id;
     RETURN NEW;
   END;
 $$
 LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION increase_episode_count_show()
+  RETURNS trigger AS
+  $$
+  BEGIN
+    UPDATE tvshow SET episode_count = episode_count + 1
+    WHERE tvshow.id = NEW.id;
+    RETURN NEW;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
 
 -- CALCULATE RATING
 CREATE OR REPLACE FUNCTION calculate_show_average()
@@ -276,6 +387,34 @@ CREATE OR REPLACE FUNCTION calculate_show_average()
   END;
 $$
 LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION calculate_episode_average()
+  RETURNS trigger AS
+  $$
+  BEGIN
+    UPDATE tvshow SET overall_rating =
+    ( SELECT AVG(rate.rating) FROM episode_rate INNER JOIN rate
+      ON show_rate.rate_id = rate.id
+    );
+    RETURN NEW;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION calculate_season_average()
+  RETURNS trigger AS
+  $$
+  BEGIN
+    UPDATE tvshow SET overall_rating =
+    ( SELECT AVG(rate.rating) FROM season_rate INNER JOIN rate
+      ON show_rate.rate_id = rate.id
+    );
+    RETURN NEW;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
+
 
 
 -- SEASON COUNT UPDATE
@@ -299,11 +438,23 @@ CREATE TRIGGER inc_episode_count_trigger
   FOR EACH ROW
   EXECUTE PROCEDURE increase_episode_count();
 
+CREATE TRIGGER inc_episode_count_show_trigger
+  AFTER INSERT
+  ON episode
+  FOR EACH ROW
+  EXECUTE PROCEDURE increase_episode_count_show();
+
 CREATE TRIGGER dec_episode_count_trigger
   AFTER DELETE
   ON episode
   FOR EACH ROW
   EXECUTE PROCEDURE decrease_episode_count();
+
+CREATE TRIGGER dec_episode_count_show_trigger
+  AFTER DELETE
+  ON episode
+  FOR EACH ROW
+  EXECUTE PROCEDURE decrease_episode_count_show();
 
 -- SUBCOMMENT COUNT UPDATE
 
@@ -323,3 +474,11 @@ CREATE TRIGGER dec_subcomment_count_trigger
 CREATE TRIGGER calculate_show_average_trigger
   AFTER INSERT OR UPDATE ON rate
   EXECUTE PROCEDURE calculate_show_average();
+
+CREATE TRIGGER calculate_episode_average_trigger
+  AFTER INSERT OR UPDATE ON rate
+  EXECUTE PROCEDURE calculate_episode_average();
+
+CREATE TRIGGER calculate_season_average_trigger
+  AFTER INSERT OR UPDATE ON rate
+  EXECUTE PROCEDURE calculate_season_average();

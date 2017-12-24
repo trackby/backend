@@ -58,6 +58,7 @@ export class Routes {
 
     /* Show */
 
+<<<<<<< HEAD
     //handles for all routes with shows
     router.use('/shows', Controller.handleAll);
    // router.get('/shows', Controller.readAll);
@@ -74,8 +75,23 @@ export class Routes {
     router.delete('/shows/watch', Controller.unmarkWatch);
     router.post('/shows/rate', Controller.rate);
     router.patch('/shows/rate', Controller.changeRate);
-    /* Show */
+=======
+    // handles for all routes with shows
 
+    router.post('/shows', ShowController.createShow);
+    router.get('/shows', ShowController.readShows);
+    router.get('/shows/:showid', ShowController.readShow);
+    router.patch('/shows/:showid', ShowController.updateShow); // check this out!
+    router.delete('/shows/:showid', ShowController.deleteShow);
+    router.get('/shows/:showid/comments', ShowController.readShowComments);
+    router.post('/shows/:showid/comments', ShowController.createShowComment);
+    router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
+    router.post('/shows/:showid/watch', ShowController.markAsWatched);
+    router.delete('/shows/:showid/watch', ShowController.unmarkWatch);
+    router.post('/shows/:showid/rate', ShowController.rateShow);
+    router.patch('/shows/:showid/rate', ShowController.changeRate);
+>>>>>>> 51db683bdf34a0916ed193f80d03eb5c09870a97
+    /* Show */
 
     /* Comment */
     router.get('/comments/:commentid', CommentController.readComment);
@@ -89,15 +105,15 @@ export class Routes {
     router.delete('/reactions/:reactionid', ReactionController.deleteReaction);
 
     router.get('/user/:username/friends', FriendshipController.showFriends);
-    router.get('/friendships/requests/', AuthController.protect, FriendshipController.showFriendshipRequests);
+    router.post('/friendships/requests/:direction', FriendshipController.showFriendshipRequests);
     router.get('/friendships/show/', FriendshipController.showFriendshipRelation);
     router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
     router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
     router.delete('/friendships/remove', FriendshipController.removeFriend);
 
-    router.get('/user/:userid/profile-photo', UploadController.retrieveProfilePhoto);
-    router.post('/upload', UploadController.uploadProfilePhoto);
-    router.delete('/upload', UploadController.removeProfilePhoto);
+    router.get('/photos/:category/:id', UploadController.retrievePhoto); // Example: /photos/tvshow/1
+    router.post('/upload', UploadController.uploadPhoto);
+    router.delete('/upload', UploadController.removePhoto);
 
     router.post('/search', SearchController.search);
   }

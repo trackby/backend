@@ -103,7 +103,7 @@ export class FriendshipController {
 
   public static async showFriendshipRequests(req: Request, res: Response) {
     const { user_id } = req.body;
-    const { direction } = req.query;
+    const { direction } = req.params;
 
     if (!user_id) {
       return res.status(400).send(new BadRequest('Required body parameters cannot be empty.'));

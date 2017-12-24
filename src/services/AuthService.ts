@@ -18,11 +18,11 @@ export class AuthService extends Service {
     try {
       let res = await client.query('SELECT * FROM users WHERE username = $1', [ username ]);
       if (res.rows[0]) {
-        return res.rows[0].id;
+        return res.rows[0];
       } else if (email) {
         res = await client.query('SELECT * FROM users WHERE email = $1', [ email ]);
         if (res.rows[0]) {
-          return res.rows[0].id;
+          return res.rows[0];
         }
       }
     } catch (e) {
@@ -92,8 +92,8 @@ export class AuthService extends Service {
     return null;
   }
 
-  public signJWT(id: number) {
-    const token = jwt.sign({ id }, this.key, {
+  public signJWT(id: number, isAdmin: boolean) {
+    const token = jwt.sign({ id, isAdmin }, this.key, {
       algorithm: 'HS384',
       expiresIn: 60 * 60 * 24,
       issuer: 'trackby',

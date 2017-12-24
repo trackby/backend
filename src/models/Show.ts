@@ -1,3 +1,7 @@
+
+import { Season } from './Season';
+import { Episode } from './Episode';
+
 export class Show {
   private _id: number;
   private _info: string;
@@ -7,6 +11,8 @@ export class Show {
   private _directorName: string;
   private _writerName: string;
   private _watched: Boolean;
+  private _seasons: Season[];
+  private _episodes: Episode[];
   
 
   constructor(id: number, name: string, info: string, trailerUrl: string, imageUrl: string, directorName: string, writerName: string) {
@@ -66,6 +72,18 @@ export class Show {
   }
   public set watched(watch: Boolean) {
     this._watched = watch;
+  }
+  public get seasons() {
+    return this._seasons;
+  }
+  public set seasons(seasons: Season[]) {
+    this._seasons = seasons;
+  }
+  public get episodes() {
+    return this._episodes;
+  }
+  public set episodes(episodes: Episode[]) {
+    this._episodes = episodes;
   }
   
 }

@@ -3,17 +3,21 @@ export class Episode {
   private _trailerUrl: string;
   private _imageUrl: string;
   private _episodeNo: number;
-  private _seasonId: number;
-  private _showId: number;
+  private _seasonNo: number;
+  private _showName: string;
+  private _episodeName: string;
+  private _watched: Boolean;
   
 
-  constructor(no: number, info: string, trailerUrl: string, imageUrl: string, seasonId: number, showId: number) {
+  constructor(no: number, name: string, info: string, trailerUrl: string, imageUrl: string, episodeName: string, seasonNo: number, showName: string) {
     this._episodeNo = no;
+    this._episodeName = episodeName;
     this._info = info;
     this._trailerUrl = trailerUrl;
     this._imageUrl = imageUrl;
-    this._seasonId = seasonId;
-    this._showId = showId;
+    this._seasonNo = seasonNo;
+    this._episodeName = episodeName;
+    this._showName = showName;
   }
   public get info(): string {
     return this._info;
@@ -39,18 +43,29 @@ export class Episode {
   public set episode_no(no: number) {
     this._episodeNo = no;
   }
-  public get season_id() {
-    return this._seasonId;
+  public get season_no() {
+    return this._seasonNo;
   }
-  public set season_id(id: number) {
-    this._seasonId = id;
+  public set season_no(id: number) {
+    this._seasonNo= id;
   }
-  public get show_id() {
-    return this._showId;
+  public get episode_name() {
+    return this._episodeName;
   }
-  public set show_id(id: number) {
-    this._showId = id;
+  public set episode_name(name: string) {
+    this._episodeName = name;
   }
-
+  public get show_name() {
+    return this._showName;
+  }
+  public set show_name(name: string) {
+    this._showName = name;
+  }
+  public get watched() {
+    return this._watched;
+  }
+  public set watched(watch: Boolean) {
+    this._watched = watch;
+  }
 }
 

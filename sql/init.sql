@@ -45,7 +45,7 @@ CREATE TABLE season(
     show_id		     INT,
     episode_count  INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(id)
+    PRIMARY KEY(show_id, season_no)
 );
 
 /*episode table */
@@ -56,10 +56,10 @@ CREATE TABLE episode(
     episode_info	VARCHAR(255),
     image_url	VARCHAR(75),
     trailer_url VARCHAR(75),    
-    season_id		INT,
+    season_no		INT,
     show_id	    INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(id)
+    PRIMARY KEY(show_id, season_no, episode_no)
 );
 
 CREATE TABLE watch (
@@ -113,11 +113,7 @@ CREATE TABLE comment_reaction(
   PRIMARY KEY(reaction_id)
 );
 
-CREATE TABLE user_profile_photo (
-  user_id INT NOT NULL,
-  image_url TEXT NOT NULL,
-  PRIMARY KEY (user_id),
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+
 /*rate table */
 CREATE TABLE rate(
 	id		SERIAL,
@@ -169,8 +165,7 @@ ALTER TABLE show_rate
 
 
 ALTER TABLE episode
-  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id),
-  ADD FOREIGN KEY(season_id) REFERENCES season(id);
+  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);
 
 ALTER TABLE comment
   ADD FOREIGN KEY(parent_id) REFERENCES comment(id),

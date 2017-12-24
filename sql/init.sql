@@ -113,6 +113,11 @@ CREATE TABLE comment_reaction(
   PRIMARY KEY(reaction_id)
 );
 
+CREATE TABLE user_profile_photo (
+  user_id INT NOT NULL,
+  image_url TEXT NOT NULL,
+  PRIMARY KEY (user_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 /*rate table */
 CREATE TABLE rate(
 	id		SERIAL,

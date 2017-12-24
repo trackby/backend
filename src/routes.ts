@@ -32,6 +32,7 @@ export class Routes {
     router.use((req, res, next) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, x-access-token');
+      res.header('Access-Control-Allow-Methods', 'GET, POST,OPTIONS, DELETE, PATCH, PUT');
       next();
     });
 
@@ -90,7 +91,10 @@ export class Routes {
     router.post('/friendships/create', FriendshipController.sendFriendshipRequest);
     router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
     router.delete('/friendships/remove', FriendshipController.removeFriend);
-    router.post('/upload', UploadController.upload);
+
+    router.get('/user/:userid/profile-photo', UploadController.retrieveProfilePhoto);
+    router.post('/upload', UploadController.uploadProfilePhoto);
+    router.delete('/upload', UploadController.removeProfilePhoto);
 
     router.post('/search', SearchController.search);
   }

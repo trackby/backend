@@ -8,17 +8,20 @@ import { RateService } from './rateservice';
 import { Season } from '../models/season';
 
 
-export class SeasonServie extends Service {
-  public async findById(id: number): Promise<Season> {
+
+export class SeasonService extends Service {
+  public async find(sname: string, season: number): Promise<Season> {
     const client = await this.pool.connect();
-    const sql = 'SELECT season.id, info, show_name, director_name, writer_name, image_url,'
-                +'trailer_url, season_count, overall_rating, rating, created_at '
-                +'FROM tvshow LEFT JOIN show_rate ON show_rate.show_id = tvshow.id LEFT JOIN rate ON rate.id = show_rate.rate_id';
+    const sql = 'SELECT info, season_year, season.season_no,' +
+                'trailer_url, episode_count, overall_rating, rating, created_at ' +
+                'FROM season LEFT JOIN season_rate ON season_rate.season_no = season.season_no AND season_rate.show_name = season.show_name ' +
+                'LEFT JOIN rate ON rate.id = season_rate.rate_id ' +
+                'WHERE season.show_name = $1 AND season.season_no = $2';
     try {
-      const res = await client.query(sql);
+      const res = await client.query(sql, [sname, season]);
       return res.rows[0];
     } catch (e) {
-      console.log(e)
+      console.log(e);
       // console.log(e.stack)
     } finally {
       client.release();
@@ -26,40 +29,13 @@ export class SeasonServie extends Service {
     return null;
   }
 
-  public async create(show: Show): Promise<number> {
-    const client = await this.pool.connect();
-    const sql = 'INSERT INTO tvshow(show_name, info, trailer_url, image_url, director_name, writer_name) ' +
-                'VALUES($1, $2, $3, $4, $5, $6) RETURNING id';
-    try {
-      const res = await client.query(sql, [show.show_name, show.info, show.trailer_url, show.image_url, show.director_name, show.writer_name]);
-      return res.rows[0].id;
-    } catch (e) {
-      // console.log(e.stack)
-    } finally {
-      client.release();
-    }
-    return null;
-  }
 
-  public async delete(sid: number): Promise<number> {
-    const client = await this.pool.connect();
-    const sql = 'DELETE FROM tvshow WHERE id = $1 RETURNING id';
-    try {
-      const res = await client.query(sql, [sid]);
-      return res.rows[0].id;
-    } catch (e) {
-      // console.log(e.stack)
-    } finally {
-      client.release();
-    }
-    return null;
-  }
 
-  public async findAll(): Promise<Show[]> {
+  public async findAllSeasons(sname: string): Promise<Season[]> {
     const client = await this.pool.connect();
-    const sql = 'SELECT * FROM tvshow';
+    const sql = 'SELECT * FROM season WHERE show_name = $1';
     try {
-      const shows = await client.query(sql);
+      const shows = await client.query(sql, [sname]);
       return shows.rows;
     } catch (e) {
       console.log(e);
@@ -70,10 +46,44 @@ export class SeasonServie extends Service {
     return null;
   }
 
-  public async findUserShowComments(uid: number) {
+
+/*season table */
+
+  public async create(season: Season): Promise<number> {
     const client = await this.pool.connect();
-    const sql = 'SELECT tvshow.show_name, comment.comment_body, comment.created_at FROM show_comment ' +
-                'INNER JOIN tvshow ON show_comment.show_id = tvshow.id ' +
+    const sql = 'INSERT INTO season(season_no, info, trailer_url, image_url, season_year, show_name) ' +
+                'VALUES($1, $2, $3, $4, $5, $6) RETURNING id';
+    try {
+      const res = await client.query(sql, [season.season_no, season.info, season.trailer_url, season.image_url, season.season_year, season.show_name]);
+      return res.rows[0].id;
+    } catch (e) {
+      console.log(e)
+      // console.log(e.stack)
+    } finally {
+      client.release();
+    }
+    return null;
+  }
+
+  public async deleteSeason(sname: string, season: number): Promise<number> {
+    const client = await this.pool.connect();
+    const sql = 'DELETE FROM season WHERE show_name = $1 AND season_no = $2 RETURNING id';
+    try {
+      const res = await client.query(sql, [sname, season]);
+      return res.rows[0].id;
+    } catch (e) {
+      // console.log(e.stack)
+    } finally {
+      client.release();
+    }
+    return null;
+  }
+
+
+  public async findUserSeasonComments(uid: number) {
+    const client = await this.pool.connect();
+    const sql = 'SELECT tvshow.show_name, comment.comment_body, comment.created_at FROM season_comment ' +
+                'INNER JOIN season ON season_comment.season_id = season.id ' +
                 'INNER JOIN comment ON show_comment.comment_id = comment.id WHERE comment.user_id IN '+
                 '(SELECT second_user_id FROM friends_view WHERE first_user_id = $1) '
                 'ORDER BY comment.created_at DESC';
@@ -90,13 +100,13 @@ export class SeasonServie extends Service {
     return null;
   }
 
-  public async createShowComment(sid: number, comment: Comment): Promise<number> {
+  public async createSeasonComment(sname: string, season: number, comment: Comment): Promise<number> {
     const ser: Service = new CommentService();
     const cid: number = await ser.create(comment);
     const client = await this.pool.connect();
-    const sql = 'INSERT INTO show_comment (show_id, comment_id) VALUES($1, $2) RETURNING comment_id';
+    const sql = 'INSERT INTO season_comment (show_name, season_no, comment_id) VALUES($1, $2, $3) RETURNING comment_id';
     try {
-      const res = await client.query(sql, [sid, cid]);
+      const res = await client.query(sql, [sname, season, cid]);
       return res.rows[0].comment_id;
     } catch (e) {
       // console.log(e.stack)
@@ -106,15 +116,15 @@ export class SeasonServie extends Service {
     return null;
   }
 
-  public async findShowComments(sid: number): Promise<Comment[]> {
+  public async findSeasonComments(sname: string, season: number): Promise<Comment[]> {
     const client = await this.pool.connect();
     const sql =
-      'SELECT comment_id, users.image_url, comment_body, users.id, users.username, subcomment_count, created_at FROM show_comment ' +
-      'INNER JOIN comment ON show_comment.comment_id = comment.id ' +
-      'INNER JOIN users ON comment.user_id = users.id WHERE show_id = $1';
+      'SELECT comment_id, users.image_url, comment_body, users.id, users.username, subcomment_count, created_at FROM season_comment ' +
+      'INNER JOIN comment ON season_comment.comment_id = comment.id ' +
+      'INNER JOIN users ON comment.user_id = users.id WHERE show_name = $1 AND season_no = $2 ORDER BY comment.created_at DESC';
 
     try {
-      const res = await client.query(sql, [sid]);
+      const res = await client.query(sql, [sname, season]);
       return res.rows;
     } catch (e) {
       console.log(e)
@@ -125,16 +135,16 @@ export class SeasonServie extends Service {
     return null;
   }
 
-  public async updateShow(sid: number, ...args: any[] ): Promise<any> {
+  public async updateSeason(sname: string, season: number, ...args: any[] ): Promise<any> {
     const client = await this.pool.connect();
-    let sql = 'UPDATE tvshow SET ';
+    let sql = 'UPDATE season SET ';
     args.forEach((arg, index) => {
       sql += arg.field + ' = ' + arg.val;
-      if (index !== args.length - 1)  sql += ','; 
+      if (index !== args.length - 1)  sql += ',';
     });
-    sql += ' WHERE id = $1';
+    sql += ' WHERE show_name = $1 AND season_no = $2';
     try {
-      const res = client.query(sql, [sid]);
+      const res = client.query(sql, [sname, season]);
       return res;
     } catch (e) {
       // console.log(e.stack)
@@ -144,15 +154,15 @@ export class SeasonServie extends Service {
     return null;
   }
 
-  public async findShowComment(sid: number, cid: number): Promise<Comment> {
+  public async findSeasonComment(sname: string, season: number, cid: number): Promise<Comment> {
     const client = await this.pool.connect();
     const sql =
     'SELECT comment_id, users.image_url, comment_body, users.id, users.username, subcomment_count, created_at FROM show_comment ' +
-    'INNER JOIN comment ON show_comment.comment_id = comment.id ' +
-    'INNER JOIN users ON comment.user_id = users.id WHERE show_id = $1 AND comment_id = $2';
- 
+    'INNER JOIN comment ON season_comment.comment_id = comment.id ' +
+    'INNER JOIN users ON comment.user_id = users.id WHERE show_name = $1 AND season_no = $2 AND comment_id = $3';
+
     try {
-      const res = await client.query(sql, [sid, cid]);
+      const res = await client.query(sql, [sname, season, cid]);
       return res.rows[0];
     } catch (e) {
       console.log(e)
@@ -163,14 +173,14 @@ export class SeasonServie extends Service {
     return null;
   }
 
-  public async markAsWatched(sid: number, uid: number) {
+  public async markAsWatched(sname: string, season: number, uid: number) {
     const ser: WatchService = new WatchService();
     const wid = await ser.create(uid);
     const client = await this.pool.connect();
-    const sql = 'INSERT INTO show_watch(watch_id, show_id) VALUES($1, $2) RETURNING watch_id';
+    const sql = 'INSERT INTO season_watch(watch_id, show_name, season_no) VALUES($1, $2, $3) RETURNING watch_id';
 
     try {
-      const res = await client.query(sql, [wid, sid]);
+      const res = await client.query(sql, [wid, sname, season]);
       return res.rows[0].watch_id;
     } catch (e) {
       console.log(e);
@@ -180,11 +190,11 @@ export class SeasonServie extends Service {
     }
   }
 
-  public async checkIfWatched(sid: number): Promise<Boolean> {
+  public async checkIfWatched(sname: string, season: number): Promise<Boolean> {
     const client = await this.pool.connect();
-    const sql = 'SELECT * from show_watch WHERE show_id = $1';
+    const sql = 'SELECT * from season_watch WHERE show_name = $1 AND season_no = $2';
     try {
-      const res = await client.query(sql, [sid]);
+      const res = await client.query(sql, [sname, season]);
       return (!res.rows.length) ? false: true;
     } catch (e) {
       // console.log(e.stack)
@@ -194,11 +204,11 @@ export class SeasonServie extends Service {
     return false;
   }
 
-  public async unmarkWatch(sid: number, uid: number): Promise<Boolean> {
-    const client = await this.pool.connect();    
-    const sql = 'DELETE FROM watch WHERE id IN (SELECT watch_id FROM show_watch WHERE show_id = $1) AND user_id = $2';
+  public async unmarkWatch(sname: string, season: number, uid: number): Promise<Boolean> {
+    const client = await this.pool.connect();
+    const sql = 'DELETE FROM watch WHERE id IN (SELECT watch_id FROM season_watch WHERE show_name = $1 AND season_no = $2) AND user_id = $3';
     try {
-      await client.query(sql, [sid, uid]);
+      await client.query(sql, [sname, season, uid]);
       return true;
     } catch (e) {
       console.log(e);
@@ -208,10 +218,12 @@ export class SeasonServie extends Service {
     }
     return false;
   }
+
+  //modify this!
   public async findUserShowWatches(uid: number) {
     const client = await this.pool.connect();
     const sql = 'SELECT * FROM show_watch ' +
-                'INNER JOIN tvshow ON show_watch.show_id = tvshow.id ' +
+                'INNER JOIN tvshow ON show_watch.show_name = tvshow.id ' +
                 'INNER JOIN comment ON show_watch.watch_id = watch.id WHERE user_id = $1';
 
     try {
@@ -225,14 +237,14 @@ export class SeasonServie extends Service {
     return null;
   }
 
-  public async rateShow(uid: number, sid: number, rating): Promise<boolean> {
+  public async rateSeason(uid: number, sname: string, season: number, rating): Promise<boolean> {
     const ser: RateService = new RateService();
-    const rid = await ser.rate(uid, rating); 
+    const rid = await ser.rate(uid, rating);
     const client = await this.pool.connect();
-    const sql = 'INSERT INTO show_rate(rate_id, show_id) VALUES($1, $2)'
+    const sql = 'INSERT INTO season_rate(rate_id, show_name, season_no) VALUES($1, $2, $3)'
 
     try {
-      const res = await client.query(sql, [rid, sid]);
+      const res = await client.query(sql, [rid, sname, season]);
       return true;
     } catch (e) {
       console.log(e)
@@ -242,16 +254,16 @@ export class SeasonServie extends Service {
     return false;
   }
 
-  public async updateRate(uid: number, sid: number, rating): Promise<Boolean> {
+  public async updateRate(uid: number, sname: string, season: number, rating): Promise<Boolean> {
     const ser: RateService = new RateService();
-    return await ser.update(uid, sid, rating);
+    return await ser.updateSeason(uid, sname, season, rating);
   }
 
-  public async findOverallRate(sid: number): Promise<number> {
+  public async findOverallRate(sname: string, season: number): Promise<number> {
     const client = await this.pool.connect();
-    const sql = 'SELECT overall_rating FROM tvshow WHERE id = $1'
+    const sql = 'SELECT overall_rating FROM season WHERE show_name = $1 AND season_no = $2'
     try {
-      const res = await client.query(sql, [sid]);
+      const res = await client.query(sql, [sname, season]);
       return res.rows[0].overall_rating;
     } catch (e) {
       console.log(e)
@@ -262,6 +274,3 @@ export class SeasonServie extends Service {
   }
 
 }
-
-
-

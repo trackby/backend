@@ -17,11 +17,39 @@ export class RateService extends Service {
     return null;
   }
 
-  public async update(uid: number, sid: number, rating): Promise<Boolean> {
+  public async update(uid: number, sname: string, rating): Promise<Boolean> {
     const client = await this.pool.connect();
-    const sql = 'UPDATE rate SET rating = $1 WHERE id IN (SELECT rate_id FROM show_rate WHERE show_id = $2) AND user_id = $3';
+    const sql = 'UPDATE rate SET rating = $1 WHERE id IN (SELECT rate_id FROM show_rate WHERE show_name = $2) AND user_id = $3';
     try {
-      await client.query(sql, [rating, sid,  uid]);
+      await client.query(sql, [rating, sname,  uid]);
+      return true;
+    } catch (e) {
+      // console.log(e.stack)
+    } finally {
+      client.release();
+    }
+    return false;
+  }
+
+  public async updateSeason(uid: number, sname: string, season: number, rating): Promise<Boolean> {
+    const client = await this.pool.connect();
+    const sql = 'UPDATE rate SET rating = $1 WHERE id IN (SELECT rate_id FROM show_rate WHERE show_name = $2 AND season_no = $3) AND user_id = $4';
+    try {
+      await client.query(sql, [rating, sname, season, uid]);
+      return true;
+    } catch (e) {
+      // console.log(e.stack)
+    } finally {
+      client.release();
+    }
+    return false;
+  }
+
+  public async updateEpisode(uid: number, sname: string, season: number, episode: number, rating): Promise<Boolean> {
+    const client = await this.pool.connect();
+    const sql = 'UPDATE rate SET rating = $1 WHERE id IN (SELECT rate_id FROM episode_rate WHERE show_name = $2 AND season_no = $3 AND episode_no = $4) AND user_id = $5';
+    try {
+      await client.query(sql, [rating, sname, season, episode, uid]);
       return true;
     } catch (e) {
       // console.log(e.stack)

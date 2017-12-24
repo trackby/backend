@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, friendship, reaction, comment_reaction CASCADE;
+DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, friendship, reaction, comment_reaction, user_profile_photo CASCADE;
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -115,8 +115,8 @@ CREATE TABLE comment_reaction(
 CREATE TABLE user_profile_photo (
   user_id INT NOT NULL,
   image_url TEXT NOT NULL,
-  PRIMARY KEY (user_id, image_url),
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE VIEW friends_view AS (

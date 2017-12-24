@@ -44,8 +44,7 @@ export class CommentController {
   public static async createSubcomment(req: Request, res: Response) {
     const { commentid } = req.params;
     const { comment_body, user_id } = req.body;
-
-    if (!comment_body || !user_id) {
+    if (!comment_body) {
       return res.status(400).send(new BadRequest());
     }
 
@@ -78,7 +77,7 @@ export class CommentController {
   public static async createCommentReaction(req: Request, res: Response) {
     const { commentid } = req.params;
     const { reaction_type, user_id } = req.body;
-    if (!reaction_type || !user_id) {
+    if (!reaction_type ) {
       return res.status(400).send(new BadRequest());
     }
     const reaction: Reaction = new Reaction(null, reaction_type, user_id);

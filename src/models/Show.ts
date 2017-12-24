@@ -6,6 +6,8 @@ export class Show {
   private _showName: string;
   private _directorName: string;
   private _writerName: string;
+  private _watched: Boolean;
+  
 
   constructor(id: number, name: string, info: string, trailerUrl: string, imageUrl: string, directorName: string, writerName: string) {
     this._id = id;
@@ -58,6 +60,12 @@ export class Show {
   }
   public set director_name(name: string) {
     this._directorName = name;
+  }
+  public get watched() {
+    return this._watched;
+  }
+  public set watched(watch: Boolean) {
+    this._watched = watch;
   }
   
 }

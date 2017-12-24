@@ -23,6 +23,7 @@ export class ShowController {
     const { showid } = req.params;
     const r: Show = await showService.findById(showid);
     if (r) {
+      r.watched = await showService.checkIfWatched(showid);      
       return res.status(200).send(r);
     }
     return res.status(404).send(new NotFound());
@@ -88,14 +89,17 @@ export class ShowController {
   public static async createShowComment(req: Request, res: Response) {
     const { showid } = req.params;
     const { comment_body, user_id } = req.body;
-    if (!comment_body || !user_id) {
+    if (!comment_body) {
       return res.status(400).send(new BadRequest());
     }
-    const comment: Comment = new Comment(null, comment_body, user_id, null);
-    const r: number = await showService.createShowComment(showid, comment);
-    if (r) {
-      comment.id = r;
-      return res.status(201).send(comment); // shorthand to showid: showid
+    let c: Comment = new Comment(null, comment_body, user_id, null);
+    const r: number = await showService.createShowComment(showid, c);
+    if(r) {
+      const comment: Comment = await showService.findShowComment(showid, r);
+      if (comment) {
+        return res.status(200).send(comment);
+      }
+      return res.status(404).send(new NotFound());
     }
     return res.status(422).send(new UnprocessableEntity());
   }
@@ -113,11 +117,37 @@ export class ShowController {
   public static async unmarkWatch(req: Request, res: Response) {
     const { user_id } = req.body;
     const { showid } = req.params;  
-    const r: number = await showService.unmarkWatch(showid, user_id);
+    const r: Boolean = await showService.unmarkWatch(showid, user_id);
     if (r) {
-      return res.status(200).send({ id: r });
+      return res.status(204);
     }
     return res.status(404).send(new NotFound());
+  }
+
+  public static async rateShow(req: Request, res: Response) {
+    const { user_id, rating } = req.body;
+    const { showid } = req.params;
+    if(!rating || rating < 1 || rating > 5) {
+      return res.status(422).send(new BadRequest());
+    }
+
+    const r: Boolean = await showService.rateShow(user_id, showid, rating);
+    if (r) {
+      const r: number = await showService.findOverallRate(showid);
+      return res.status(200).send({ overall_rate: r });
+    }
+    return res.status(422).send(new UnprocessableEntity());
+  }
+
+  public static async changeRate(req: Request, res: Response) {
+    const { user_id, rating } = req.body;
+    const { showid } = req.params;
+    const r: Boolean = await showService.updateRate(user_id, showid, rating);
+    if (r) {
+      const r: number = await showService.findOverallRate(showid);
+      return res.status(200).send({ overall_rate: r });
+    }
+    return res.status(422).send(new UnprocessableEntity());  
   }
   
 }

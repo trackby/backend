@@ -5,7 +5,7 @@ import { Controller } from './controllers/Controller';
 import { FriendshipController } from './controllers/FriendshipController';
 import { ReactionController } from './controllers/ReactionController';
 import { SearchController } from './controllers/SearchController';
-import { ShowController } from './controllers/ShowContoller';
+import { ShowController } from './controllers/ShowController';
 import { UploadController } from './controllers/UploadController';
 import { WatchController } from './controllers/WatchController';
 
@@ -32,6 +32,7 @@ export class Routes {
     router.use((req, res, next) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, x-access-token');
+      res.header('Access-Control-Allow-Methods', 'GET, POST,OPTIONS, DELETE, PATCH, PUT');
       next();
     });
 
@@ -65,6 +66,9 @@ export class Routes {
     router.get('/shows/:showid/comments/:commentid', ShowController.readShowComment);
     router.post('/shows/:showid/watch', ShowController.markAsWatched);
     router.delete('/shows/:showid/watch', ShowController.unmarkWatch);
+    router.post('/shows/:showid/rate', ShowController.rateShow);
+    router.patch('/shows/:showid/rate', ShowController.changeRate);
+
     /* Show */
 
     /* Comment */

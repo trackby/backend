@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, friendship, reaction, comment_reaction, user_profile_photo CASCADE;
+DROP TABLE IF EXISTS comment, tvshow, episode, season, show_comment, show_watch, watch, users, friendship, reaction, comment_reaction, rate, show_rate CASCADE;
 CREATE EXTENSION IF NOT EXISTS citext;
 
 /*comment table */
@@ -14,10 +14,9 @@ CREATE TABLE comment (
 
 /*show_comment table */
 CREATE TABLE show_comment (
-  id SERIAL,
   show_id	INT NOT NULL,
   comment_id  INT NOT NULL,
-  PRIMARY KEY(id)
+  PRIMARY KEY(show_id)
 );
 
 /*tvshow table */
@@ -30,6 +29,7 @@ CREATE TABLE tvshow (
     image_url	VARCHAR(75),
     trailer_url VARCHAR(75),
     season_count INT DEFAULT 0,
+    overall_rating FLOAT DEFAULT 0.0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(id)
 );
@@ -81,6 +81,7 @@ CREATE TABLE users (
   password TEXT NOT NULL,
   email CITEXT NOT NULL UNIQUE,
   age SMALLINT NOT NULL,
+  image_url TEXT,
   isAdmin BOOLEAN DEFAULT false,
   PRIMARY KEY(id)
 );
@@ -117,7 +118,21 @@ CREATE TABLE user_profile_photo (
   image_url TEXT NOT NULL,
   PRIMARY KEY (user_id),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+/*rate table */
+CREATE TABLE rate(
+	id		SERIAL,
+	user_id		INT NOT NULL,
+	rating   FLOAT,
+  PRIMARY KEY(id)
 );
+
+/*show_rate table */
+CREATE TABLE show_rate(
+	show_id	INT  NOT NULL,
+	rate_id	INT NOT NULL,
+  PRIMARY KEY(rate_id)
+);
+
 
 CREATE VIEW friends_view AS (
   SELECT first_user_id, second_user_id FROM friendship WHERE status='APPROVED'
@@ -144,6 +159,14 @@ CREATE VIEW admin_user AS (
 /* migrations */
 ALTER TABLE season
   ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);
+
+ALTER TABLE rate
+  ADD FOREIGN KEY(user_id) REFERENCES users(id);
+
+ALTER TABLE show_rate
+  ADD FOREIGN KEY(rate_id) REFERENCES rate(id),
+  ADD FOREIGN KEY(show_id) REFERENCES tvshow(id);
+
 
 ALTER TABLE episode
   ADD FOREIGN KEY(show_id) REFERENCES tvshow(id),
@@ -233,12 +256,27 @@ CREATE OR REPLACE FUNCTION decrease_season_count()
 $$
 LANGUAGE 'plpgsql';
 
+
 CREATE OR REPLACE FUNCTION increase_episode_count()
   RETURNS trigger AS
   $$
   BEGIN
     UPDATE season SET episode_count = episode_count + 1
     WHERE season.id = NEW.season_id;
+    RETURN NEW;
+  END;
+$$
+LANGUAGE 'plpgsql';
+
+-- CALCULATE RATING
+CREATE OR REPLACE FUNCTION calculate_show_average()
+  RETURNS trigger AS
+  $$
+  BEGIN
+    UPDATE tvshow SET overall_rating =
+    ( SELECT AVG(rate.rating) FROM show_rate INNER JOIN rate
+      ON show_rate.rate_id = rate.id
+    );
     RETURN NEW;
   END;
 $$
@@ -285,3 +323,8 @@ CREATE TRIGGER dec_subcomment_count_trigger
   ON comment
   FOR EACH ROW
   EXECUTE PROCEDURE decrease_subcomment_count();
+
+
+CREATE TRIGGER calculate_show_average_trigger
+  AFTER INSERT OR UPDATE ON rate
+  EXECUTE PROCEDURE calculate_show_average();

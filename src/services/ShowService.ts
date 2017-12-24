@@ -4,14 +4,19 @@ import { ShowComment } from '../models/showcomment';
 import { CommentService } from './commentservice';
 import { Service } from './service';
 import { WatchService } from './watchservice';
+import { RateService } from './rateservice';
+
 export class ShowService extends Service {
   public async findById(id: number): Promise<Show> {
     const client = await this.pool.connect();
-    const sql = 'SELECT * FROM tvshow WHERE id = $1';
+    const sql = 'SELECT tvshow.id, info, show_name, director_name, writer_name, image_url,'
+                +'trailer_url, season_count, overall_rating, rating, created_at '
+                +'FROM tvshow LEFT JOIN show_rate ON show_rate.show_id = tvshow.id LEFT JOIN rate ON rate.id = show_rate.rate_id';
     try {
-      const res = await client.query(sql, [id]);
+      const res = await client.query(sql);
       return res.rows[0];
     } catch (e) {
+      console.log(e)
       // console.log(e.stack)
     } finally {
       client.release();
@@ -55,6 +60,7 @@ export class ShowService extends Service {
       const shows = await client.query(sql);
       return shows.rows;
     } catch (e) {
+      console.log(e);
       // console.log(e.stack)
     } finally {
       client.release();
@@ -85,10 +91,10 @@ export class ShowService extends Service {
     const ser: Service = new CommentService();
     const cid: number = await ser.create(comment);
     const client = await this.pool.connect();
-    const sql = 'INSERT into show_comment (show_id, comment_id) VALUES($1, $2) RETURNING id';
+    const sql = 'INSERT INTO show_comment (show_id, comment_id) VALUES($1, $2) RETURNING comment_id';
     try {
       const res = await client.query(sql, [sid, cid]);
-      return res.rows[0].id;
+      return res.rows[0].comment_id;
     } catch (e) {
       // console.log(e.stack)
     } finally {
@@ -100,8 +106,9 @@ export class ShowService extends Service {
   public async findShowComments(sid: number): Promise<Comment[]> {
     const client = await this.pool.connect();
     const sql =
-      'SELECT comment_id,comment_body, user_id, subcomment_count, created_at FROM show_comment INNER JOIN comment ' +
-      'ON show_comment.comment_id = comment.id WHERE show_id = $1';
+      'SELECT comment_id, users.image_url, comment_body, users.id, users.username, subcomment_count, created_at FROM show_comment ' +
+      'INNER JOIN comment ON show_comment.comment_id = comment.id ' +
+      'INNER JOIN users ON comment.user_id = users.id WHERE show_id = $1';
 
     try {
       const res = await client.query(sql, [sid]);
@@ -137,8 +144,9 @@ export class ShowService extends Service {
   public async findShowComment(sid: number, cid: number): Promise<Comment> {
     const client = await this.pool.connect();
     const sql =
-      'SELECT comment_id, comment_body, user_id, subcomment_count, created_at FROM show_comment INNER JOIN comment ' +
-      'ON show_comment.comment_id = comment.id WHERE show_id = $1 AND comment_id = $2';
+    'SELECT comment_id, users.image_url, comment_body, users.id, users.username, subcomment_count, created_at FROM show_comment ' +
+    'INNER JOIN comment ON show_comment.comment_id = comment.id ' +
+    'INNER JOIN users ON comment.user_id = users.id WHERE show_id = $1 AND comment_id = $2';
  
     try {
       const res = await client.query(sql, [sid, cid]);
@@ -168,18 +176,33 @@ export class ShowService extends Service {
     }
   }
 
-  public async unmarkWatch(sid: number, uid: number): Promise<number> {
-    const client = await this.pool.connect();    
-    const sql = 'DELETE FROM watch WHERE id IN (SELECT watch_id FROM show_watch WHERE show_id = $1) AND user_id = $2 RETURNING id';
+  public async checkIfWatched(sid: number): Promise<Boolean> {
+    const client = await this.pool.connect();
+    const sql = 'SELECT * from show_watch WHERE show_id = $1';
     try {
-      const res = await client.query(sql, [sid, uid]);
-      return res.rows[0].id;
+      const res = await client.query(sql, [sid]);
+      return (!res.rows.length) ? false: true;
     } catch (e) {
       // console.log(e.stack)
     } finally {
       client.release();
     }
-    return null;
+    return false;
+  }
+
+  public async unmarkWatch(sid: number, uid: number): Promise<Boolean> {
+    const client = await this.pool.connect();    
+    const sql = 'DELETE FROM watch WHERE id IN (SELECT watch_id FROM show_watch WHERE show_id = $1) AND user_id = $2';
+    try {
+      await client.query(sql, [sid, uid]);
+      return true;
+    } catch (e) {
+      console.log(e);
+      // console.log(e.stack)
+    } finally {
+      client.release();
+    }
+    return false;
   }
   public async findUserShowWatches(uid: number) {
     const client = await this.pool.connect();
@@ -197,4 +220,44 @@ export class ShowService extends Service {
     }
     return null;
   }
+
+  public async rateShow(uid: number, sid: number, rating): Promise<boolean> {
+    const ser: RateService = new RateService();
+    const rid = await ser.rate(uid, rating); 
+    const client = await this.pool.connect();
+    const sql = 'INSERT INTO show_rate(rate_id, show_id) VALUES($1, $2)'
+
+    try {
+      const res = await client.query(sql, [rid, sid]);
+      return true;
+    } catch (e) {
+      console.log(e)
+    } finally {
+      client.release();
+    }
+    return false;
+  }
+
+  public async updateRate(uid: number, sid: number, rating): Promise<Boolean> {
+    const ser: RateService = new RateService();
+    return await ser.update(uid, sid, rating);
+  }
+
+  public async findOverallRate(sid: number): Promise<number> {
+    const client = await this.pool.connect();
+    const sql = 'SELECT overall_rating FROM tvshow WHERE id = $1'
+    try {
+      const res = await client.query(sql, [sid]);
+      return res.rows[0].overall_rating;
+    } catch (e) {
+      console.log(e)
+    } finally {
+      client.release();
+    }
+    return null;
+  }
+
 }
+
+
+

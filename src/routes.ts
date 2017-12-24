@@ -89,9 +89,9 @@ export class Routes {
     router.patch('/friendships/update', FriendshipController.updateFriendshipStatus);
     router.delete('/friendships/remove', FriendshipController.removeFriend);
 
-    router.get('/user/:userid/profile-photo', UploadController.retrieveProfilePhoto);
-    router.post('/upload', UploadController.uploadProfilePhoto);
-    router.delete('/upload', UploadController.removeProfilePhoto);
+    router.get('/photos/:category/:id', UploadController.retrievePhoto); // Example: /photos/tvshow/1
+    router.post('/upload', UploadController.uploadPhoto);
+    router.delete('/upload', UploadController.removePhoto);
 
     router.post('/search', SearchController.search);
   }

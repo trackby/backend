@@ -108,13 +108,12 @@ export class ShowService extends Service {
     const sql =
       'SELECT comment_id, users.image_url, comment_body, users.id, users.username, subcomment_count, created_at FROM show_comment ' +
       'INNER JOIN comment ON show_comment.comment_id = comment.id ' +
-      'INNER JOIN users ON comment.user_id = users.id WHERE show_id = $1';
+      'INNER JOIN users ON comment.user_id = users.id WHERE show_id = $1 ORDER BY comment.created_at DESC';
 
     try {
       const res = await client.query(sql, [sid]);
       return res.rows;
     } catch (e) {
-      console.log(e)
       // console.log(e.stack)
     } finally {
       client.release();
@@ -258,6 +257,3 @@ export class ShowService extends Service {
   }
 
 }
-
-
-

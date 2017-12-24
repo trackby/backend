@@ -58,8 +58,9 @@ export class AuthController {
     if (isExists) {
       const isMatched: boolean = await service.comparePass(password, username);
       if (isMatched) {
-        const id = isExists;
-        const jwt = service.signJWT(id);
+        const id = isExists.id;
+        const flag = isExists.isadmin;
+        const jwt = service.signJWT(id, flag);
         return res.status(200).json({ token: jwt, expiresIn: '1 day' });
       } else {
         return res.status(401).send(new Unauthorized());
@@ -73,10 +74,10 @@ export class AuthController {
      if (req.method === 'GET') {
              return next();
         }
-        /*
-        * TODO(1): Implement the application's business logic about guest/member/admin users.
-        * Which routes are protected or not? Define them in here.
-        */
+      /*
+      * TODO(1): Implement the application's business logic about guest/member/admin users.
+      * Which routes are protected or not? Define them in here.
+      */
 
      if (process.env.NODE_ENV === 'test') {
       req.body.user_id = 1; // mock data
@@ -90,6 +91,7 @@ export class AuthController {
 
       if (decoded) {
         req.body.user_id = decoded.id;
+        req.body.isAdmin = decoded.isAdmin;
         next();
       } else {
         return res.status(403).send(new Unauthorized());

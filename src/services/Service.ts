@@ -14,7 +14,7 @@ export class Service {
     });
   }
 
-  public async findById(id: number): Promise<any> {
+  public async findById(id: number, extra?: any): Promise<any> {
     throw new Error('findById() was not implemented yet');
   }
 
@@ -26,7 +26,7 @@ export class Service {
     throw new Error('create() was not implemented yet');
   }
 
-  public async delete(id: number): Promise<any> {
+  public async delete(id: number, extra?: any): Promise<any> {
     throw new Error('delete() was not implemented yet');
   }
 }

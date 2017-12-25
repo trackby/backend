@@ -8,16 +8,16 @@ import { RateService } from './rateservice';
 import { Episode } from '../models/episode';
 
 export class EpisodeService extends Service {
-  public async find(sname: string, season: number, episode: number): Promise<Episode> {
+  public async find(sname: string, season: number, episode: number, uid: number): Promise<Episode> {
     const client = await this.pool.connect();
     const sql = 'SELECT info, episode.episode_no, episode.episode_name,'
                 +'trailer_url, overall_rating, rating, created_at '
                 +'FROM episode LEFT JOIN episode_rate ON episode_rate.show_name = episode.show_name AND ' 
                 +'episode_rate.episode_no = episode.episode_no AND episode_rate.season_no = episode.season_no '
-                +'LEFT JOIN rate ON rate.id = episode_rate.rate_id '
-                +'WHERE episode.show_name = $1 AND episode.season_no = $2 AND episode.episode_no = $3';
+                +'LEFT JOIN rate ON rate.id = episode_rate.rate_id AND rate.user_id = $1 '
+                +'WHERE episode.show_name = $2 AND episode.season_no = $3 AND episode.episode_no = $4 ';
     try {
-      const res = await client.query(sql, [sname, season, episode]);
+      const res = await client.query(sql, [uid, sname, season, episode]);
       return res.rows[0];
     } catch (e) {
       console.log(e)
@@ -247,25 +247,6 @@ export class EpisodeService extends Service {
     }
     return false;
   }
-
-  public async findUserEpisodeComments(uid: number) {
-    const client = await this.pool.connect();
-    const sql = 'SELECT episode.show_name, episode.season_no, episode.episode_no, comment.comment_body, comment.created_at FROM episode_comment ' +
-                'INNER JOIN episode ON episode_comment.show_name = episode.show_name AND episode_comment.season_no = episode.season_no AND episode_comment.episode_no = episode.episode_no ' +
-                'INNER JOIN comment ON episode_comment.comment_id = comment.id WHERE comment.user_id IN '+
-                '(SELECT second_user_id FROM friends_view WHERE first_user_id = $1)'
-                'ORDER BY comment.created_at DESC';
-    try {
-      const res = await client.query(sql, [uid]);
-    return res.rows;
-    } catch (e) {
-    // console.log(e.stack)
-    } finally {
-    client.release();
-    }
-    return null;
-  }
-  
 
   //modify this!
   public async findUserShowWatches(uid: number) {

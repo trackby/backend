@@ -16,16 +16,6 @@ export class WatchService extends Service {
     return null;
   }
   
-
-  public async findUserWatches(uid: number): Promise<any> {
-    const ser: ShowService = new ShowService();
-    const show_watches = await ser.findUserShowWatches(uid);
-    //may be added more
-    return {
-      show_watches: show_watches
-    };
-  }
-
   public async delete(uid: number): Promise<number> {
     const client = await this.pool.connect();
     const sql = 'DELETE FROM watch WHERE id = $1 RETURNING id';

@@ -17,13 +17,4 @@ export class WatchController {
     }
     return res.status(404).send(new NotFound());
   }
-
-  public static async readUserWatches(req: Request, res: Response) {
-    const { user_id } = req.body;
-    const r = await watchService.findUserWatches(user_id);
-    if (r) {
-      return res.status(200).send(r);
-    }
-    return res.status(404).send(new NotFound());
-  }
 }

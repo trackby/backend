@@ -8,14 +8,14 @@ import { RateService } from './rateservice';
 
 export class ShowService extends Service {
 
-  public async find(sname: string): Promise<Show> {
+  public async find(sname: string, uid: number): Promise<Show> {
     const client = await this.pool.connect();
     const sql = 'SELECT tvshow.id, info, tvshow.show_name, director_name, writer_name, image_url,'
-                +'trailer_url, season_count, episode_count, overall_rating, rating, created_at '
-                +'FROM tvshow LEFT JOIN show_rate ON show_rate.show_name = tvshow.show_name LEFT JOIN rate ON rate.id = show_rate.rate_id '
-                +'WHERE tvshow.show_name = $1';
+                +'trailer_url, season_count, episode_count, overall_rating, rating, tvshow.created_at '
+                +'FROM tvshow LEFT JOIN show_rate ON show_rate.show_name = tvshow.show_name LEFT JOIN rate ON rate.id = show_rate.rate_id AND rate.user_id = $1 '
+                +'WHERE tvshow.show_name = $2 ';
     try {
-      const res = await client.query(sql, [sname]);
+      const res = await client.query(sql, [uid, sname]);
       return res.rows[0];
     } catch (e) {
       console.log(e)
@@ -70,24 +70,6 @@ export class ShowService extends Service {
     return null;
   }
 
-  public async findUserShowComments(uid: number) {
-    const client = await this.pool.connect();
-    const sql = 'SELECT tvshow.show_name, comment.comment_body, comment.created_at FROM show_comment ' +
-                'INNER JOIN tvshow ON show_comment.show_name = tvshow.show_name ' +
-                'INNER JOIN comment ON show_comment.comment_id = comment.id WHERE comment.user_id IN '+
-                '(SELECT second_user_id FROM friends_view WHERE first_user_id = $1)'
-                'ORDER BY comment.created_at DESC';
-
-    try {
-      const res = await client.query(sql, [uid]);
-      return res.rows;
-    } catch (e) {
-      // console.log(e.stack)
-    } finally {
-      client.release();
-    }
-    return null;
-  }
 
   public async createShowComment(sname: string, comment: Comment): Promise<number> {
     const ser: Service = new CommentService();
@@ -205,22 +187,6 @@ export class ShowService extends Service {
       client.release();
     }
     return false;
-  }
-  public async findUserShowWatches(uid: number) {
-    const client = await this.pool.connect();
-    const sql = 'SELECT * FROM show_watch ' +
-                'INNER JOIN tvshow ON show_watch.show_name = tvshow.show_name ' +
-                'INNER JOIN comment ON show_watch.watch_id = watch.id WHERE user_id = $1';
-
-    try {
-      const res = await client.query(sql, [uid]);
-      return res.rows;
-    } catch (e) {
-      // console.log(e.stack)
-    } finally {
-      client.release();
-    }
-    return null;
   }
 
   public async rateShow(uid: number, sname: string, rating): Promise<boolean> {

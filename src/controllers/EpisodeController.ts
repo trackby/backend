@@ -12,7 +12,8 @@ const episodeService = new EpisodeService();
 export class EpisodeController {
   public async readOne(req: Request, res: Response) {
     const { show, season, episode } = req.query;
-    const r: Episode = await episodeService.find(show, season, episode);
+    const { user_id } = req.body;
+    const r: Episode = await episodeService.find(show, season, episode, user_id);
     if (r) {
       r.watched = await episodeService.checkIfWatched(show, season, episode);      
       return res.status(200).send(r);

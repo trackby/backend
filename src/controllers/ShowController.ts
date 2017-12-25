@@ -22,10 +22,13 @@ export class ShowController {
   }
 
   public async readOne(req: Request, res: Response) {
+    console.log('requested')
     const { show } = req.query;
+    const { user_id } = req.body;
+    console.log(user_id)
     const episodeService = new EpisodeService();
     const seasonService = new SeasonService();
-    const r = await showService.find(show);
+    const r = await showService.find(show, user_id);
     if (r) {
       r.watched = await showService.checkIfWatched(show); 
       r.seasons = await seasonService.findAllSeasons(show);
@@ -136,9 +139,7 @@ export class ShowController {
 
   public async rate(req: Request, res: Response) {
     const { user_id, rating } = req.body;
-    console.log('rate this!');
     const { show } = req.query;
-    console.log(rating);
     if(!rating || rating < 1 || rating > 5) {
       return res.status(422).send(new BadRequest());
     }

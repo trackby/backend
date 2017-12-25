@@ -64,7 +64,7 @@ export class Controller {
     return res.locals.ctrl.rate(req, res);
   }
 
-  public static async changeRate(req: Request, res: Response,) {
+  public static async changeRate(req: Request, res: Response) {
     return res.locals.ctrl.changeRate(req, res);
   }
 

@@ -8,6 +8,8 @@ import { SearchController } from './controllers/SearchController';
 import { ShowController } from './controllers/ShowController';
 import { UploadController } from './controllers/UploadController';
 import { WatchController } from './controllers/WatchController';
+import { FeedController } from './controllers/FeedController';
+
  
 
 /**
@@ -51,9 +53,7 @@ export class Routes {
     });
 
     /* Feed */
-    router.get('/feed/comments', CommentController.readUserComments);
-    router.get('/feed/reactions', ReactionController.readUserReactions);
-    router.get('/feed/watches', WatchController.readUserWatches);
+    router.get('/feed', FeedController.readFeed);
     /* Feed */
 
     /* Show */

@@ -10,15 +10,15 @@ import { Season } from '../models/season';
 
 
 export class SeasonService extends Service {
-  public async find(sname: string, season: number): Promise<Season> {
+  public async find(sname: string, season: number, uid: number): Promise<Season> {
     const client = await this.pool.connect();
     const sql = 'SELECT info, season_year, season.season_no,' +
                 'trailer_url, episode_count, overall_rating, rating, created_at ' +
                 'FROM season LEFT JOIN season_rate ON season_rate.season_no = season.season_no AND season_rate.show_name = season.show_name ' +
-                'LEFT JOIN rate ON rate.id = season_rate.rate_id ' +
-                'WHERE season.show_name = $1 AND season.season_no = $2';
+                'LEFT JOIN rate ON rate.id = season_rate.rate_id AND rate.user_id = $1 ' +
+                'WHERE season.show_name = $2 AND season.season_no = $3';
     try {
-      const res = await client.query(sql, [sname, season]);
+      const res = await client.query(sql, [uid, sname, season]);
       return res.rows[0];
     } catch (e) {
       console.log(e);
@@ -153,24 +153,6 @@ export class SeasonService extends Service {
   }
 
 
-  public async findUserSeasonComments(uid: number) {
-    const client = await this.pool.connect();
-    const sql = 'SELECT season.show_name, season.season_no, comment.comment_body, comment.created_at FROM season_comment ' +
-                'INNER JOIN season ON season_comment.show_name = season.show_name AND season_comment.season_no = season.season_no ' +
-                'INNER JOIN comment ON season_comment.comment_id = comment.id WHERE comment.user_id IN '+
-                '(SELECT second_user_id FROM friends_view WHERE first_user_id = $1) '
-                'ORDER BY comment.created_at DESC';
-    try {
-      const res = await client.query(sql, [uid]);
-    return res.rows;
-    } catch (e) {
-      console.log(e)
-    // console.log(e.stack)
-    } finally {
-    client.release();
-    }
-    return null;
-  }
 
   public async markAsWatched(sname: string, season: number, uid: number) {
     const ser: WatchService = new WatchService();

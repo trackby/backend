@@ -71,9 +71,7 @@ export class AuthController {
   }
 
   public static protect(req: Request, res: Response, next: NextFunction) {
-     if (req.method === 'GET') {
-             return next();
-        }
+
       /*
       * TODO(1): Implement the application's business logic about guest/member/admin users.
       * Which routes are protected or not? Define them in here.

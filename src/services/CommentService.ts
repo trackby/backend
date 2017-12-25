@@ -2,7 +2,7 @@ import { Comment } from '../models/comment';
 import { Service } from './service';
 import { Reaction } from '../models/reaction';
 import { ReactionService } from './ReactionService';
-import { ShowService } from './ShowService';
+import { FeedService } from './FeedService';
 import { EpisodeService } from './EpisodeService';
 import { SeasonService } from './SeasonService';
 
@@ -51,28 +51,7 @@ export class CommentService extends Service {
     return null;
   }
 
-  public async findUserComments(uid: number): Promise<any> {
-    console.log('find user comments')
-    const showService: ShowService = new ShowService();
-    const commentService: CommentService = new CommentService();
-    const episodeService: EpisodeService = new EpisodeService();
-    const seasonService: SeasonService = new SeasonService();
-    
-    const show_comments = await showService.findUserShowComments(uid);    
-    const subcomments = await commentService.findUserSubcomments(uid);
-    const season_comments = await seasonService.findUserSeasonComments(uid);
-    const episode_comments = await episodeService.findUserEpisodeComments(uid);
 
-    //episode_comments, season_comments, movie_comments, subcomments
-
-    return {
-      show_comments: show_comments,
-      subcomments: subcomments,
-      episode_comments: episode_comments,
-      season_comments: season_comments
-    }
-    
-  }
 
   public async findSubcomments(cid: number): Promise<Comment[]> {
     const client = await this.pool.connect();
@@ -90,22 +69,6 @@ export class CommentService extends Service {
     return null;
   }
   
-  //gets all subcomments that user entered
-  public async findUserSubcomments(uid: number): Promise<Comment[]> {
-    const client = await this.pool.connect();
-    const sql = 
-      'SELECT parent.comment_body as parent_body, sub.comment_body, sub.subcomment_count, sub.created_at ' +
-      'FROM comment parent INNER JOIN comment sub ON sub.parent_id = parent.id';
-    try {
-      const res = await client.query(sql);
-      return res.rows;
-    } catch (e) {
-      // console.log(e.stack)
-    } finally {
-      client.release();
-    }
-    return null;
-  }
 
   public async createCommentReaction(cid: number, reaction: Reaction) {
     const ser: Service = new ReactionService();

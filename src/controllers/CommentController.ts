@@ -12,15 +12,6 @@ const commentService = new CommentService();
 
 export class CommentController {
 
-  // For user feed
-  public static async readUserComments(req: Request, res: Response) {
-    const { user_id } = req.body;
-    const r = await commentService.findUserComments(user_id);
-    if (r) {
-      return res.status(200).send(r);
-    }
-    return res.status(404).send(new NotFound());
-  }
 
     // For user feed
   public static async readComment(req: Request, res: Response) {

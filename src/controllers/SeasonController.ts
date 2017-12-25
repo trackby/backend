@@ -15,8 +15,9 @@ export class SeasonController {
 
   public async readOne(req: Request, res: Response) {
     const { show,  season } = req.query;
+    const { user_id } = req.body;
     const episodeService = new EpisodeService();
-    const r: Season = await seasonService.find(show, season);
+    const r: Season = await seasonService.find(show, season, user_id);
     if (r) {
       r.watched = await seasonService.checkIfWatched(show, season);  
       r.episodes = await episodeService.findEpisodesByNo(show, season);

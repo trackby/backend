@@ -93,14 +93,14 @@ CREATE TABLE watch (
 CREATE TABLE show_watch (
   watch_id INT,
   show_name	VARCHAR(40),
-  PRIMARY KEY(show_name)
+  PRIMARY KEY(watch_id)
 );
 
 CREATE TABLE season_watch (
   watch_id INT,
   show_name	VARCHAR(40) NOT NULL,
   season_no INT,
-  PRIMARY KEY(show_name, season_no)
+  PRIMARY KEY(watch_id)
 );
 
 CREATE TABLE episode_watch (
@@ -108,7 +108,7 @@ CREATE TABLE episode_watch (
   show_name	VARCHAR(40) NOT NULL,
   season_no INT,
   episode_no INT,
-  PRIMARY KEY(show_name, season_no, episode_no)
+  PRIMARY KEY(watch_id)
 );
 
 CREATE TABLE users (
@@ -155,6 +155,7 @@ CREATE TABLE rate(
 	id		SERIAL,
 	user_id		INT NOT NULL,
 	rating   FLOAT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(id)
 );
 

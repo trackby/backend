@@ -40,11 +40,14 @@ export class ShowController {
     const { show } = req.query;
     const params = req.body;
     delete params['user_id'];
-    const r: boolean = await showService.updateShow(show, params);
-    if (r) {
-      return res.status(204).send();
+    if(params['isAdmin']) {
+      delete params['isAdmin'];
+      const r: boolean = await showService.updateShow(show, params);
+      if (r) {
+        return res.status(204).send();
+      }
+      return res.status(422).send(new UnprocessableEntity());  
     }
-    return res.status(422).send(new UnprocessableEntity());  
   }
 
   public async readComment(req: Request, res: Response) {

@@ -40,7 +40,7 @@ export class ShowController {
     const { show } = req.query;
     const params = req.body;
     delete params['user_id'];
-    const r: boolean = await showService.updateShow(show, req.body);
+    const r: boolean = await showService.updateShow(show, params);
     if (r) {
       return res.status(204).send();
     }

@@ -225,11 +225,11 @@ export class ShowService extends Service {
 
   public async findReport() {
     const client = await this.pool.connect();
-    const sql = 'SELECT tvshow.show_name, tvshow.id, AVG(rating) as average_rating FROM rate '
+    const sql = 'SELECT tvshow.show_name,  AVG(rating) as average_rating FROM rate '
               + 'INNER JOIN show_rate ON show_rate.rate_id = rate.id '
               + 'INNER JOIN tvshow ON tvshow.show_name = show_rate.show_name '
               + 'WHERE show_rate.show_name IN (SELECT show_name FROM show_rate '
-              + 'GROUP BY show_rate.show_name ORDER BY COUNT(*) DESC LIMIT 3) GROUP BY show_rate.show_name '
+              + 'GROUP BY show_rate.show_name ORDER BY COUNT(*) DESC LIMIT 3) GROUP BY tvshow.show_name '
     try {
       const res = await client.query(sql);
       return res.rows;

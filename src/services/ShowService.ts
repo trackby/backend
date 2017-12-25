@@ -43,7 +43,7 @@ export class ShowService extends Service {
 
   public async deleteShow(sname: string): Promise<string> {
     const client = await this.pool.connect();
-    const sql = 'DELETE FROM tvshow WHERE id = $1 RETURNING show_name';
+    const sql = 'DELETE FROM tvshow WHERE show_name = $1 RETURNING show_name';
     try {
       const res = await client.query(sql, [sname]);
       return res.rows[0].show_name;
@@ -106,14 +106,13 @@ export class ShowService extends Service {
     return null;
   }
 
-  public async updateShow(sname: string, ...args: any[] ): Promise<any> {
+  public async updateShow(sname: string, args): Promise<any> {
     const client = await this.pool.connect();
     let sql = 'UPDATE tvshow SET ';
-    args.forEach((arg, index) => {
-      sql += arg.field + ' = ' + arg.val;
-      if (index !== args.length - 1)  sql += ',';
-    });
-    sql += ' WHERE id = $1';
+    for(let k in args) {
+      sql += k + " = '" + args[k] + "',"; 
+    }
+    sql = sql.slice(0, -1) + ' WHERE show_name = $1';
     try {
       const res = client.query(sql, [sname]);
       return res;

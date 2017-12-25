@@ -22,10 +22,8 @@ export class ShowController {
   }
 
   public async readOne(req: Request, res: Response) {
-    console.log('requested')
     const { show } = req.query;
     const { user_id } = req.body;
-    console.log(user_id)
     const episodeService = new EpisodeService();
     const seasonService = new SeasonService();
     const r = await showService.find(show, user_id);
@@ -40,17 +38,11 @@ export class ShowController {
 
   public async update(req: Request, res: Response) {
     const { show } = req.query;
-    const fields = req.body;
-    let args = [];
-    for (let field in fields) {
-      args.push({ field: field, val: fields[field]});
-    }
-    if (!fields.length) {
-      return res.status(400).send(new BadRequest());
-    }
-    const r: boolean = await showService.updateShow(show, ...args);
+    const params = req.body;
+    delete params['user_id'];
+    const r: boolean = await showService.updateShow(show, req.body);
     if (r) {
-      return res.status(204);
+      return res.status(204).send();
     }
     return res.status(422).send(new UnprocessableEntity());  
   }
@@ -92,7 +84,7 @@ export class ShowController {
   }
   public async delete(req: Request, res: Response) {
     const { show } = req.query;
-    const r: number = await showService.delete(show);
+    const r = await showService.deleteShow(show);
     if (r) {
       return res.status(200).send({ show }); // shorthand to showid: showid
     }

@@ -40,8 +40,8 @@ CREATE TABLE episode_comment (
 /*tvshow table */
 CREATE TABLE tvshow (
     id SERIAL,
-    info	VARCHAR(255),
-    show_name	VARCHAR(40) NOT NULL UNIQUE,
+    info	TEXT,
+    show_name	VARCHAR(40) NOT NULL,
     director_name VARCHAR(45),
     writer_name VARCHAR(45),
     image_url	TEXT,
@@ -56,8 +56,8 @@ CREATE TABLE tvshow (
 /*season table */
 CREATE TABLE season(
 	  id 		SERIAL,
-    season_no     INT NOT NULL UNIQUE,
-    info		VARCHAR(255),
+    season_no     INT NOT NULL,
+    info		TEXT,
     season_year	    INT,
     image_url	TEXT,
     overall_rating FLOAT DEFAULT 0.0,
@@ -71,13 +71,13 @@ CREATE TABLE season(
 /*episode table */
 CREATE TABLE episode(
 	  id 	SERIAL,
-	  episode_no   	INT   NOT NULL UNIQUE,
+	  episode_no   	INT   NOT NULL,
     episode_name	VARCHAR(45) NOT NULL,
-    info	VARCHAR(255),
+    info	TEXT,
     image_url	TEXT,
     overall_rating FLOAT DEFAULT 0.0,
     trailer_url VARCHAR(75),    
-    season_no		INT NOT NULL UNIQUE,
+    season_no		INT NOT NULL,
     show_name	VARCHAR(40) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(show_name, season_no, episode_no)
@@ -210,7 +210,7 @@ ALTER TABLE season
 
 
 ALTER TABLE episode
-  ADD FOREIGN KEY(season_no) REFERENCES season(season_no),
+  ADD FOREIGN KEY(season_no, show_name) REFERENCES season(season_no, show_name),
   ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name);
 
 ALTER TABLE rate
@@ -222,13 +222,13 @@ ALTER TABLE show_rate
 
 ALTER TABLE season_rate
   ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
-  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(show_name, season_no) REFERENCES season(show_name, season_no) ON DELETE CASCADE,
   ADD FOREIGN KEY(rate_id) REFERENCES rate(id) ON DELETE CASCADE;
 
 ALTER TABLE episode_rate
   ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
-  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
-  ADD FOREIGN KEY(episode_no) REFERENCES episode(episode_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(season_no, show_name) REFERENCES season(season_no, show_name) ON DELETE CASCADE,
+  ADD FOREIGN KEY(episode_no, season_no, show_name) REFERENCES episode(episode_no, season_no, show_name) ON DELETE CASCADE,
   ADD FOREIGN KEY(rate_id) REFERENCES rate(id) ON DELETE CASCADE;
 
 
@@ -246,13 +246,13 @@ ALTER TABLE show_comment
 
 ALTER TABLE season_comment
   ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
-  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(season_no, show_name) REFERENCES season(season_no, show_name) ON DELETE CASCADE,
   ADD FOREIGN KEY(comment_id) REFERENCES comment(id) ON DELETE CASCADE;
 
 ALTER TABLE episode_comment
   ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
-  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
-  ADD FOREIGN KEY(episode_no) REFERENCES episode(episode_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(season_no, show_name) REFERENCES season(season_no, show_name) ON DELETE CASCADE,
+  ADD FOREIGN KEY(episode_no, season_no, show_name) REFERENCES episode(episode_no, season_no, show_name) ON DELETE CASCADE,
   ADD FOREIGN KEY(comment_id) REFERENCES comment(id) ON DELETE CASCADE;
 
 
@@ -262,13 +262,13 @@ ALTER TABLE show_watch
 
 ALTER TABLE season_watch
   ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
-  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(show_name, season_no) REFERENCES season(show_name, season_no) ON DELETE CASCADE,
   ADD FOREIGN KEY(watch_id) REFERENCES watch(id) ON DELETE CASCADE;
 
 ALTER TABLE episode_watch
   ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name) ON DELETE CASCADE,
-  ADD FOREIGN KEY(season_no) REFERENCES season(season_no) ON DELETE CASCADE,
-  ADD FOREIGN KEY(episode_no) REFERENCES episode(episode_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(show_name, season_no) REFERENCES season(show_name, season_no) ON DELETE CASCADE,
+  ADD FOREIGN KEY(show_name, season_no, episode_no) REFERENCES episode(show_name, season_no, episode_no) ON DELETE CASCADE,
   ADD FOREIGN KEY(watch_id) REFERENCES watch(id) ON DELETE CASCADE;
 
 

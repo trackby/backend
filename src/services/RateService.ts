@@ -57,4 +57,21 @@ export class RateService extends Service {
     }
     return false;
   }
+
+  public async getHighestRates() {
+    const client = await this.pool.connect();
+    const sql = 'SELECT username, AVG(rating) as average_rating,'
+              + 'stddev(rating) as rating_deviation, COUNT(*) as rate_count FROM users '
+              + 'INNER JOIN rate ON rate.user_id = users.id '
+              + 'GROUP BY users.id ORDER BY rate_count DESC LIMIT 4';
+    try {
+      const res = await client.query(sql);
+      return res.rows;
+    } catch (e) {
+      console.log(e)
+    } finally {
+      client.release();
+    }
+    return null;
+  }
 }

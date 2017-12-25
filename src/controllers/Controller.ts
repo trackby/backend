@@ -3,6 +3,8 @@ import { NotFound } from '../errors/NotFound';
 import { EpisodeController } from '../controllers/EpisodeController';
 import { ShowController } from '../controllers/ShowController';
 import { SeasonController } from '../controllers/SeasonController';
+import { ShowService } from '../services/ShowService';
+import { RateService } from '../services/RateService';
 
 
 export class Controller {
@@ -67,6 +69,14 @@ export class Controller {
   public static async changeRate(req: Request, res: Response) {
     return res.locals.ctrl.changeRate(req, res);
   }
-
+  
+  public static async findReports(req: Request, res: Response) {
+    const showService = new ShowService();
+    const rateService = new RateService();
+    const r = await showService.findReport();
+    const h = await rateService.getHighestRates();
+    return res.status(200).send({report1: r, report2: h});
+  }
+  
 }
 

@@ -416,8 +416,6 @@ $$
 LANGUAGE 'plpgsql';
 
 
-
-
 -- SEASON COUNT UPDATE
 CREATE TRIGGER inc_season_count_trigger
   AFTER INSERT
@@ -483,3 +481,18 @@ CREATE TRIGGER calculate_episode_average_trigger
 CREATE TRIGGER calculate_season_average_trigger
   AFTER INSERT OR UPDATE ON rate
   EXECUTE PROCEDURE calculate_season_average();
+
+-- INDEXES
+CREATE INDEX show_comment_index ON show_comment(comment_id);
+CREATE INDEX season_comment_index ON season_comment(comment_id);
+CREATE INDEX episode_comment_index ON episode_comment(comment_id);
+CREATE INDEX watch_index ON show_watch(watch_id);
+CREATE INDEX season_watch_index ON season_watch(watch_id);
+CREATE INDEX episode_watch_index ON episode_watch(watch_id);
+CREATE INDEX show_rate_index ON show_rate(rate_id);
+CREATE INDEX season_rate_index ON season_rate(rate_id);
+CREATE INDEX episode_rate_index ON episode_rate(rate_id);
+CREATE INDEX comment_reaction_index ON comment_reaction(reaction_id);
+CREATE INDEX showname_index ON tvshow (show_name);
+CREATE INDEX episode_no_index ON episode USING btree (episode_no);
+CREATE INDEX season_no_index ON season USING btree (season_no);

@@ -56,6 +56,8 @@ export class Routes {
     router.get('/feed', FeedController.readFeed);
     /* Feed */
 
+    router.get('/reports', Controller.findReports);
+
     /* Show */
 
     //handles for all routes with shows

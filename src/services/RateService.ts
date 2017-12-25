@@ -9,7 +9,6 @@ export class RateService extends Service {
       const res = await client.query(sql, [uid, rating]);
       return res.rows[0].id;
     } catch (e) {
-      console.log(e)
       // console.log(e.stack)
     } finally {
       client.release();

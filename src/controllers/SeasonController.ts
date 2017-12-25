@@ -37,7 +37,7 @@ export class SeasonController {
     }
     const r: boolean = await seasonService.updateSeason(show, season, ...args);
     if (r) {
-      return res.status(204);
+      return res.status(204).send();
     }
     return res.status(422).send(new UnprocessableEntity());  
   }

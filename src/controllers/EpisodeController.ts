@@ -7,14 +7,11 @@ import { Episode } from '../models/episode';
 import { ShowComment } from '../models/showcomment';
 import { EpisodeService } from '../services/episodeservice';
 
-
-
 const episodeService = new EpisodeService();
 
 export class EpisodeController {
   public async readOne(req: Request, res: Response) {
     const { show, season, episode } = req.query;
-    
     const r: Episode = await episodeService.find(show, season, episode);
     if (r) {
       r.watched = await episodeService.checkIfWatched(show, season, episode);      
@@ -117,7 +114,7 @@ export class EpisodeController {
     const { user_id } = req.body;
     const r: Boolean = await episodeService.unmarkWatch(show, season, episode, user_id);
     if (r) {
-      return res.status(204);
+      return res.status(204).send();
     }
     return res.status(404).send(new NotFound());
   }

@@ -248,6 +248,25 @@ export class EpisodeService extends Service {
     return false;
   }
 
+  public async findUserEpisodeComments(uid: number) {
+    const client = await this.pool.connect();
+    const sql = 'SELECT episode.show_name, episode.season_no, episode.episode_no, comment.comment_body, comment.created_at FROM episode_comment ' +
+                'INNER JOIN episode ON episode_comment.show_name = episode.show_name AND episode_comment.season_no = episode.season_no AND episode_comment.episode_no = episode.episode_no ' +
+                'INNER JOIN comment ON episode_comment.comment_id = comment.id WHERE comment.user_id IN '+
+                '(SELECT second_user_id FROM friends_view WHERE first_user_id = $1)'
+                'ORDER BY comment.created_at DESC';
+    try {
+      const res = await client.query(sql, [uid]);
+    return res.rows;
+    } catch (e) {
+    // console.log(e.stack)
+    } finally {
+    client.release();
+    }
+    return null;
+  }
+  
+
   //modify this!
   public async findUserShowWatches(uid: number) {
     const client = await this.pool.connect();

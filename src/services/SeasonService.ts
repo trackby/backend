@@ -79,27 +79,6 @@ export class SeasonService extends Service {
     return null;
   }
 
-
-  public async findUserSeasonComments(uid: number) {
-    const client = await this.pool.connect();
-    const sql = 'SELECT tvshow.show_name, comment.comment_body, comment.created_at FROM season_comment ' +
-                'INNER JOIN season ON season_comment.season_id = season.id ' +
-                'INNER JOIN comment ON show_comment.comment_id = comment.id WHERE comment.user_id IN '+
-                '(SELECT second_user_id FROM friends_view WHERE first_user_id = $1) '
-                'ORDER BY comment.created_at DESC';
-
-    try {
-      const res = await client.query(sql, [uid]);
-      return res.rows;
-    } catch (e) {
-      console.log(e)
-      // console.log(e.stack)
-    } finally {
-      client.release();
-    }
-    return null;
-  }
-
   public async createSeasonComment(sname: string, season: number, comment: Comment): Promise<number> {
     const ser: Service = new CommentService();
     const cid: number = await ser.create(comment);
@@ -169,6 +148,26 @@ export class SeasonService extends Service {
       // console.log(e.stack)
     } finally {
       client.release();
+    }
+    return null;
+  }
+
+
+  public async findUserSeasonComments(uid: number) {
+    const client = await this.pool.connect();
+    const sql = 'SELECT season.show_name, season.season_no, comment.comment_body, comment.created_at FROM season_comment ' +
+                'INNER JOIN season ON season_comment.show_name = season.show_name AND season_comment.season_no = season.season_no ' +
+                'INNER JOIN comment ON season_comment.comment_id = comment.id WHERE comment.user_id IN '+
+                '(SELECT second_user_id FROM friends_view WHERE first_user_id = $1) '
+                'ORDER BY comment.created_at DESC';
+    try {
+      const res = await client.query(sql, [uid]);
+    return res.rows;
+    } catch (e) {
+      console.log(e)
+    // console.log(e.stack)
+    } finally {
+    client.release();
     }
     return null;
   }

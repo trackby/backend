@@ -227,13 +227,12 @@ export class ShowService extends Service {
     const ser: RateService = new RateService();
     const rid = await ser.rate(uid, rating);
     const client = await this.pool.connect();
-    const sql = 'INSERT INTO show_rate(rate_id, show_name) VALUES($1, $2)'
-
+    const sql = 'INSERT INTO show_rate(rate_id, show_name) VALUES($1, $2)'  
     try {
       const res = await client.query(sql, [rid, sname]);
       return true;
     } catch (e) {
-      console.log(e)
+
     } finally {
       client.release();
     }

@@ -3,6 +3,8 @@ import { Service } from './service';
 import { Reaction } from '../models/reaction';
 import { ReactionService } from './ReactionService';
 import { ShowService } from './ShowService';
+import { EpisodeService } from './EpisodeService';
+import { SeasonService } from './SeasonService';
 
 
 export class CommentService extends Service {
@@ -53,13 +55,21 @@ export class CommentService extends Service {
     console.log('find user comments')
     const showService: ShowService = new ShowService();
     const commentService: CommentService = new CommentService();
+    const episodeService: EpisodeService = new EpisodeService();
+    const seasonService: SeasonService = new SeasonService();
+    
     const show_comments = await showService.findUserShowComments(uid);    
     const subcomments = await commentService.findUserSubcomments(uid);
+    const season_comments = await seasonService.findUserSeasonComments(uid);
+    const episode_comments = await episodeService.findUserEpisodeComments(uid);
+
     //episode_comments, season_comments, movie_comments, subcomments
 
     return {
       show_comments: show_comments,
-      subcomments: subcomments
+      subcomments: subcomments,
+      episode_comments: episode_comments,
+      season_comments: season_comments
     }
     
   }

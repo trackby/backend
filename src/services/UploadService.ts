@@ -61,9 +61,8 @@ export class UploadService extends Service {
     const client = await this.pool.connect();
     const values = [id];
     const sql = `WITH old AS (SELECT image_url FROM ${category} WHERE id = $1)
-                  UPDATE ${category} SET image_url = NULL WHERE id = $1
-                  RETURNING (SELECT image_url FROM old)`;
-
+                 UPDATE ${category} SET image_url = NULL WHERE id = $1
+                 RETURNING (SELECT image_url FROM old)`;
     try {
       const res = await client.query(sql, values);
       if (res.rows[0]) {
@@ -76,5 +75,4 @@ export class UploadService extends Service {
     }
     return undefined;
   }
-
 }

@@ -15,7 +15,7 @@ export class EpisodeController {
     const { user_id } = req.body;
     const r: Episode = await episodeService.find(show, season, episode, user_id);
     if (r) {
-      r.watched = await episodeService.checkIfWatched(show, season, episode);      
+      r.watched = await episodeService.checkIfWatched(show, season, episode);
       return res.status(200).send(r);
     }
     return res.status(404).send(new NotFound());
@@ -23,10 +23,12 @@ export class EpisodeController {
 
   public async update(req: Request, res: Response) {
     const fields = req.body;
-    const { show, season, episode } = req.query;    
-    let args = [];
-    for (let field in fields) {
-      args.push({ field: field, val: fields[field]});
+    const { show, season, episode } = req.query;
+    const args = [];
+    for (const field in fields) {
+      if (field) {
+        args.push({ field, val: fields[field]});
+      }
     }
     if (!fields.length) {
       return res.status(400).send(new BadRequest());
@@ -35,12 +37,12 @@ export class EpisodeController {
     if (r) {
       return res.status(204);
     }
-    return res.status(422).send(new UnprocessableEntity());  
+    return res.status(422).send(new UnprocessableEntity());
   }
 
   public async readComment(req: Request, res: Response) {
     const { commentid } = req.params;
-    const { show, season, episode } = req.query;        
+    const { show, season, episode } = req.query;
     const r: Comment = await episodeService.findEpisodeComment(show, season, episode, commentid);
     if (r) {
       return res.status(200).send(r);
@@ -49,7 +51,7 @@ export class EpisodeController {
   }
 
   public async readComments(req: Request, res: Response) {
-    const { show, season, episode } = req.query;        
+    const { show, season, episode } = req.query;
     const r: Comment[] = await episodeService.findEpisodeComments(show, season, episode);
     if (r) {
       return res.status(200).send(r);
@@ -58,12 +60,9 @@ export class EpisodeController {
   }
 
   public async create(req: Request, res: Response) {
-    console.log('bravo');
-    
     const { show, season, episode } = req.query;
     const { info, image_url, trailer_url, episode_name } = req.body;
-    console.log('sasasa');
-    if (!image_url || !info || !episode_name || !trailer_url) {      
+    if (!image_url || !info || !episode_name || !trailer_url) {
       return res.status(400).send(new BadRequest());
     }
     const e: Episode = new Episode(episode, episode_name, info, trailer_url, image_url, episode_name, season, show);
@@ -74,7 +73,7 @@ export class EpisodeController {
     return res.status(422).send(new UnprocessableEntity());
   }
   public async delete(req: Request, res: Response) {
-    const { show, season, episode } = req.query;    
+    const { show, season, episode } = req.query;
     const r: number = await episodeService.deleteEpisode(show, season, episode);
     if (r) {
       return res.status(200).send({ show }); // shorthand to showid: showid
@@ -83,14 +82,14 @@ export class EpisodeController {
   }
 
   public async createComment(req: Request, res: Response) {
-    const { show, season, episode } = req.query;        
+    const { show, season, episode } = req.query;
     const { comment_body, user_id } = req.body;
     if (!comment_body) {
       return res.status(400).send(new BadRequest());
     }
-    let c: Comment = new Comment(null, comment_body, user_id, null);
+    const c: Comment = new Comment(null, comment_body, user_id, null);
     const r: number = await episodeService.createEpisodeComment(show, season, episode, c);
-    if(r) {
+    if (r) {
       const comment: Comment = await episodeService.findEpisodeComment(show, season, episode, r);
       if (comment) {
         return res.status(200).send(comment);
@@ -101,7 +100,7 @@ export class EpisodeController {
   }
 
   public async markAsWatched(req: Request, res: Response) {
-    const { show, season, episode } = req.query;            
+    const { show, season, episode } = req.query;
     const { user_id } = req.body;
     const r: number = await episodeService.markAsWatched(show, season, episode, user_id);
     if (r) {
@@ -111,23 +110,23 @@ export class EpisodeController {
   }
 
   public async unmarkWatch(req: Request, res: Response) {
-    const { show, season, episode } = req.query;                
+    const { show, season, episode } = req.query;
     const { user_id } = req.body;
-    const r: Boolean = await episodeService.unmarkWatch(show, season, episode, user_id);
-    if (r) {
+    const success: boolean = await episodeService.unmarkWatch(show, season, episode, user_id);
+    if (success) {
       return res.status(204).send();
     }
     return res.status(404).send(new NotFound());
   }
 
   public async rate(req: Request, res: Response) {
-    const { show, season, episode } = req.query;                    
+    const { show, season, episode } = req.query;
     const { user_id, rating } = req.body;
-    if(!rating || rating < 1 || rating > 5) {
+    if (!rating || rating < 1 || rating > 5) {
       return res.status(422).send(new BadRequest());
     }
-    const r: Boolean = await episodeService.rateEpisode(user_id, show, season, episode, rating);
-    if (r) {
+    const success: boolean = await episodeService.rateEpisode(user_id, show, season, episode, rating);
+    if (success) {
       const r: number = await episodeService.findOverallRate(show, season, episode);
       return res.status(200).send({ overall_rate: r });
     }
@@ -135,14 +134,14 @@ export class EpisodeController {
   }
 
   public async changeRate(req: Request, res: Response) {
-    const { show, season, episode } = req.query;                        
+    const { show, season, episode } = req.query;
     const { user_id, rating } = req.body;
-    const r: Boolean = await episodeService.updateRate(user_id, show, season, episode, rating);
-    if (r) {
+    const success: boolean = await episodeService.updateRate(user_id, show, season, episode, rating);
+    if (success) {
       const r: number = await episodeService.findOverallRate(show, season, episode);
       return res.status(200).send({ overall_rate: r });
     }
-    return res.status(422).send(new UnprocessableEntity());  
+    return res.status(422).send(new UnprocessableEntity());
   }
-  
+
 }

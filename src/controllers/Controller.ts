@@ -1,11 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import { NotFound } from '../errors/NotFound';
+import { NextFunction, Request, Response } from 'express';
 import { EpisodeController } from '../controllers/EpisodeController';
-import { ShowController } from '../controllers/ShowController';
 import { SeasonController } from '../controllers/SeasonController';
-import { ShowService } from '../services/ShowService';
+import { ShowController } from '../controllers/ShowController';
+import { NotFound } from '../errors/NotFound';
 import { RateService } from '../services/RateService';
-
+import { ShowService } from '../services/ShowService';
 
 export class Controller {
   public static sayHello(req: Request, res: Response) {
@@ -13,18 +12,17 @@ export class Controller {
   }
 
   public static handleAll(req: Request, res: Response, next: NextFunction) {
-      
+
     const { show, season, episode } = req.query;
-    if(show && season && episode) {
+    if (show && season && episode) {
       res.locals.ctrl = new EpisodeController();
-    } else if(show && season) {
+    } else if (show && season) {
       res.locals.ctrl = new SeasonController();
     } else {
       res.locals.ctrl = new ShowController();
     }
     return next();
   }
-
 
   public static async create(req: Request, res: Response) {
     return res.locals.ctrl.create(req, res);
@@ -69,7 +67,7 @@ export class Controller {
   public static async changeRate(req: Request, res: Response) {
     return res.locals.ctrl.changeRate(req, res);
   }
-  
+
   public static async findReports(req: Request, res: Response) {
     const showService = new ShowService();
     const rateService = new RateService();
@@ -77,6 +75,5 @@ export class Controller {
     const h = await rateService.getHighestRates();
     return res.status(200).send({report1: r, report2: h});
   }
-  
-}
 
+}

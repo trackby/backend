@@ -21,8 +21,6 @@ export class AuthController {
     try {
       isExists = await service.isUserExists(username, email);
     } catch (e) {
-      // tslint:disable-next-line:no-console
-      console.log(e);
       return res.status(500).send(new ServerError());
     }
 
@@ -71,12 +69,6 @@ export class AuthController {
   }
 
   public static protect(req: Request, res: Response, next: NextFunction) {
-
-      /*
-      * TODO(1): Implement the application's business logic about guest/member/admin users.
-      * Which routes are protected or not? Define them in here.
-      */
-
      if (process.env.NODE_ENV === 'test') {
       req.body.user_id = 1; // mock data
       return next();

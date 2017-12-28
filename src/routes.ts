@@ -2,18 +2,16 @@ import { Router } from 'express';
 import { AuthController } from './controllers/AuthController';
 import { CommentController } from './controllers/CommentController';
 import { Controller } from './controllers/Controller';
+import { FeedController } from './controllers/FeedController';
 import { FriendshipController } from './controllers/FriendshipController';
 import { ReactionController } from './controllers/ReactionController';
 import { SearchController } from './controllers/SearchController';
 import { ShowController } from './controllers/ShowController';
 import { UploadController } from './controllers/UploadController';
 import { WatchController } from './controllers/WatchController';
-import { FeedController } from './controllers/FeedController';
-
- 
 
 /**
- * / route
+ * route
  *
  * @class User
  */
@@ -60,9 +58,9 @@ export class Routes {
 
     /* Show */
 
-    //handles for all routes with shows
+    // handles for all routes with shows
     router.use('/shows', Controller.handleAll);
-    router.post('/shows', Controller.create);   
+    router.post('/shows', Controller.create);
     router.get('/shows', Controller.read);
     router.patch('/shows', Controller.update); // check this out!
     router.delete('/shows', Controller.delete);

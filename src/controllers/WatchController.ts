@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
 import { BadRequest } from '../errors/BadRequest';
 import { NotFound } from '../errors/NotFound';
+import { UnprocessableEntity } from '../errors/UnprocessableEntity';
 import { Comment } from '../models/comment';
 import { WatchService } from '../services/WatchService';
-import { UnprocessableEntity } from '../errors/UnprocessableEntity';
-
 
 const watchService = new WatchService();
 export class WatchController {

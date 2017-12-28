@@ -6,10 +6,10 @@ export class Episode {
   private _seasonNo: number;
   private _showName: string;
   private _episodeName: string;
-  private _watched: Boolean;
-  
+  private _watched: boolean;
 
-  constructor(no: number, name: string, info: string, trailerUrl: string, imageUrl: string, episodeName: string, seasonNo: number, showName: string) {
+  constructor(no: number, name: string, info: string, trailerUrl: string, imageUrl: string, episodeName: string,
+              seasonNo: number, showName: string) {
     this._episodeNo = no;
     this._episodeName = episodeName;
     this._info = info;
@@ -47,7 +47,7 @@ export class Episode {
     return this._seasonNo;
   }
   public set season_no(id: number) {
-    this._seasonNo= id;
+    this._seasonNo = id;
   }
   public get episode_name() {
     return this._episodeName;
@@ -64,8 +64,7 @@ export class Episode {
   public get watched() {
     return this._watched;
   }
-  public set watched(watch: Boolean) {
+  public set watched(watch: boolean) {
     this._watched = watch;
   }
 }
-

@@ -1,19 +1,14 @@
 import { Request, Response } from 'express';
 import { BadRequest } from '../errors/BadRequest';
 import { NotFound } from '../errors/NotFound';
-import { Comment } from '../models/comment';
-import { CommentService } from '../services/commentservice';
 import { UnprocessableEntity } from '../errors/UnprocessableEntity';
+import { Comment } from '../models/comment';
 import { Reaction } from '../models/reaction';
-
-
+import { CommentService } from '../services/commentservice';
 
 const commentService = new CommentService();
 
 export class CommentController {
-
-
-    // For user feed
   public static async readComment(req: Request, res: Response) {
     const { commentid } = req.params;
     const r: Comment = await commentService.findById(commentid);
@@ -39,7 +34,7 @@ export class CommentController {
       return res.status(400).send(new BadRequest());
     }
 
-    const comment: Comment = new Comment(null, comment_body, user_id, commentid);    
+    const comment: Comment = new Comment(null, comment_body, user_id, commentid);
     const r: number = await commentService.create(comment);
     if (r) {
       return res.status(201).send({ id: r }); // shorthand to showid: showid

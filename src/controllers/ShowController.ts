@@ -5,10 +5,9 @@ import { UnprocessableEntity } from '../errors/UnprocessableEntity';
 import { Comment } from '../models/comment';
 import { Show } from '../models/show';
 import { ShowComment } from '../models/showcomment';
-import { ShowService } from '../services/showservice';
 import { EpisodeService } from '../services/episodeservice';
 import { SeasonService } from '../services/seasonservice';
-
+import { ShowService } from '../services/showservice';
 
 const showService = new ShowService();
 
@@ -28,7 +27,7 @@ export class ShowController {
     const seasonService = new SeasonService();
     const r = await showService.find(show, user_id);
     if (r) {
-      r.watched = await showService.checkIfWatched(show); 
+      r.watched = await showService.checkIfWatched(show);
       r.seasons = await seasonService.findAllSeasons(show);
       r.episodes = await episodeService.findAllShowEpisodes(show);
       return res.status(200).send(r);
@@ -39,19 +38,19 @@ export class ShowController {
   public async update(req: Request, res: Response) {
     const { show } = req.query;
     const params = req.body;
-    delete params['user_id'];
-    if(params['isAdmin']) {
-      delete params['isAdmin'];
+    delete params.user_id;
+    if (params.isAdmin) {
+      delete params.isAdmin;
       const r: boolean = await showService.updateShow(show, params);
       if (r) {
         return res.status(204).send();
       }
-      return res.status(422).send(new UnprocessableEntity());  
+      return res.status(422).send(new UnprocessableEntity());
     }
   }
 
   public async readComment(req: Request, res: Response) {
-    const { show } = req.query;    
+    const { show } = req.query;
     const { commentid } = req.params;
     const r: Comment = await showService.findShowComment(show, commentid);
     if (r) {
@@ -62,7 +61,7 @@ export class ShowController {
 
   public async readComments(req: Request, res: Response) {
     const { show } = req.query;
-    if(!show) {
+    if (!show) {
       return res.status(400).send(new BadRequest());
     }
     const r: Comment[] = await showService.findShowComments(show);
@@ -75,7 +74,7 @@ export class ShowController {
   public async create(req: Request, res: Response) {
     const { show } = req.query;
     const { image_url, info, trailer_url, director_name, writer_name } = req.body;
-    if (!image_url || !info || !show || !trailer_url || !director_name || !writer_name ) {      
+    if (!image_url || !info || !show || !trailer_url || !director_name || !writer_name ) {
       return res.status(400).send(new BadRequest());
     }
     const s: Show = new Show(null, show, info, trailer_url, image_url, director_name, writer_name);
@@ -100,9 +99,9 @@ export class ShowController {
     if (!comment_body) {
       return res.status(400).send(new BadRequest());
     }
-    let c: Comment = new Comment(null, comment_body, user_id, null);
+    const c: Comment = new Comment(null, comment_body, user_id, null);
     const r: number = await showService.createShowComment(show, c);
-    if(r) {
+    if (r) {
       const comment: Comment = await showService.findShowComment(show, r);
       if (comment) {
         return res.status(200).send(comment);
@@ -114,7 +113,7 @@ export class ShowController {
 
   public async markAsWatched(req: Request, res: Response) {
     const { user_id } = req.body;
-    const { show } = req.query;  
+    const { show } = req.query;
     const r: number = await showService.markAsWatched(show, user_id);
     if (r) {
       return res.status(201).send({ id: r });
@@ -124,8 +123,8 @@ export class ShowController {
 
   public async unmarkWatch(req: Request, res: Response) {
     const { user_id } = req.body;
-    const { show } = req.query;  
-    const r: Boolean = await showService.unmarkWatch(show, user_id);
+    const { show } = req.query;
+    const r: boolean = await showService.unmarkWatch(show, user_id);
     if (r) {
       return res.status(204).send();
     }
@@ -135,12 +134,12 @@ export class ShowController {
   public async rate(req: Request, res: Response) {
     const { user_id, rating } = req.body;
     const { show } = req.query;
-    if(!rating || rating < 1 || rating > 5) {
+    if (!rating || rating < 1 || rating > 5) {
       return res.status(422).send(new BadRequest());
     }
 
-    const r: Boolean = await showService.rateShow(user_id, show, rating);
-    if (r) {
+    const success: boolean = await showService.rateShow(user_id, show, rating);
+    if (success) {
       const r: number = await showService.findOverallRate(show);
       return res.status(200).send({ overall_rate: r });
     }
@@ -150,13 +149,12 @@ export class ShowController {
   public async changeRate(req: Request, res: Response) {
     const { user_id, rating } = req.body;
     const { show } = req.query;
-    const r: Boolean = await showService.updateRate(user_id, show, rating);
-    if (r) {
+    const success: boolean = await showService.updateRate(user_id, show, rating);
+    if (success) {
       const r: number = await showService.findOverallRate(show);
       return res.status(200).send({ overall_rate: r });
     }
-    return res.status(422).send(new UnprocessableEntity());  
+    return res.status(422).send(new UnprocessableEntity());
   }
 
-  
 }

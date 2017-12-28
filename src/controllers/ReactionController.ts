@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
 import { BadRequest } from '../errors/BadRequest';
 import { NotFound } from '../errors/NotFound';
-import { Comment } from '../models/comment';
-import { ReactionService } from '../services/reactionservice';
 import { UnprocessableEntity } from '../errors/UnprocessableEntity';
+import { Comment } from '../models/comment';
 import { Reaction } from '../models/reaction';
-
+import { ReactionService } from '../services/reactionservice';
 
 const reactionService = new ReactionService();
 export class ReactionController {

@@ -26,8 +26,6 @@ export class AuthService extends Service {
         }
       }
     } catch (e) {
-      // tslint:disable-next-line:no-console
-      console.log(e.stack);
       throw new Error(e);
     } finally {
       client.release();
@@ -45,19 +43,15 @@ export class AuthService extends Service {
 
     const values = [ username, hashedPass, email, age ];
     const sql = 'INSERT INTO users(username, password, email, age) VALUES($1, $2, $3, $4) RETURNING *';
-
     const client = await this.pool.connect();
+
     try {
       const res = await client.query(sql, values);
       if (res.rows[0]) {
         user.id = res.rows[0].id;
-        // tslint:disable-next-line:no-console
-        console.dir(user);
         return true;
       }
     } catch (e) {
-      // tslint:disable-next-line:no-console
-      console.log(e.stack);
       throw new Error(e);
     } finally {
       client.release();
@@ -85,7 +79,6 @@ export class AuthService extends Service {
       }
     } catch (e) {
       throw new Error(e);
-      // console.log(e.stack)
     } finally {
       client.release();
     }

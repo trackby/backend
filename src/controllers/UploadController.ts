@@ -34,6 +34,13 @@ const storage = multer.diskStorage({
 });
 
 const imageFilter = (req, file, cb) => {
+  if (req.body.category) {
+    if (req.body.category !== 'users' && !req.body.id) {
+        return cb(new Error('Field -id- cannot be empty!'), false);
+    }
+  } else {
+    return cb(new Error('Field -category- cannot be empty!'), false);
+  }
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
     return cb(new Error('Only image files are allowed!'), false);
   }
@@ -51,7 +58,8 @@ const service = new UploadService();
 
 export class UploadController {
   public static async uploadPhoto(req: any, res: Response, next: NextFunction) {
-    const { user_id, isAdmin } = req.body;
+    const { uid, role } = res.locals.user;
+    const isAdmin = role === 'ADMIN' ? true : false;
     let imageUrl = '';
     let category = '';
     let id = 0;
@@ -63,18 +71,10 @@ export class UploadController {
       imageUrl = `${HOST}/static/${req.file.filename}`;
       delPreFlight = imageUrl.substring(TRIM_LENGTH);
       category = req.body.category;
-      if (!category) {
-        clean(UPLOAD_PATH, delPreFlight);
-        return res.status(400).send(new BadRequest('category cannot be empty.'));
-      }
       if (category === 'users') {
-        id = user_id;
+        id = uid;
       } else {
         id = req.body.id;
-        if (!id) {
-          clean(UPLOAD_PATH, delPreFlight);
-          return res.status(400).send(new BadRequest('id cannot be empty.'));
-        }
       }
     } catch (e) {
       return res.status(400).send(new BadRequest('Image upload operation is not successful!'));
@@ -114,11 +114,13 @@ export class UploadController {
   }
 
   public static async removePhoto(req: any, res: Response, next: NextFunction) {
-    const { user_id, category, isAdmin } = req.body;
+    const { uid, role } = res.locals.user;
+    const { category } = req.body;
+    const isAdmin = role === 'ADMIN' ? true : false;
     let id = req.body.id;
 
     if (category === 'users') {
-      id = user_id;
+      id = uid;
     } else if (!isAdmin) {
       return res.status(401).send(new Unauthorized());
     }

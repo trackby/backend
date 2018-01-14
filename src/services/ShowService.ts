@@ -73,7 +73,8 @@ export class ShowService extends Service {
     const sql = 'INSERT INTO show_comment (show_name, comment_id) VALUES($1, $2) RETURNING comment_id';
     try {
       const res = await client.query(sql, [sname, cid]);
-      return res.rows[0].comment_id;
+      comment.id = res.rows[0].id;
+      return res.rows[0].id;
     } catch (e) {
       throw new Error(e);
     } finally {

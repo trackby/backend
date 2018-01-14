@@ -182,29 +182,7 @@ CREATE TABLE episode_rate(
  PRIMARY KEY(rate_id)
 );
 
-CREATE VIEW friends_view AS (
-  SELECT first_user_id, second_user_id FROM friendship WHERE status='APPROVED'
-  UNION ALL 
-  SELECT second_user_id, first_user_id FROM friendship WHERE status='APPROVED'
-  ORDER BY first_user_id, second_user_id
-);
-
-CREATE VIEW friendship_requests AS (
-  SELECT first_user_id, second_user_id, action_user_id FROM friendship WHERE status='PENDING'
-  UNION ALL 
-  SELECT second_user_id, first_user_id, action_user_id FROM friendship WHERE status='PENDING'
-  ORDER BY first_user_id, second_user_id, action_user_id
-);
-
-CREATE VIEW public_user AS (
-  SELECT * FROM users WHERE role='REGISTERED_USER'
-);
-
-CREATE VIEW admin_user AS (
-  SELECT * FROM users WHERE role='ADMIN'
-);
-
-/* migrations */
+-- Migrations 
 ALTER TABLE season
   ADD FOREIGN KEY(show_name) REFERENCES tvshow(show_name);
 
@@ -282,7 +260,7 @@ ALTER TABLE comment_reaction
   ADD FOREIGN KEY(comment_id) REFERENCES comment(id) ON DELETE CASCADE,
   ADD FOREIGN KEY(reaction_id) REFERENCES reaction(id) ON DELETE CASCADE;
 
-/*Triggers */
+-- Triggers
 
 -- Functions
 CREATE OR REPLACE FUNCTION decrease_episode_count()
@@ -496,3 +474,115 @@ CREATE INDEX comment_reaction_index ON comment_reaction(reaction_id);
 CREATE INDEX showname_index ON tvshow (show_name);
 CREATE INDEX episode_no_index ON episode USING btree (episode_no);
 CREATE INDEX season_no_index ON season USING btree (season_no);
+
+
+-- VIEWS
+
+CREATE VIEW friends_view AS (
+  SELECT first_user_id, second_user_id FROM friendship WHERE status='APPROVED'
+  UNION ALL 
+  SELECT second_user_id, first_user_id FROM friendship WHERE status='APPROVED'
+  ORDER BY first_user_id, second_user_id
+);
+
+CREATE VIEW friendship_requests AS (
+  SELECT first_user_id, second_user_id, action_user_id FROM friendship WHERE status='PENDING'
+  UNION ALL 
+  SELECT second_user_id, first_user_id, action_user_id FROM friendship WHERE status='PENDING'
+  ORDER BY first_user_id, second_user_id, action_user_id
+);
+
+CREATE VIEW public_user AS (
+  SELECT * FROM users WHERE isAdmin=false
+);
+
+CREATE VIEW admin_user AS (
+  SELECT * FROM users WHERE isAdmin=true
+);
+
+CREATE VIEW episode_comments AS (
+  SELECT episode.show_name, episode.season_no, episode.episode_no, comment.comment_body, 
+    comment.created_at, comment.user_id, 'episode_comment' AS type FROM episode_comment
+  INNER JOIN episode ON episode_comment.show_name = episode.show_name 
+    AND episode_comment.season_no = episode.season_no 
+    AND episode_comment.episode_no = episode.episode_no
+  INNER JOIN comment ON episode_comment.comment_id = comment.id
+  INNER JOIN users ON comment.user_id = users.id 
+);
+
+CREATE VIEW subcomments AS (
+  SELECT parent.comment_body as parent_body, users.username, users.image_url, sub.comment_body, 
+    sub.subcomment_count, sub.user_id, sub.created_at, 'subcomment' AS type FROM comment parent 
+  INNER JOIN comment sub ON sub.parent_id = parent.id
+  INNER JOIN users ON sub.user_id = users.id
+);
+
+CREATE VIEW season_comments AS (
+  SELECT users.username, users.image_url, season.show_name, season.season_no, comment.comment_body, 
+    comment.user_id, comment.created_at, 'seasoncomment' AS type FROM season_comment
+  INNER JOIN season ON season_comment.show_name = season.show_name
+    AND season_comment.season_no = season.season_no
+  INNER JOIN comment ON season_comment.comment_id = comment.id
+  INNER JOIN users ON comment.user_id = users.id
+);
+
+CREATE VIEW show_comments AS (
+  SELECT users.username, users.image_url, tvshow.show_name, comment.comment_body, 
+    comment.created_at, comment.user_id, 'showcomment' as type FROM show_comment
+  INNER JOIN tvshow ON show_comment.show_name = tvshow.show_name
+  INNER JOIN comment ON show_comment.comment_id = comment.id
+  INNER JOIN users ON comment.user_id = users.id 
+);
+
+CREATE VIEW show_watches AS (
+  SELECT users.username, tvshow.show_name, watch.created_at, 
+    watch.user_id, 'showwatches' as type FROM show_watch
+  INNER JOIN tvshow ON show_watch.show_name = tvshow.show_name
+  INNER JOIN watch ON show_watch.watch_id = watch.id
+  INNER JOIN users ON watch.user_id = users.id
+);
+
+CREATE VIEW season_watches AS (
+  SELECT users.username, season.show_name, season.season_no, watch.created_at,
+    watch.user_id, 'seasonwatches' as type FROM season_watch
+  INNER JOIN season ON season_watch.show_name = season.show_name
+    AND season_watch.season_no = season.season_no
+  INNER JOIN watch ON season_watch.watch_id = watch.id
+  INNER JOIN users ON watch.user_id = users.id 
+);
+
+CREATE VIEW episode_watches AS (
+  SELECT users.username, episode.show_name, episode.season_no, episode.episode_no, watch.created_at,
+    watch.user_id, 'episodewatches' as type FROM episode_watch
+  INNER JOIN episode ON episode_watch.show_name = episode.show_name
+    AND episode_watch.season_no = episode.season_no AND episode_watch.episode_no = episode.episode_no
+  INNER JOIN watch ON episode_watch.watch_id = watch.id
+  INNER JOIN users ON watch.user_id = users.id
+);
+
+CREATE VIEW show_rates AS (
+  SELECT users.username, tvshow.show_name, rate.rating, rate.created_at, 
+    rate.user_id, 'showrates' as type FROM show_rate
+  INNER JOIN tvshow ON show_rate.show_name = tvshow.show_name
+  INNER JOIN rate ON show_rate.rate_id = rate.id
+  INNER JOIN users ON rate.user_id = users.id 
+);
+
+CREATE VIEW season_rates AS (
+  SELECT users.username, season.show_name, season.season_no, rate.rating, rate.created_at,
+    rate.user_id, 'seasonrates' as type  FROM season_rate
+  INNER JOIN season ON season_rate.show_name = season.show_name
+    AND season_rate.season_no = season.season_no
+  INNER JOIN rate ON season_rate.rate_id = rate.id
+  INNER JOIN users ON rate.user_id = users.id 
+);
+
+CREATE VIEW episode_rates AS (
+  SELECT users.username, episode.show_name, episode.season_no, episode.episode_no, rate.rating,
+    rate.created_at, rate.user_id, 'episoderates' as type  FROM episode_rate
+  INNER JOIN episode ON episode_rate.show_name = episode_rate.show_name
+    AND episode_rate.season_no = episode.season_no 
+    AND episode_rate.episode_no = episode.episode_no
+  INNER JOIN rate ON episode_rate.rate_id = rate.id
+  INNER JOIN users ON rate.user_id = users.id 
+);

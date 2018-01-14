@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import * as _ from 'lodash';
 import { BadRequest } from '../errors/BadRequest';
 import { NotFound } from '../errors/NotFound';
 import { UnprocessableEntity } from '../errors/UnprocessableEntity';
@@ -37,10 +38,9 @@ export class ShowController {
 
   public async update(req: Request, res: Response) {
     const { show } = req.query;
-    const params = req.body;
-    delete params.user_id;
-    if (params.isAdmin) {
-      delete params.isAdmin;
+    const { isAdmin } = req.body;
+    const params =  _.omit(req.body, ['isAdmin', 'user_id']);
+    if (isAdmin) {
       const r: boolean = await showService.updateShow(show, params);
       if (r) {
         return res.status(204).send();
@@ -100,14 +100,10 @@ export class ShowController {
     if (!comment_body) {
       return res.status(400).send(new BadRequest());
     }
-    const c: Comment = new Comment(null, comment_body, uid, null);
-    const r: number = await showService.createShowComment(show, c);
+    const comment: Comment = new Comment(null, comment_body, uid, null);
+    const r: number = await showService.createShowComment(show, comment);
     if (r) {
-      const comment: Comment = await showService.findShowComment(show, r);
-      if (comment) {
-        return res.status(200).send(comment);
-      }
-      return res.status(404).send(new NotFound());
+      return res.status(200).send(comment);
     }
     return res.status(422).send(new UnprocessableEntity());
   }

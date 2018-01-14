@@ -93,7 +93,7 @@ export class Routes {
 
     router.get('/photos/:category/:id', UploadController.retrievePhoto); // Example: /photos/tvshow/1
     router.post('/upload', UploadController.uploadPhoto);
-    router.delete('/upload', UploadController.removePhoto);
+    router.delete('/upload', AuthController.role('ADMIN'), UploadController.removePhoto);
 
     router.post('/search', SearchController.search);
   }

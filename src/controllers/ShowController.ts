@@ -22,10 +22,10 @@ export class ShowController {
 
   public async readOne(req: Request, res: Response) {
     const { show } = req.query;
-    const { user_id } = req.body;
+    const { uid } = res.locals.user;
     const episodeService = new EpisodeService();
     const seasonService = new SeasonService();
-    const r = await showService.find(show, user_id);
+    const r = await showService.find(show, uid);
     if (r) {
       r.watched = await showService.checkIfWatched(show);
       r.seasons = await seasonService.findAllSeasons(show);
@@ -95,11 +95,12 @@ export class ShowController {
 
   public async createComment(req: Request, res: Response) {
     const { show } = req.query;
-    const { comment_body, user_id } = req.body;
+    const { uid } = res.locals.user;
+    const { comment_body } = req.body;
     if (!comment_body) {
       return res.status(400).send(new BadRequest());
     }
-    const c: Comment = new Comment(null, comment_body, user_id, null);
+    const c: Comment = new Comment(null, comment_body, uid, null);
     const r: number = await showService.createShowComment(show, c);
     if (r) {
       const comment: Comment = await showService.findShowComment(show, r);
@@ -112,9 +113,9 @@ export class ShowController {
   }
 
   public async markAsWatched(req: Request, res: Response) {
-    const { user_id } = req.body;
+    const { uid } = res.locals.user;
     const { show } = req.query;
-    const r: number = await showService.markAsWatched(show, user_id);
+    const r: number = await showService.markAsWatched(show, uid);
     if (r) {
       return res.status(201).send({ id: r });
     }
@@ -122,9 +123,9 @@ export class ShowController {
   }
 
   public async unmarkWatch(req: Request, res: Response) {
-    const { user_id } = req.body;
+    const { uid } = res.locals.user;
     const { show } = req.query;
-    const r: boolean = await showService.unmarkWatch(show, user_id);
+    const r: boolean = await showService.unmarkWatch(show, uid);
     if (r) {
       return res.status(204).send();
     }
@@ -132,13 +133,14 @@ export class ShowController {
   }
 
   public async rate(req: Request, res: Response) {
-    const { user_id, rating } = req.body;
+    const { rating } = req.body;
+    const { uid } = res.locals.user;
     const { show } = req.query;
     if (!rating || rating < 1 || rating > 5) {
       return res.status(422).send(new BadRequest());
     }
 
-    const success: boolean = await showService.rateShow(user_id, show, rating);
+    const success: boolean = await showService.rateShow(uid, show, rating);
     if (success) {
       const r: number = await showService.findOverallRate(show);
       return res.status(200).send({ overall_rate: r });
@@ -147,9 +149,10 @@ export class ShowController {
   }
 
   public async changeRate(req: Request, res: Response) {
-    const { user_id, rating } = req.body;
+    const { rating } = req.body;
+    const { uid } = res.locals.user;
     const { show } = req.query;
-    const success: boolean = await showService.updateRate(user_id, show, rating);
+    const success: boolean = await showService.updateRate(uid, show, rating);
     if (success) {
       const r: number = await showService.findOverallRate(show);
       return res.status(200).send({ overall_rate: r });

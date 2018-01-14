@@ -14,9 +14,9 @@ export class SeasonController {
 
   public async readOne(req: Request, res: Response) {
     const { show,  season } = req.query;
-    const { user_id } = req.body;
+    const { uid } = res.locals.user;
     const episodeService = new EpisodeService();
-    const r: Season = await seasonService.find(show, season, user_id);
+    const r: Season = await seasonService.find(show, season, uid);
     if (r) {
       r.watched = await seasonService.checkIfWatched(show, season);
       r.episodes = await episodeService.findEpisodesByNo(show, season);
@@ -88,11 +88,12 @@ export class SeasonController {
 
   public async createComment(req: Request, res: Response) {
     const { show, season } = req.query;
-    const { comment_body, user_id } = req.body;
+    const { comment_body } = req.body;
+    const { uid } = res.locals.user;
     if (!comment_body || !show || !season) {
       return res.status(400).send(new BadRequest());
     }
-    const c: Comment = new Comment(null, comment_body, user_id, null);
+    const c: Comment = new Comment(null, comment_body, uid, null);
     const r: number = await seasonService.createSeasonComment(show, season, c);
     if (r) {
       const comment: Comment = await seasonService.findSeasonComment(show, season, r);
@@ -105,9 +106,9 @@ export class SeasonController {
   }
 
   public async markAsWatched(req: Request, res: Response) {
-    const { user_id } = req.body;
+    const { uid } = res.locals.user;
     const { season, show } = req.query;
-    const r: number = await seasonService.markAsWatched(show, season, user_id);
+    const r: number = await seasonService.markAsWatched(show, season, uid);
     if (r) {
       return res.status(201).send({ id: r });
     }
@@ -115,9 +116,9 @@ export class SeasonController {
   }
 
   public async unmarkWatch(req: Request, res: Response) {
-    const { user_id } = req.body;
+    const { uid } = res.locals.user;
     const { season, show } = req.query;
-    const r: boolean = await seasonService.unmarkWatch(show, season, user_id);
+    const r: boolean = await seasonService.unmarkWatch(show, season, uid);
     if (r) {
       return res.status(204);
     }
@@ -125,14 +126,15 @@ export class SeasonController {
   }
 
   public async rate(req: Request, res: Response) {
-    const { user_id, rating } = req.body;
+    const { rating } = req.body;
+    const { uid } = res.locals.user;
     const { season, show } = req.query;
     if (!rating || rating < 1 || rating > 5) {
       return res.status(422).send(new BadRequest());
     }
 
-    const r: boolean = await seasonService.rateSeason(user_id, show, season, rating);
-    if (r) {
+    const success: boolean = await seasonService.rateSeason(uid, show, season, rating);
+    if (success) {
       const r: number = await seasonService.findOverallRate(show, season);
       return res.status(200).send({ overall_rate: r });
     }
@@ -140,10 +142,11 @@ export class SeasonController {
   }
 
   public async changeRate(req: Request, res: Response) {
-    const { user_id, rating } = req.body;
+    const { rating } = req.body;
+    const { uid } = res.locals.user;
     const { season, show } = req.query;
-    const r: boolean = await seasonService.updateRate(user_id, show, season, rating);
-    if (r) {
+    const success: boolean = await seasonService.updateRate(uid, show, season, rating);
+    if (success) {
       const r: number = await seasonService.findOverallRate(show, season);
       return res.status(200).send({ overall_rate: r });
     }

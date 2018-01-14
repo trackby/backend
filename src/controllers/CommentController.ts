@@ -29,12 +29,13 @@ export class CommentController {
 
   public static async createSubcomment(req: Request, res: Response) {
     const { commentid } = req.params;
-    const { comment_body, user_id } = req.body;
+    const { comment_body } = req.body;
+    const { uid } = res.locals.user;
     if (!comment_body) {
       return res.status(400).send(new BadRequest());
     }
 
-    const comment: Comment = new Comment(null, comment_body, user_id, commentid);
+    const comment: Comment = new Comment(null, comment_body, uid, commentid);
     const r: number = await commentService.create(comment);
     if (r) {
       return res.status(201).send({ id: r }); // shorthand to showid: showid
@@ -62,11 +63,12 @@ export class CommentController {
 
   public static async createCommentReaction(req: Request, res: Response) {
     const { commentid } = req.params;
-    const { reaction_type, user_id } = req.body;
+    const { reaction_type } = req.body;
+    const { uid } = res.locals.user;
     if (!reaction_type ) {
       return res.status(400).send(new BadRequest());
     }
-    const reaction: Reaction = new Reaction(null, reaction_type, user_id);
+    const reaction: Reaction = new Reaction(null, reaction_type, uid);
     const r: number = await commentService.createCommentReaction(commentid, reaction);
     if (r) {
       return res.status(201).send({ id: r }); // shorthand to showid: showid

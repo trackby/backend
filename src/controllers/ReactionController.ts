@@ -9,8 +9,8 @@ import { ReactionService } from '../services/reactionservice';
 const reactionService = new ReactionService();
 export class ReactionController {
   public static async readUserReactions(req: Request, res: Response) {
-    const { user_id } = req.body;
-    const r = await reactionService.findUserReactions(user_id);
+    const { uid } = res.locals.user;
+    const r = await reactionService.findUserReactions(uid);
     if (r) {
       return res.status(200).send(r);
     }

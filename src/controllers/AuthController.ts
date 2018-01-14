@@ -70,7 +70,7 @@ export class AuthController {
 
   public static protect(req: Request, res: Response, next: NextFunction) {
      if (process.env.NODE_ENV === 'test') {
-      req.body.user_id = 1; // mock data
+      req.body.user.uid = 1; // mock data
       return next();
     }
      if (req.method === 'OPTIONS') {
@@ -80,12 +80,41 @@ export class AuthController {
       const decoded: any = service.verifyJWT(token);
 
       if (decoded) {
-        req.body.user_id = decoded.id;
-        req.body.isAdmin = decoded.isAdmin;
+        res.locals.user = {};
+        res.locals.user.uid = decoded.id;
+        res.locals.user.role = decoded.role;
         next();
       } else {
         return res.status(403).send(new Unauthorized());
       }
     }
   }
+
+  // Role-Permission middleware. req.body.user.role should be used in other methods from now on.
+  public static role(role: any) {
+    return (req: Request, res: Response, next: NextFunction) => {
+      switch (role) {
+        case 'ADMIN': {
+          if (res.locals.user && res.locals.user.role === 'ADMIN') {
+            next();
+          } else {
+            return res.status(403).send(new Unauthorized());
+          }
+          break;
+        }
+        case 'REGISTERED_USER': {
+          if (res.locals.user && res.locals.user.role === 'REGISTERED_USER') {
+            next();
+          } else {
+            return res.status(403).send(new Unauthorized());
+          }
+          break;
+        }
+        default: {
+           console.log('Not an expected argument.');
+           break;
+        }
+     }
+    };
+   }
 }

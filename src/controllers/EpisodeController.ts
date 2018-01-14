@@ -12,8 +12,8 @@ const episodeService = new EpisodeService();
 export class EpisodeController {
   public async readOne(req: Request, res: Response) {
     const { show, season, episode } = req.query;
-    const { user_id } = req.body;
-    const r: Episode = await episodeService.find(show, season, episode, user_id);
+    const { uid } = res.locals.user;
+    const r: Episode = await episodeService.find(show, season, episode, uid);
     if (r) {
       r.watched = await episodeService.checkIfWatched(show, season, episode);
       return res.status(200).send(r);
@@ -83,11 +83,11 @@ export class EpisodeController {
 
   public async createComment(req: Request, res: Response) {
     const { show, season, episode } = req.query;
-    const { comment_body, user_id } = req.body;
+    const { comment_body, uid } = req.body;
     if (!comment_body) {
       return res.status(400).send(new BadRequest());
     }
-    const c: Comment = new Comment(null, comment_body, user_id, null);
+    const c: Comment = new Comment(null, comment_body, uid, null);
     const r: number = await episodeService.createEpisodeComment(show, season, episode, c);
     if (r) {
       const comment: Comment = await episodeService.findEpisodeComment(show, season, episode, r);
@@ -101,8 +101,8 @@ export class EpisodeController {
 
   public async markAsWatched(req: Request, res: Response) {
     const { show, season, episode } = req.query;
-    const { user_id } = req.body;
-    const r: number = await episodeService.markAsWatched(show, season, episode, user_id);
+    const { uid } = res.locals.user;
+    const r: number = await episodeService.markAsWatched(show, season, episode, uid);
     if (r) {
       return res.status(201).send({ id: r });
     }
@@ -111,8 +111,8 @@ export class EpisodeController {
 
   public async unmarkWatch(req: Request, res: Response) {
     const { show, season, episode } = req.query;
-    const { user_id } = req.body;
-    const success: boolean = await episodeService.unmarkWatch(show, season, episode, user_id);
+    const { uid } = res.locals.user;
+    const success: boolean = await episodeService.unmarkWatch(show, season, episode, uid);
     if (success) {
       return res.status(204).send();
     }
@@ -121,11 +121,12 @@ export class EpisodeController {
 
   public async rate(req: Request, res: Response) {
     const { show, season, episode } = req.query;
-    const { user_id, rating } = req.body;
+    const { rating } = req.body;
+    const { uid } = res.locals.user;
     if (!rating || rating < 1 || rating > 5) {
       return res.status(422).send(new BadRequest());
     }
-    const success: boolean = await episodeService.rateEpisode(user_id, show, season, episode, rating);
+    const success: boolean = await episodeService.rateEpisode(uid, show, season, episode, rating);
     if (success) {
       const r: number = await episodeService.findOverallRate(show, season, episode);
       return res.status(200).send({ overall_rate: r });
@@ -135,8 +136,9 @@ export class EpisodeController {
 
   public async changeRate(req: Request, res: Response) {
     const { show, season, episode } = req.query;
-    const { user_id, rating } = req.body;
-    const success: boolean = await episodeService.updateRate(user_id, show, season, episode, rating);
+    const { rating } = req.body;
+    const { uid } = res.locals.user;
+    const success: boolean = await episodeService.updateRate(uid, show, season, episode, rating);
     if (success) {
       const r: number = await episodeService.findOverallRate(show, season, episode);
       return res.status(200).send({ overall_rate: r });

@@ -15,17 +15,18 @@ const service = new FriendshipService();
 
 export class FriendshipController {
   public static async sendFriendshipRequest(req: Request, res: Response) {
-    const { user_id, target_user_id } = req.body;
+    const { target_user_id } = req.body;
+    const { uid } = res.locals.user;
     let success: any = false;
 
-    if (!user_id || !target_user_id) {
+    if (!uid || !target_user_id) {
       return res.status(400).send(new BadRequest('Required body parameters cannot be empty.'));
     }
     /*  if (![user_id, target_user_id].includes(action_id)) {
       return res.status(400).send(new BadRequest('action_uid must be defined as one of the two other user ids.'));
     } */
     try {
-      const friendship = new Friendship(user_id, target_user_id, undefined, user_id);
+      const friendship = new Friendship(uid, target_user_id, undefined, uid);
       success = await service.save(friendship);
     } catch (e) {
       return res.status(400).send(new BadRequest());
@@ -52,20 +53,21 @@ export class FriendshipController {
   }
 
   public static async updateFriendshipStatus(req: Request, res: Response) {
-    const { user_id, target_user_id, status } = req.body;
+    const { target_user_id, status } = req.body;
+    const { uid } = res.locals.user;
     let check: any = false;
 
-    if (!user_id || !target_user_id || !status) {
+    if (!uid || !target_user_id || !status) {
       return res.status(400).send(new BadRequest('Required body parameters cannot be empty.'));
     }
     try {
-      check = await service.showFriendshipRelation(user_id, target_user_id);
+      check = await service.showFriendshipRelation(uid, target_user_id);
     } catch (e) {
       return res.status(400).send(new BadRequest());
     }
     if (check) {
       const { action_user_id } = check;
-      if (action_user_id === user_id) {
+      if (action_user_id === uid) {
         return res.status(400).send(new BadRequest('You cannot modify your own friendship request.'));
       }
     } else {
@@ -73,7 +75,7 @@ export class FriendshipController {
     }
 
     try {
-      const friendship = new Friendship(user_id, target_user_id, status, undefined);
+      const friendship = new Friendship(uid, target_user_id, status, undefined);
       const success = await service.update(friendship);
       if (success) {
         return res.status(200).send({ success });
@@ -102,14 +104,14 @@ export class FriendshipController {
   }
 
   public static async showFriendshipRequests(req: Request, res: Response) {
-    const { user_id } = req.body;
+    const { uid } = res.locals.user;
     const { direction } = req.params;
 
-    if (!user_id) {
+    if (!uid) {
       return res.status(400).send(new BadRequest('Required body parameters cannot be empty.'));
     }
     try {
-      const success = await service.showFriendshipRequests(user_id, direction);
+      const success = await service.showFriendshipRequests(uid, direction);
       if (success) {
         return res.status(200).send(success);
       }
@@ -120,13 +122,14 @@ export class FriendshipController {
   }
 
   public static async removeFriend(req: Request, res: Response) {
-    const { user_id, target_user_id } = req.body;
+    const { target_user_id } = req.body;
+    const { uid } = res.locals.user;
 
-    if (!user_id || !target_user_id) {
+    if (!uid || !target_user_id) {
       return res.status(400).send(new BadRequest('Required body parameters cannot be empty.'));
     }
     try {
-      const friendship = new Friendship(user_id, target_user_id, undefined, undefined);
+      const friendship = new Friendship(uid, target_user_id, undefined, undefined);
       const success = await service.delete(0, friendship);
       if (success) {
         return res.status(200).send(success);

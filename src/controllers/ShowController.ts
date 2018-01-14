@@ -101,9 +101,9 @@ export class ShowController {
       return res.status(400).send(new BadRequest());
     }
     const comment: Comment = new Comment(null, comment_body, uid, null);
-    const r: number = await showService.createShowComment(show, comment);
+    const r = await showService.createShowComment(show, comment);
     if (r) {
-      return res.status(200).send(comment);
+      return res.status(200).send(r);
     }
     return res.status(422).send(new UnprocessableEntity());
   }

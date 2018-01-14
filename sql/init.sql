@@ -528,7 +528,7 @@ CREATE VIEW season_comments AS (
 
 CREATE VIEW show_comments AS (
   SELECT users.username, users.image_url, tvshow.show_name, comment.comment_body, 
-    comment.created_at, comment.user_id, 'showcomment' as type FROM show_comment
+    comment.created_at, comment.user_id, show_comment.comment_id, 'showcomment' as type FROM show_comment
   INNER JOIN tvshow ON show_comment.show_name = tvshow.show_name
   INNER JOIN comment ON show_comment.comment_id = comment.id
   INNER JOIN users ON comment.user_id = users.id 

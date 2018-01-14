@@ -66,16 +66,21 @@ export class ShowService extends Service {
     }
   }
 
-  public async createShowComment(sname: string, comment: Comment): Promise<number> {
+  public async createShowComment(sname: string, comment: Comment): Promise<Comment> {
     const ser: Service = new CommentService();
     const cid: number = await ser.create(comment);
     const client = await this.pool.connect();
-    const sql = 'INSERT INTO show_comment (show_name, comment_id) VALUES($1, $2) RETURNING comment_id';
+
     try {
-      const res = await client.query(sql, [sname, cid]);
-      comment.id = res.rows[0].id;
-      return res.rows[0].id;
+      let sql = 'INSERT INTO show_comment (show_name, comment_id) VALUES($1, $2) RETURNING show_name, comment_id';
+      await client.query('BEGIN');
+      const { rows } = await client.query(sql, [sname, cid]);
+      sql = `SELECT * FROM show_comments WHERE show_name = $1 AND comment_id = $2 `;
+      const res = await client.query(sql, [rows[0].show_name, rows[0].comment_id]);
+      await client.query('COMMIT');
+      return res.rows[0];
     } catch (e) {
+      await client.query('ROLLBACK');
       throw new Error(e);
     } finally {
       client.release();

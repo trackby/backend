@@ -57,7 +57,7 @@ export class AuthController {
       const isMatched: boolean = await service.comparePass(password, username);
       if (isMatched) {
         const id = isExists.id;
-        const flag = isExists.isadmin;
+        const flag = isExists.role;
         const jwt = service.signJWT(id, flag);
         return res.status(200).json({ token: jwt, expiresIn: '1 day' });
       } else {

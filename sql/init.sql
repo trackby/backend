@@ -118,7 +118,7 @@ CREATE TABLE users (
   email CITEXT NOT NULL UNIQUE,
   age SMALLINT NOT NULL,
   image_url TEXT,
-  isAdmin BOOLEAN DEFAULT false,
+  role VARCHAR(20) DEFAULT 'REGISTERED_USER' CHECK (role IN ('REGISTERED_USER', 'ADMIN', 'MODERATOR')),
   PRIMARY KEY(id)
 );
 
@@ -197,11 +197,11 @@ CREATE VIEW friendship_requests AS (
 );
 
 CREATE VIEW public_user AS (
-  SELECT * FROM users WHERE isAdmin=false
+  SELECT * FROM users WHERE role='REGISTERED_USER'
 );
 
 CREATE VIEW admin_user AS (
-  SELECT * FROM users WHERE isAdmin=true
+  SELECT * FROM users WHERE role='ADMIN'
 );
 
 /* migrations */

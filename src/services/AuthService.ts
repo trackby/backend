@@ -85,8 +85,8 @@ export class AuthService extends Service {
     return null;
   }
 
-  public signJWT(id: number, isAdmin: boolean) {
-    const token = jwt.sign({ id, isAdmin }, this.key, {
+  public signJWT(id: number, role: string) {
+    const token = jwt.sign({ id, role }, this.key, {
       algorithm: 'HS384',
       expiresIn: 60 * 60 * 24,
       issuer: 'trackby',

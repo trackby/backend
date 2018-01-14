@@ -492,14 +492,6 @@ CREATE VIEW friendship_requests AS (
   ORDER BY first_user_id, second_user_id, action_user_id
 );
 
-CREATE VIEW public_user AS (
-  SELECT * FROM users WHERE isAdmin=false
-);
-
-CREATE VIEW admin_user AS (
-  SELECT * FROM users WHERE isAdmin=true
-);
-
 CREATE VIEW episode_comments AS (
   SELECT episode.show_name, episode.season_no, episode.episode_no, comment.comment_body, 
     comment.created_at, comment.user_id, 'episode_comment' AS type FROM episode_comment

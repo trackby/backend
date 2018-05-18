@@ -14,14 +14,14 @@ CREATE TABLE comment (
 
 /*show_comment table */
 CREATE TABLE show_comment (
-  show_name	VARCHAR(40) NOT NULL,
+  show_name	CITEXT NOT NULL,
   comment_id  INT NOT NULL,
   PRIMARY KEY(comment_id)
 );
 
 /*season_comment table */
 CREATE TABLE season_comment (
-  show_name	VARCHAR(40) NOT NULL,
+  show_name	CITEXT NOT NULL,
   season_no INT NOT NULL,
   comment_id  INT NOT NULL,
   PRIMARY KEY(comment_id)
@@ -29,7 +29,7 @@ CREATE TABLE season_comment (
 
 /*episode_ table */
 CREATE TABLE episode_comment (
-  show_name	VARCHAR(40) NOT NULL,
+  show_name	CITEXT NOT NULL,
   season_no INT NOT NULL,
   episode_no INT NOT NULL,
   comment_id  INT NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE episode_comment (
 CREATE TABLE tvshow (
     id SERIAL,
     info	TEXT,
-    show_name	VARCHAR(40) NOT NULL,
+    show_name	CITEXT NOT NULL,
     director_name VARCHAR(45),
     writer_name VARCHAR(45),
     image_url	TEXT,
@@ -62,7 +62,7 @@ CREATE TABLE season(
     image_url	TEXT,
     overall_rating FLOAT DEFAULT 0.0,
     trailer_url     VARCHAR(75),
-    show_name	VARCHAR(40) NOT NULL,
+    show_name	CITEXT NOT NULL,
     episode_count  INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(show_name, season_no)
@@ -78,7 +78,7 @@ CREATE TABLE episode(
     overall_rating FLOAT DEFAULT 0.0,
     trailer_url VARCHAR(75),    
     season_no		INT NOT NULL,
-    show_name	VARCHAR(40) NOT NULL,
+    show_name	CITEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(show_name, season_no, episode_no)
 );
@@ -92,20 +92,20 @@ CREATE TABLE watch (
 
 CREATE TABLE show_watch (
   watch_id INT,
-  show_name	VARCHAR(40),
+  show_name	CITEXT,
   PRIMARY KEY(watch_id)
 );
 
 CREATE TABLE season_watch (
   watch_id INT,
-  show_name	VARCHAR(40) NOT NULL,
+  show_name	CITEXT NOT NULL,
   season_no INT,
   PRIMARY KEY(watch_id)
 );
 
 CREATE TABLE episode_watch (
   watch_id INT,
-  show_name	VARCHAR(40) NOT NULL,
+  show_name	CITEXT NOT NULL,
   season_no INT,
   episode_no INT,
   PRIMARY KEY(watch_id)
@@ -161,13 +161,13 @@ CREATE TABLE rate(
 
 /*show_rate table */
 CREATE TABLE show_rate(
-  show_name	VARCHAR(40) NOT NULL,
+  show_name	CITEXT NOT NULL,
 	rate_id	INT NOT NULL,
   PRIMARY KEY(rate_id)
 );
 
 CREATE TABLE season_rate(
-  show_name	VARCHAR(40) NOT NULL,
+  show_name	CITEXT NOT NULL,
   season_no INT NOT NULL,
 	rate_id	INT NOT NULL,
   PRIMARY KEY(rate_id)
@@ -175,7 +175,7 @@ CREATE TABLE season_rate(
 
 
 CREATE TABLE episode_rate(
-  show_name	VARCHAR(40) NOT NULL,
+ show_name	CITEXT NOT NULL,
  season_no INT NOT NULL,
  episode_no INT NOT NULL,
  rate_id	INT NOT NULL,

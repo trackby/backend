@@ -33,7 +33,7 @@ export class AuthService extends Service {
     return false;
   }
   public async save(user: User): Promise<boolean> {
-    const { username, password, email, age } = user;
+    const { username, password, email } = user;
     const salt = await bcrypt.genSalt(10).catch((error) => {
       throw new Error(error);
     });
@@ -41,8 +41,8 @@ export class AuthService extends Service {
       throw new Error(error);
     });
 
-    const values = [ username, hashedPass, email, age ];
-    const sql = 'INSERT INTO users(username, password, email, age) VALUES($1, $2, $3, $4) RETURNING *';
+    const values = [ username, hashedPass, email ];
+    const sql = 'INSERT INTO users(username, password, email) VALUES($1, $2, $3) RETURNING *';
     const client = await this.pool.connect();
 
     try {

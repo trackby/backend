@@ -65,6 +65,7 @@ export class Server {
 
     this.app.use(helmet());
     this.app.disable('x-powered-by');
+    this.app.disable('etag');
 
     limiter({
       expire: 1000 * 60 * 60,

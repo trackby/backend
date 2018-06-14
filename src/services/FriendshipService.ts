@@ -38,7 +38,7 @@ export class FriendshipService extends Service {
       predicate = 'IS NOT DISTINCT FROM';
     }
 
-    const sql = `SELECT id, username, email, age FROM users WHERE id
+    const sql = `SELECT id, username, email FROM users WHERE id
     IN (SELECT second_user_id FROM friendship_requests WHERE first_user_id=$1 AND action_user_id ${predicate} $1) `;
 
     try {
@@ -114,7 +114,7 @@ export class FriendshipService extends Service {
 
   public async findAllFriends(username: string): Promise<User[]> {
     const client = await this.pool.connect();
-    const sql = `SELECT id, username, email, age FROM users WHERE id
+    const sql = `SELECT id, username, email FROM users WHERE id
                 IN (SELECT second_user_id FROM friends_view WHERE first_user_id=$1) `;
     try {
       const userId = await service.findByUsername(username);

@@ -12,10 +12,10 @@ const service = new AuthService();
 
 export class AuthController {
   public static async signup(req: Request, res: Response) {
-    const { username, password, email, age } = req.body;
+    const { username, password, email } = req.body;
     let isExists: boolean = false;
 
-    if (!username || !password || !email || !age) {
+    if (!username || !password || !email) {
       return res.status(400).send(new BadRequest());
     }
     try {
@@ -25,7 +25,7 @@ export class AuthController {
     }
 
     if (!isExists) {
-      const user = new User(username, password, email, age);
+      const user = new User(username, password, email);
       let success: boolean = false;
       try {
         success = await service.save(user);

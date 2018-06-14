@@ -3,15 +3,13 @@ export class User {
   private _username: string;
   private _password: string;
   private _email: string;
-  private _age: number;
   private _role: string;
 
-  constructor(username: string, password: string, email: string, age: number,
+  constructor(username: string, password: string, email: string,
               role: string = 'REGISTERED_USER', id?: number) {
     this._id = id;
     this._username = username;
     this._password = password;
-    this._age = age;
     this._email = email;
     this._role = role;
   }
@@ -39,12 +37,6 @@ export class User {
   }
   public set email(email: string) {
     this._email = email;
-  }
-  public get age(): number {
-    return this._age;
-  }
-  public set age(age: number) {
-    this._age = age;
   }
   public get isAdmin(): boolean {
     return this._role === 'ADMIN';

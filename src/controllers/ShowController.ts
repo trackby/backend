@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import * as _ from 'lodash';
 import { BadRequest } from '../errors/BadRequest';
 import { NotFound } from '../errors/NotFound';
 import { UnprocessableEntity } from '../errors/UnprocessableEntity';
@@ -26,9 +25,10 @@ export class ShowController {
     const { uid } = res.locals.user;
     const episodeService = new EpisodeService();
     const seasonService = new SeasonService();
-    const r = await showService.find(show, uid);
+    const r = await showService.find(show);
     if (r) {
-      r.watched = await showService.checkIfWatched(show);
+      r.watched = await showService.checkIfWatched(show, uid);
+      r.rating = await showService.findUserRate(show, uid);
       r.seasons = await seasonService.findAllSeasons(show);
       r.episodes = await episodeService.findAllShowEpisodes(show);
       return res.status(200).send(r);
@@ -38,15 +38,11 @@ export class ShowController {
 
   public async update(req: Request, res: Response) {
     const { show } = req.query;
-    const { isAdmin } = req.body;
-    const params =  _.omit(req.body, ['isAdmin', 'user_id']);
-    if (isAdmin) {
-      const r: boolean = await showService.updateShow(show, params);
-      if (r) {
-        return res.status(204).send();
-      }
-      return res.status(422).send(new UnprocessableEntity());
+    const r: boolean = await showService.updateShow(show, req.body);
+    if (r) {
+      return res.status(204).send();
     }
+    return res.status(422).send(new UnprocessableEntity());
   }
 
   public async readComment(req: Request, res: Response) {

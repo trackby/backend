@@ -70,7 +70,9 @@ export class AuthController {
 
   public static protect(req: Request, res: Response, next: NextFunction) {
      if (process.env.NODE_ENV === 'test') {
-      req.body.user.uid = 1; // mock data
+      res.locals.user = {};
+      res.locals.user.uid = 1; // mock data
+      res.locals.user.role = 'REGISTERED_USER';
       return next();
     }
      if (req.method === 'OPTIONS') {

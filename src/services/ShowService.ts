@@ -8,16 +8,27 @@ import { WatchService } from './watchservice';
 
 export class ShowService extends Service {
 
-  public async find(sname: string, uid: number): Promise<Show> {
+  public async find(sname: string): Promise<Show> {
     const client = await this.pool.connect();
-    const sql = `SELECT tvshow.id, info, tvshow.show_name, director_name, writer_name, image_url,
-                trailer_url, season_count, episode_count, overall_rating, rating, tvshow.created_at
-                FROM tvshow LEFT JOIN show_rate ON show_rate.show_name = tvshow.show_name
-                LEFT JOIN rate ON rate.id = show_rate.rate_id AND rate.user_id = $1
-                WHERE tvshow.show_name = $2 `;
+    const sql = `SELECT * FROM tvshow WHERE show_name = $1`;
     try {
-      const res = await client.query(sql, [uid, sname]);
+      const res = await client.query(sql, [sname]);
       return res.rows[0];
+    } catch (e) {
+      throw new Error(e);
+    } finally {
+      client.release();
+    }
+  }
+
+  public async findUserRate(sname: string, uid: number): Promise<number> {
+    const client = await this.pool.connect();
+    const sql = `SELECT rating FROM rate INNER JOIN show_rate ON rate.id = show_rate.rate_id
+            INNER JOIN tvshow ON tvshow.show_name = show_rate.show_name WHERE tvshow.show_name = $1 AND
+            rate.user_id = $2`;
+    try {
+      const res = await client.query(sql, [sname, uid]);
+      return (res.rows[0]) ? res.rows[0].rating : null;
     } catch (e) {
       throw new Error(e);
     } finally {
@@ -27,8 +38,8 @@ export class ShowService extends Service {
 
   public async create(show: Show): Promise<string> {
     const client = await this.pool.connect();
-    const sql = 'INSERT INTO tvshow(show_name, info, trailer_url, image_url, director_name, writer_name) ' +
-                'VALUES($1, $2, $3, $4, $5, $6) RETURNING show_name';
+    const sql = `INSERT INTO tvshow(show_name, info, trailer_url, image_url, director_name, writer_name)
+                 VALUES($1, $2, $3, $4, $5, $6) RETURNING show_name`;
     try {
       const res = await client.query(sql,
         [show.show_name, show.info, show.trailer_url, show.image_url, show.director_name, show.writer_name]);
@@ -156,11 +167,12 @@ export class ShowService extends Service {
     }
   }
 
-  public async checkIfWatched(sname: string): Promise<boolean> {
+  public async checkIfWatched(sname: string, uid: number): Promise<boolean> {
     const client = await this.pool.connect();
-    const sql = 'SELECT * from show_watch WHERE show_name = $1';
+    const sql = `SELECT * from watch WHERE id IN
+        (SELECT watch_id FROM show_watch WHERE show_name = $1) AND user_id = $2`;
     try {
-      const res = await client.query(sql, [sname]);
+      const res = await client.query(sql, [sname, uid]);
       return (!res.rows.length) ? false : true;
     } catch (e) {
       throw new Error(e);

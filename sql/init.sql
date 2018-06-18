@@ -577,3 +577,4 @@ CREATE VIEW episode_rates AS (
   INNER JOIN rate ON episode_rate.rate_id = rate.id
   INNER JOIN users ON rate.user_id = users.id 
 );
+

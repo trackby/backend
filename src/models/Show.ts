@@ -11,6 +11,7 @@ export class Show {
   private _directorName: string;
   private _writerName: string;
   private _watched: boolean;
+  private _rating: number;
   private _seasons: Season[];
   private _episodes: Episode[];
 
@@ -72,6 +73,12 @@ export class Show {
   }
   public set watched(watch: boolean) {
     this._watched = watch;
+  }
+  public get rating() {
+    return this._rating;
+  }
+  public set rating(rating: number) {
+    this._rating = rating;
   }
   public get seasons() {
     return this._seasons;

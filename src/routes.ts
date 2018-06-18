@@ -61,10 +61,10 @@ export class Routes {
 
     // handles for all routes with shows
     router.use('/shows', Controller.handleAll);
-    router.post('/shows', Controller.create);
+    router.post('/shows', AuthController.role('ADMIN'), Controller.create);
+    router.patch('/shows', AuthController.role('ADMIN'), Controller.update);
+    router.delete('/shows', AuthController.role('ADMIN'), Controller.delete);
     router.get('/shows', Controller.read);
-    router.patch('/shows', Controller.update); // check this out!
-    router.delete('/shows', Controller.delete);
     router.get('/shows/comments', Controller.readComments);
     router.post('/shows/comments', Controller.createComment);
     router.get('/shows/comments/:commentid', Controller.readComment);
